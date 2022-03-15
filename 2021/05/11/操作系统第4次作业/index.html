@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta name="description" content="Welcome to nnilk&#39;s daily learning blog" />
+      
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>3.operating-systems-three-easy-pieces answers |  nnilk&#39;s blog</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/images/logo3.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-操作系统第4次作业"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  3.operating-systems-three-easy-pieces answers
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/05/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%AC4%E6%AC%A1%E4%BD%9C%E4%B8%9A/" class="article-date">
+  <time datetime="2021-05-10T16:00:00.000Z" itemprop="datePublished">2021-05-11</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/The-Operating-System-Notes/">The-Operating-System-Notes</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">3.4k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">17 min</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="操作系统第-4-次作业"><a href="#操作系统第-4-次作业" class="headerlink" title="操作系统第 4 次作业"></a>操作系统第 4 次作业</h1><p>201908010224 黄雅妮</p>
+<h2 id="第-37-章——磁盘驱动器"><a href="#第-37-章——磁盘驱动器" class="headerlink" title="第 37 章——磁盘驱动器"></a>第 37 章——磁盘驱动器</h2><h3 id="37-1"><a href="#37-1" class="headerlink" title="37.1"></a>37.1</h3><p><strong>计算以下几组请求的寻道、旋转和传输时间：-a 0，-a 6，-a 30，-a 7，30，8，最后 -a 10，11，12，13。</strong></p>
+<p>运行以下命令行</p>
+<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">python2 disk.py  -a 0 -G</span><br><span class="line">python2 disk.py  -a 6 -G</span><br><span class="line">python2 disk.py  -a 30 -G</span><br><span class="line">python2 disk.py  -a 7,30,8 -G</span><br><span class="line">python2 disk.py  -a 10,11,12,13 -G</span><br></pre></td></tr></table></figure>
+
+<p><strong>对于 -a 0,</strong></p>
+<p>Rotate &#x3D; 165</p>
+<p>Transfer &#x3D; 30</p>
+<p>seek &#x3D; 0</p>
+<p>total &#x3D; 165 + 30 + 0 &#x3D;195</p>
+<p><strong>对于 -a 6,</strong></p>
+<p>Rotate &#x3D; 345</p>
+<p>Transfer &#x3D; 30</p>
+<p>seek &#x3D; 0</p>
+<p>total &#x3D; 345 + 30 + 0 &#x3D;375</p>
+<p><strong>对于 -a 30,</strong></p>
+<p>Rotate &#x3D; 265</p>
+<p>Transfer &#x3D; 30</p>
+<p>seek &#x3D; 80</p>
+<p>total &#x3D;375</p>
+<p><strong>对于 -a 7,30,8,</strong></p>
+<p>Rotate &#x3D; 545</p>
+<p>Transfer &#x3D; 90</p>
+<p>seek &#x3D; 160</p>
+<p>total &#x3D; 795</p>
+<p><strong>对于 -a 10，11，12，13</strong></p>
+<p>Rotate &#x3D; 425</p>
+<p>Transfer &#x3D;120</p>
+<p>seek &#x3D;40</p>
+<p>total &#x3D; 585</p>
+<h3 id="37-2"><a href="#37-2" class="headerlink" title="37.2"></a>37.2</h3><p><strong>执行上述相同请求，但将寻道速率更改为不同值：-S 2，-S 4，-S 8，-S 10，-S 40，-S 0.1。时间如何变化？</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>-a 0</th>
+<th>-a 30</th>
+<th>-a 7,30,8</th>
+<th>-a 10,11,12,13</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>- S 2</td>
+<td>195</td>
+<td>375</td>
+<td>795</td>
+<td>585</td>
+</tr>
+<tr>
+<td>-S 4</td>
+<td>195</td>
+<td>375</td>
+<td>435</td>
+<td>585</td>
+</tr>
+<tr>
+<td>-S 8</td>
+<td>195</td>
+<td>375</td>
+<td>435</td>
+<td>585</td>
+</tr>
+<tr>
+<td>-S 10</td>
+<td>195</td>
+<td>375</td>
+<td>435</td>
+<td>585</td>
+</tr>
+<tr>
+<td>-S 40</td>
+<td>195</td>
+<td>375</td>
+<td>435</td>
+<td>585</td>
+</tr>
+<tr>
+<td>-S 0.1</td>
+<td>195</td>
+<td>1095</td>
+<td>2235</td>
+<td>945</td>
+</tr>
+</tbody></table>
+<h3 id="37-3"><a href="#37-3" class="headerlink" title="37.3"></a>37.3</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>-a 0</th>
+<th>-a 30</th>
+<th>-a 7,30,8</th>
+<th>-a 10,11,12,13</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>- R 0.1</td>
+<td>1950</td>
+<td>3750</td>
+<td>4349</td>
+<td>5850</td>
+</tr>
+<tr>
+<td>- R 0.5</td>
+<td>390</td>
+<td>750</td>
+<td>1590</td>
+<td>1170</td>
+</tr>
+<tr>
+<td>- R 0.01</td>
+<td>19500</td>
+<td>37501</td>
+<td>43500</td>
+<td>58501</td>
+</tr>
+</tbody></table>
+<h3 id="37-4"><a href="#37-4" class="headerlink" title="37.4"></a>37.4</h3><p>你可能已经注意到，对于一些请求流，一些策略比 FIFO 更好。例如，对于请求流-a 7，30，8，处理请求的顺序是什么？现在在相同的工作负载上运行最短寻道时间优先（SSTF）调度程序（-p SSTF）。每个请求服务需要多长时间（寻道、旋转、传输）？</p>
+<p>FIFO:7,30,8</p>
+<p>SSTF:7,8,30</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>seek</th>
+<th>rotate</th>
+<th>transfer</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>FIFO</td>
+<td>160</td>
+<td>545</td>
+<td>90</td>
+</tr>
+<tr>
+<td>SSTF</td>
+<td>80</td>
+<td>205</td>
+<td>90</td>
+</tr>
+</tbody></table>
+<h3 id="37-5"><a href="#37-5" class="headerlink" title="37.5"></a><strong>37.5</strong></h3><p><strong>现在做同样的事情，但使用最短的访问时间优先（SATF）调度程序（-p SATF）。它是否对-a 7，30，8 指定的一组请求有所不同？找到 SATF 明显优于 SSTF 的一组请求。出现显著差异的条件是什么？</strong></p>
+<p>使用 SATF，磁盘的访问顺序依然是 7 ， 8, 30。寻道，旋转，传输都是一样的</p>
+<p>-a 12,31 -c -S 40 -R 3 -p SSTF</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Block:  12  Seek:  1  Rotate: 54  Transfer: 10  Total:  65</span><br><span class="line">Block:  31  Seek:  1  Rotate: 59  Transfer: 10  Total:  70</span><br><span class="line"></span><br><span class="line">TOTALS      Seek:  2  Rotate:113  Transfer: 20  Total: 135</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>-a 12,31 -c -S 40 -R 3 -p SATF</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Block:  31  Seek:  2  Rotate:  3  Transfer: 10  Total:  15</span><br><span class="line">Block:  12  Seek:  1  Rotate: 39  Transfer: 10  Total:  50</span><br><span class="line"></span><br><span class="line">TOTALS      Seek:  3  Rotate: 42  Transfer: 20  Total:  65</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>运行以上两组参数。显然 SATF 优于 SSTF.</p>
+<p>只要是，寻道时间远远小于旋转时间的情况，SATF 性能就会显著优于 SSTF。</p>
+<h3 id="37-6"><a href="#37-6" class="headerlink" title="37.6"></a>37.6</h3><p><strong>你可能已经注意到，该磁盘没有特别好地处理请求流-a 10，11，12，13。这是为什么？你可以引入一个磁道偏斜来解决这个问题（-o skew，其中 skew 是一个非负整数）？考虑到默认寻道速率，偏斜应该是多少，才能尽量减少这一组请求的总时间？对于不同的寻道速率（例如，-S 2，-S 4）呢？一般来说，考虑到寻道速率和扇区布局信息，你能否写出一个公式来计算偏斜？</strong></p>
+<p>寻道时间太长，导致更换磁道时，刚好旋转超过了 12，导致需要重新旋转一个周期</p>
+<p><img src="https://s2.loli.net/2022/01/03/p3BAPZMqlvUgNVH.png" alt="image-20220103194714898"></p>
+<p><img src="https://s2.loli.net/2022/01/03/eVHXtKjTdF2GcIm.png" alt="image-20220103194623054"></p>
+<p>跨越相邻磁道的寻道时间约接近（小于）旋转过一个扇区的旋转时间，效果越好。</p>
+<p>如果寻道速度为 V，寻道距离为 D，旋转角速度为 W，每扇区区域跨越的角度为 A，偏斜为 O，<strong>那么:<code>D / V &lt; A*O / W</code> ，所以偏斜量<code>O &gt; DW / VA</code>，并取满足该条件下的最小的整数。</strong></p>
+<h2 id="第-38-章——RAID"><a href="#第-38-章——RAID" class="headerlink" title="第 38 章——RAID"></a>第 38 章——RAID</h2><h3 id="38-1"><a href="#38-1" class="headerlink" title="38.1"></a>38.1</h3><p><strong>使用模拟器执行一些基本的 RAID 映射测试。运行不同的级别（0、1、4、5），看看你是否可以找出一组请求的映射。对于 RAID-5，看看你是否可以找出左对称（left-symmetric）和左不对称（left-asymmetric）布局之间的区别。使用一些不同的随机种子，产生不同于上面的问题。</strong></p>
+<p>运行以下命令行</p>
+<p>❯ python2 raid.py -n 10 -L 5 -5 LS -c -W seq</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">LOGICAL READ from addr:0 size:4096</span><br><span class="line">  read  [disk 0, offset 0]</span><br><span class="line">LOGICAL READ from addr:1 size:4096</span><br><span class="line">  read  [disk 1, offset 0]</span><br><span class="line">LOGICAL READ from addr:2 size:4096</span><br><span class="line">  read  [disk 2, offset 0]</span><br><span class="line">LOGICAL READ from addr:3 size:4096</span><br><span class="line">  read  [disk 3, offset 1]</span><br><span class="line">LOGICAL READ from addr:4 size:4096</span><br><span class="line">  read  [disk 0, offset 1]</span><br><span class="line">LOGICAL READ from addr:5 size:4096</span><br><span class="line">  read  [disk 1, offset 1]</span><br><span class="line">LOGICAL READ from addr:6 size:4096</span><br><span class="line">  read  [disk 2, offset 2]</span><br><span class="line">LOGICAL READ from addr:7 size:4096</span><br><span class="line">  read  [disk 3, offset 2]</span><br><span class="line">LOGICAL READ from addr:8 size:4096</span><br><span class="line">  read  [disk 0, offset 2]</span><br><span class="line">LOGICAL READ from addr:9 size:4096</span><br><span class="line">  read  [disk 1, offset 3]</span><br></pre></td></tr></table></figure>
+
+<p>❯ python2 raid.py -n 10 -L 5 -5 LA -c -W seq</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">LOGICAL READ from addr:0 size:4096</span><br><span class="line">  read  [disk 0, offset 0]</span><br><span class="line">LOGICAL READ from addr:1 size:4096</span><br><span class="line">  read  [disk 1, offset 0]</span><br><span class="line">LOGICAL READ from addr:2 size:4096</span><br><span class="line">  read  [disk 2, offset 0]</span><br><span class="line">LOGICAL READ from addr:3 size:4096</span><br><span class="line">  read  [disk 0, offset 1]</span><br><span class="line">LOGICAL READ from addr:4 size:4096</span><br><span class="line">  read  [disk 1, offset 1]</span><br><span class="line">LOGICAL READ from addr:5 size:4096</span><br><span class="line">  read  [disk 3, offset 1]</span><br><span class="line">LOGICAL READ from addr:6 size:4096</span><br><span class="line">  read  [disk 0, offset 2]</span><br><span class="line">LOGICAL READ from addr:7 size:4096</span><br><span class="line">  read  [disk 2, offset 2]</span><br><span class="line">LOGICAL READ from addr:8 size:4096</span><br><span class="line">  read  [disk 3, offset 2]</span><br><span class="line">LOGICAL READ from addr:9 size:4096</span><br><span class="line">  read  [disk 1, offset 3]</span><br><span class="line">&lt;/pre&gt;</span><br></pre></td></tr></table></figure>
+
+<p>从上面读取的磁盘与偏移可以推测 left- symmetric）和 left-asymmetric 的物理磁盘布局：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">left-symmetric      left-asymmetric</span><br><span class="line">0  1  2  P          0  1  2  P</span><br><span class="line">4  5  P  3          3  4  P  5</span><br><span class="line">8  P  6  7          6  P  7  8</span><br></pre></td></tr></table></figure>
+
+<h3 id="38-2"><a href="#38-2" class="headerlink" title="38.2"></a>38.2</h3><p><strong>与第一个问题一样，但这次使用 -C 来改变块的大小。大块的大小如何改变映射？</strong></p>
+<p>❯ python2 raid.py -n 20 -L 5 -5 LS -c -W seq -C 8K</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">LOGICAL READ from addr:0 size:4096</span><br><span class="line">  read  [disk 0, offset 0]</span><br><span class="line">LOGICAL READ from addr:1 size:4096</span><br><span class="line">  read  [disk 0, offset 1]</span><br><span class="line">LOGICAL READ from addr:2 size:4096</span><br><span class="line">  read  [disk 1, offset 0]</span><br><span class="line">LOGICAL READ from addr:3 size:4096</span><br><span class="line">  read  [disk 1, offset 1]</span><br><span class="line">LOGICAL READ from addr:4 size:4096</span><br><span class="line">  read  [disk 2, offset 0]</span><br><span class="line">LOGICAL READ from addr:5 size:4096</span><br><span class="line">  read  [disk 2, offset 1]</span><br><span class="line">LOGICAL READ from addr:6 size:4096</span><br><span class="line">  read  [disk 3, offset 2]</span><br><span class="line">LOGICAL READ from addr:7 size:4096</span><br><span class="line">  read  [disk 3, offset 3]</span><br><span class="line">LOGICAL READ from addr:8 size:4096</span><br><span class="line">  read  [disk 0, offset 2]</span><br><span class="line">LOGICAL READ from addr:9 size:4096</span><br><span class="line">  read  [disk 0, offset 3]</span><br></pre></td></tr></table></figure>
+
+<p>布局推测：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0  2  4  P</span><br><span class="line">1  3  5  P</span><br><span class="line">8  10 P  6</span><br><span class="line">9  11 P  7</span><br></pre></td></tr></table></figure>
+
+<h3 id="38-3"><a href="#38-3" class="headerlink" title="38.3"></a><strong>38.3</strong></h3><p><strong>执行上述测试，但使用 r 标志来反转每个问题的性质。</strong></p>
+<p>可以看到，磁盘布局没有发生变化</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">❯ python2 raid.py -n 12 -L 5 -5 LS -c -W seq -C 8K -r</span><br><span class="line">LOGICAL READ from addr:0 size:4096</span><br><span class="line">  read  [disk 0, offset 0]</span><br><span class="line">LOGICAL READ from addr:1 size:4096</span><br><span class="line">  read  [disk 0, offset 1]</span><br><span class="line">LOGICAL READ from addr:2 size:4096</span><br><span class="line">  read  [disk 1, offset 0]</span><br><span class="line">LOGICAL READ from addr:3 size:4096</span><br><span class="line">  read  [disk 1, offset 1]</span><br><span class="line">LOGICAL READ from addr:4 size:4096</span><br><span class="line">  read  [disk 2, offset 0]</span><br><span class="line">LOGICAL READ from addr:5 size:4096</span><br><span class="line">  read  [disk 2, offset 1]</span><br><span class="line">LOGICAL READ from addr:6 size:4096</span><br><span class="line">  read  [disk 3, offset 2]</span><br><span class="line">LOGICAL READ from addr:7 size:4096</span><br><span class="line">  read  [disk 3, offset 3]</span><br><span class="line">LOGICAL READ from addr:8 size:4096</span><br><span class="line">  read  [disk 0, offset 2]</span><br><span class="line">LOGICAL READ from addr:9 size:4096</span><br><span class="line">  read  [disk 0, offset 3]</span><br><span class="line">LOGICAL READ from addr:10 size:4096</span><br><span class="line">  read  [disk 1, offset 2]</span><br><span class="line">LOGICAL READ from addr:11 size:4096</span><br><span class="line">  read  [disk 1, offset 3]</span><br></pre></td></tr></table></figure>
+
+<h3 id="38-4"><a href="#38-4" class="headerlink" title="38.4"></a>38.4</h3><p><strong>现在使用反转标志，但用-S 标志增加每个请求的大小。尝试指定 8 KB、12 KB 和 16 KB 的大小，同时改变 RAID 级别。当请求的大小增加时，底层 IO 模式会发生什么？请务必在顺序工作负载上尝试此操作（-W sequential）。对于什么请求大小，RAID-4 和 RAID-5 的 I0 效率更高？</strong></p>
+<p>1.当请求块大小超过磁盘块大小时，一个请求需要读写多个磁盘</p>
+<p>2.对于 RAID-4 和 RAID-5，请求块大小为 16 K 时，效率更高，因为可以同时利用多个磁盘，相当于全条带写入</p>
+<h3 id="38-5"><a href="#38-5" class="headerlink" title="38.5"></a>38.5</h3><p><strong>使用模拟器的定时模式（-t）来估计 100 次随机读取到 RAID 的性能，同时改变 RAID 级别，使用 4 个磁盘。</strong></p>
+<p>运行以下命令行，可以看到 RAID0 的性能是最优的，RAID4 由于可使用磁盘为 4-1&#x3D;3，读取性能较差</p>
+<p><code>python2 raid.py -L 0 -t -n 100 -c -D 4</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">disk:0  busy: 100.00  I/Os:    28 (sequential:0 nearly:1 random:27)</span><br><span class="line">disk:1  busy:  93.91  I/Os:    29 (sequential:0 nearly:6 random:23)</span><br><span class="line">disk:2  busy:  87.92  I/Os:    24 (sequential:0 nearly:0 random:24)</span><br><span class="line">disk:3  busy:  65.94  I/Os:    19 (sequential:0 nearly:1 random:18)</span><br><span class="line"></span><br><span class="line">STAT totalTime 275.7</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>python2 raid.py -L 1 -t -n 100 -c -D 4</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">disk:0  busy: 100.00  I/Os:    28 (sequential:0 nearly:1 random:27)</span><br><span class="line">disk:1  busy:  86.98  I/Os:    24 (sequential:0 nearly:0 random:24)</span><br><span class="line">disk:2  busy:  97.52  I/Os:    29 (sequential:0 nearly:3 random:26)</span><br><span class="line">disk:3  busy:  65.23  I/Os:    19 (sequential:0 nearly:1 random:18)</span><br><span class="line"></span><br><span class="line">STAT totalTime 278.7</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>python2 raid.py -L 4 -t -n 100 -c -D 4</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">disk:0  busy:  78.48  I/Os:    30 (sequential:0 nearly:0 random:30)</span><br><span class="line">disk:1  busy: 100.00  I/Os:    40 (sequential:0 nearly:3 random:37)</span><br><span class="line">disk:2  busy:  76.46  I/Os:    30 (sequential:0 nearly:2 random:28)</span><br><span class="line">disk:3  busy:   0.00  I/Os:     0 (sequential:0 nearly:0 random:0)</span><br><span class="line"></span><br><span class="line">STAT totalTime 386.1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>python2 raid.py -L 5 -t -n 100 -c -D 4</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">disk:0  busy: 100.00  I/Os:    28 (sequential:0 nearly:1 random:27)</span><br><span class="line">disk:1  busy:  95.84  I/Os:    29 (sequential:0 nearly:5 random:24)</span><br><span class="line">disk:2  busy:  87.60  I/Os:    24 (sequential:0 nearly:0 random:24)</span><br><span class="line">disk:3  busy:  65.70  I/Os:    19 (sequential:0 nearly:1 random:18)</span><br><span class="line"></span><br><span class="line">STAT totalTime 276.7</span><br></pre></td></tr></table></figure>
+
+<h2 id="第-40-章——文件系统的实现"><a href="#第-40-章——文件系统的实现" class="headerlink" title="第 40 章——文件系统的实现"></a>第 40 章——文件系统的实现</h2><h3 id="40-1"><a href="#40-1" class="headerlink" title="40.1"></a>40.1</h3><p><strong>用一些不同的随机种子（比如 17、18、19、20）运行模拟器，看看你是否能确定每次状态变化之间一定发生了哪些操作。</strong></p>
+<p>以随机种子 -s 17 为例</p>
+<p>运行以下命令行</p>
+<p><code>python2 vsfs.py -n 6 -s 17</code></p>
+<p>每步发生的操作写在注释中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Initial state</span><br><span class="line"></span><br><span class="line">inode bitmap  10000000</span><br><span class="line">inodes        [d a:0 r:2] [] [] [] [] [] [] []</span><br><span class="line">data bitmap   10000000</span><br><span class="line">data          [(.,0) (..,0)] [] [] [] [] [] [] []</span><br><span class="line"></span><br><span class="line">Which operation took place?</span><br><span class="line">#创建了目录‘/u’  mkdir(&#x27;/u&#x27;)</span><br><span class="line">inode bitmap  11000000</span><br><span class="line">inodes        [d a:0 r:3] [d a:1 r:2] [] [] [] [] [] []</span><br><span class="line">data bitmap   11000000</span><br><span class="line">data          [(.,0) (..,0) (u,1)] [(.,1) (..,0)] [] [] [] [] [] []</span><br><span class="line"></span><br><span class="line">Which operation took place?</span><br><span class="line">#创建文件‘/a’  create(&#x27;/a&#x27;)</span><br><span class="line">inode bitmap  11100000</span><br><span class="line">inodes        [d a:0 r:3] [d a:1 r:2] [f a:-1 r:1] [] [] [] [] []</span><br><span class="line">data bitmap   11000000</span><br><span class="line">data          [(.,0) (..,0) (u,1) (a,2)] [(.,1) (..,0)] [] [] [] [] [] []</span><br><span class="line"></span><br><span class="line">Which operation took place?</span><br><span class="line">#删除文件‘/a’    unlink(&#x27;/a&#x27;)</span><br><span class="line">inode bitmap  11000000</span><br><span class="line">inodes        [d a:0 r:3] [d a:1 r:2] [] [] [] [] [] []</span><br><span class="line">data bitmap   11000000</span><br><span class="line">data          [(.,0) (..,0) (u,1)] [(.,1) (..,0)] [] [] [] [] [] []</span><br><span class="line"></span><br><span class="line">Which operation took place?</span><br><span class="line">#创建目录‘/z’    mkdir(/z)</span><br><span class="line">inode bitmap  11100000</span><br><span class="line">inodes        [d a:0 r:4] [d a:1 r:2] [d a:2 r:2] [] [] [] [] []</span><br><span class="line">data bitmap   11100000</span><br><span class="line">data          [(.,0) (..,0) (u,1) (z,2)] [(.,1) (..,0)] [(.,2) (..,0)] [] [] [] [] []</span><br><span class="line"></span><br><span class="line">Which operation took place?</span><br><span class="line">#创建目录‘/s’       mkdir(&#x27;/s&#x27;)</span><br><span class="line">inode bitmap  11110000</span><br><span class="line">inodes        [d a:0 r:5] [d a:1 r:2] [d a:2 r:2] [d a:3 r:2] [] [] [] []</span><br><span class="line">data bitmap   11110000</span><br><span class="line">data          [(.,0) (..,0) (u,1) (z,2) (s,3)] [(.,1) (..,0)] [(.,2) (..,0)] [(.,3) (..,0)] [] [] [] []</span><br><span class="line"></span><br><span class="line">Which operation took place?</span><br><span class="line">#创建文件‘/z/x’    create(/z/x)</span><br><span class="line">inode bitmap  11111000</span><br><span class="line">inodes        [d a:0 r:5] [d a:1 r:2] [d a:2 r:2] [d a:3 r:2] [f a:-1 r:1] [] [] []</span><br><span class="line">data bitmap   11110000</span><br><span class="line">data          [(.,0) (..,0) (u,1) (z,2) (s,3)] [(.,1) (..,0)] [(.,2) (..,0) (x,4)] [(.,3) (..,0)] [] [] [] []</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="40-2"><a href="#40-2" class="headerlink" title="40.2"></a>40.2</h3><p><strong>现在使用不同的随机种子（比如 21、22、23、24），但使用-r 标志运行，这样做可以让你在显示操作时猜测状态的变化。关于 inode 和数据块分配算法，根据它们喜欢分配的块，你可以得出什么结论？</strong></p>
+<p>可以看到，操作系统按照最近可分配原则分配 inode 和数据块</p>
+<p><code>python2 vsfs.py -s 21 -r</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">Initial state</span><br><span class="line"></span><br><span class="line">inode bitmap  10000000</span><br><span class="line">inodes        [d a:0 r:2] [] [] [] [] [] [] []</span><br><span class="line">data bitmap   10000000</span><br><span class="line">data          [(.,0) (..,0)] [] [] [] [] [] [] []</span><br><span class="line"></span><br><span class="line">mkdir(&quot;/o&quot;);</span><br><span class="line"></span><br><span class="line">inode bitmap  11000000</span><br><span class="line">inodes        [d a:0 r:3] [d a:1 r:2] [] [] [] [] [] []</span><br><span class="line">data bitmap   11000000</span><br><span class="line">data          [(.,0) (..,0) (o,1)] [(.,1) (..,0)] [] [] [] [] [] []</span><br><span class="line"></span><br><span class="line">creat(&quot;/b&quot;);</span><br><span class="line"></span><br><span class="line">inode bitmap  11100000</span><br><span class="line">inodes        [d a:0 r:3] [d a:1 r:2] [f a:-1 r:1] [] [] [] [] []</span><br><span class="line">data bitmap   11000000</span><br><span class="line">data          [(.,0) (..,0) (o,1) (b,2)] [(.,1) (..,0)] [] [] [] [] [] []</span><br><span class="line"></span><br><span class="line">creat(&quot;/o/q&quot;);</span><br><span class="line"></span><br><span class="line">inode bitmap  11110000</span><br><span class="line">inodes        [d a:0 r:3] [d a:1 r:2] [f a:-1 r:1] [f a:-1 r:1] [] [] [] []</span><br><span class="line">data bitmap   11000000</span><br><span class="line">data          [(.,0) (..,0) (o,1) (b,2)] [(.,1) (..,0) (q,3)] [] [] [] [] [] []</span><br><span class="line"></span><br><span class="line">fd=open(&quot;/b&quot;, O_WRONLY|O_APPEND); write(fd, buf, BLOCKSIZE); close(fd);</span><br><span class="line"></span><br><span class="line">inode bitmap  11110000</span><br><span class="line">inodes        [d a:0 r:3] [d a:1 r:2] [f a:2 r:1] [f a:-1 r:1] [] [] [] []</span><br><span class="line">data bitmap   11100000</span><br><span class="line">data          [(.,0) (..,0) (o,1) (b,2)] [(.,1) (..,0) (q,3)] [m] [] [] [] [] []</span><br><span class="line"></span><br><span class="line">fd=open(&quot;/o/q&quot;, O_WRONLY|O_APPEND); write(fd, buf, BLOCKSIZE); close(fd);</span><br><span class="line"></span><br><span class="line">inode bitmap  11110000</span><br><span class="line">inodes        [d a:0 r:3] [d a:1 r:2] [f a:2 r:1] [f a:3 r:1] [] [] [] []</span><br><span class="line">data bitmap   11110000</span><br><span class="line">data          [(.,0) (..,0) (o,1) (b,2)] [(.,1) (..,0) (q,3)] [m] [j] [] [] [] []</span><br><span class="line"></span><br><span class="line">creat(&quot;/o/j&quot;);</span><br><span class="line"></span><br><span class="line">inode bitmap  11111000</span><br><span class="line">inodes        [d a:0 r:3] [d a:1 r:2] [f a:2 r:1] [f a:3 r:1] [f a:-1 r:1] [] [] []</span><br><span class="line">data bitmap   11110000</span><br><span class="line">data          [(.,0) (..,0) (o,1) (b,2)] [(.,1) (..,0) (q,3) (j,4)] [m] [j] [] [] [] []</span><br><span class="line"></span><br><span class="line">unlink(&quot;/b&quot;);</span><br><span class="line"></span><br><span class="line">inode bitmap  11011000</span><br><span class="line">inodes        [d a:0 r:3] [d a:1 r:2] [] [f a:3 r:1] [f a:-1 r:1] [] [] []</span><br><span class="line">data bitmap   11010000</span><br><span class="line">data          [(.,0) (..,0) (o,1)] [(.,1) (..,0) (q,3) (j,4)] [] [j] [] [] [] []</span><br><span class="line"></span><br><span class="line">fd=open(&quot;/o/j&quot;, O_WRONLY|O_APPEND); write(fd, buf, BLOCKSIZE); close(fd);</span><br><span class="line"></span><br><span class="line">inode bitmap  11011000</span><br><span class="line">inodes        [d a:0 r:3] [d a:1 r:2] [] [f a:3 r:1] [f a:2 r:1] [] [] []</span><br><span class="line">data bitmap   11110000</span><br><span class="line">data          [(.,0) (..,0) (o,1)] [(.,1) (..,0) (q,3) (j,4)] [g] [j] [] [] [] []</span><br><span class="line"></span><br><span class="line">creat(&quot;/o/x&quot;);</span><br><span class="line"></span><br><span class="line">inode bitmap  11111000</span><br><span class="line">inodes        [d a:0 r:3] [d a:1 r:2] [f a:-1 r:1] [f a:3 r:1] [f a:2 r:1] [] [] []</span><br><span class="line">data bitmap   11110000</span><br><span class="line">data          [(.,0) (..,0) (o,1)] [(.,1) (..,0) (q,3) (j,4) (x,2)] [g] [j] [] [] [] []</span><br><span class="line"></span><br><span class="line">mkdir(&quot;/o/t&quot;);</span><br><span class="line"></span><br><span class="line">inode bitmap  11111100</span><br><span class="line">inodes        [d a:0 r:3] [d a:1 r:3] [f a:-1 r:1] [f a:3 r:1] [f a:2 r:1] [d a:4 r:2] [] []</span><br><span class="line">data bitmap   11111000</span><br><span class="line">data          [(.,0) (..,0) (o,1)] [(.,1) (..,0) (q,3) (j,4) (x,2) (t,5)] [g] [j] [(.,5) (..,1)] [] [] []</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="40-3"><a href="#40-3" class="headerlink" title="40.3"></a>40.3</h3><p><strong>现在将文件系统中的数据块数量减少到非常少（比如两个），并用 100 个左右的请求来运行模拟器。在这种高度约束的布局中，哪些类型的文件最终会出现在文件系统中？什么类型的操作会失败？</strong></p>
+<p>只有 inode 和 data 会出现在文件系统中</p>
+<p>mkdir 操作会失败， create 操作不会失败,但 create 操作不会添加数据块</p>
+<h3 id="40-4"><a href="#40-4" class="headerlink" title="40.4"></a>40.4</h3><p><strong>现在做同样的事情，但针对 inodes。只有非常少的 inode，什么类型的操作才能成功？哪些通常会失败？文件系统的最终状态可能是什么？</strong></p>
+<p>mkdir 和 create 操作都会失败，最终文件系统的状态如下（vsfs 最后一个数据块不能使用）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">inode bitmap  10</span><br><span class="line">inodes        [d a:0 r:2] []</span><br><span class="line">data bitmap   10000000</span><br><span class="line">data          [(.,0) (..,0)] [] [] [] [] [] [] []</span><br></pre></td></tr></table></figure>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/05/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%AC4%E6%AC%A1%E4%BD%9C%E4%B8%9A/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/operating-sysytem/" rel="tag">operating sysytem</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/05/15/%E6%8C%81%E4%B9%85%E6%80%A7/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            并发性
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/04/22/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">2.operating-systems-three-easy-pieces answers</div>
+      </a>
+    
+  </nav>
+
+  
+   
+    
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2019-2022
+        <i class="ri-heart-fill heart_icon"></i> nnilk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>Visitors:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>Views:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="nnilk&#39;s blog"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>

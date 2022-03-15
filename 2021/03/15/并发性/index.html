@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta name="description" content="Welcome to nnilk&#39;s daily learning blog" />
+      
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>并发性 |  nnilk&#39;s blog</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/images/logo3.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-并发性"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  并发性
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/03/15/%E5%B9%B6%E5%8F%91%E6%80%A7/" class="article-date">
+  <time datetime="2021-03-14T16:00:00.000Z" itemprop="datePublished">2021-03-15</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/The-Operating-System-Notes/">The-Operating-System-Notes</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">7.8k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">34 min</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="并发"><a href="#并发" class="headerlink" title="并发"></a>并发</h1><h2 id="并发缺陷"><a href="#并发缺陷" class="headerlink" title="并发缺陷"></a>并发缺陷</h2><h3 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h3><p>若系统中存在一组进程，其中每个进程都占用了某种资源，又都在等待已被该组进程中的其他进程占用的资源，这种等待永远不能结束，称为死锁。</p>
+<p>死锁产生条件</p>
+<p>1、<strong>互斥</strong>：线程对于需要的资源进行互斥的访问（例如一个线程抢到锁）。<br>2、<strong>持有并等待</strong>：线程持有了资源（例如已将持有的锁），同时又在等待其他资源（例如，需要获得的锁）。<br>3、 <strong>非抢占</strong>：线程获得的资源（例如锁），不能被抢占。<br>4、<strong>循环等待</strong>：线程之间存在一个环路，环路上每个线程都额外持有一个资源，而这个资源又是下一个线程要申请的。</p>
+<h3 id="活锁"><a href="#活锁" class="headerlink" title="活锁"></a>活锁</h3><p>是指线程 1 可以使用资源，但它很礼貌，让其他线程先使用资源，线程 2 也可以使用资源，但它很绅士，也让其他线程先使用资源。这样你让我，我让你，最后两个线程都无法使用资源。</p>
+<h2 id="第-26-章——并发"><a href="#第-26-章——并发" class="headerlink" title="第 26 章——并发"></a>第 26 章——并发</h2><h3 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h3><h4 id="线程和进程"><a href="#线程和进程" class="headerlink" title="线程和进程"></a>线程和进程</h4><p><strong>线程</strong></p>
+<p>经典观点是一个程序只有一个执行点（一个程序计数器，用来存放要执行的指令），但多线程（multi-threaded）程序会有多个执行点（多个程序计数器，每个都用于取指令和执行）。换一个角度来看，每个线程类似于独立的进程</p>
+<p><strong>区别：</strong></p>
+<p>每个进程都有独立的代码和数据空间（程序上下文），程序之间的切换会有较大的开销；线程可以看做轻量级的进程，<strong>同一类线程共享代码和数据空间，每个线程都有自己独立的运行栈和程序计数器（PC）</strong>，线程之间切换的开销小。</p>
+<ol>
+<li>线程之间它们共享地址空间，从而能够访问相同的数据。</li>
+<li>线程上下文切换地址空间保持不变（即不需要切换当前使用的页表）。</li>
+<li>状态保存到线程控制块（TCB）</li>
+<li>在简单的传统进程地址空间模型中，只有一个栈，通常位于地址空间的底部，每个线程都有一个栈</li>
+</ol>
+<p><img src="https://s2.loli.net/2022/01/09/cVOeF4mlSv5soby.png" alt="image-20211111221705381"></p>
+<p><strong>相同点：</strong></p>
+<ol>
+<li>线程有一个程序计数器（PC），记录程序从哪里获取指令。每个线程有自己的一组用于计算的寄存器。</li>
+<li>线程之间的上下文切换类似于进程间的上下文切换。</li>
+</ol>
+<h4 id="线程创建"><a href="#线程创建" class="headerlink" title="线程创建"></a>线程创建</h4><p>主程序创建了两个线程，分别执行函数 mythread()，但是传入不同的参数（字符串类型的 A 或者 B）。一旦线程创建，可能会立即运行（取决于调度程序），或者处于就绪状态，等待执行。创建了两个线程（T1 和 T2）后，主程序调用 pthread_join()，等待特定线程完成。</p>
+<p>代码实现</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;assert.h&gt;</span><br><span class="line">#include &lt;pthread.h&gt;</span><br><span class="line"></span><br><span class="line">void *mythread(void *arg)</span><br><span class="line">&#123;</span><br><span class="line"> printf(&quot;%s\n&quot;, (char *) arg); return NULL;</span><br><span class="line">&#125;</span><br><span class="line">int main(int argc, char *argv[]) &#123;</span><br><span class="line"></span><br><span class="line">pthread_t p1, p2;</span><br><span class="line">int rc;</span><br><span class="line">printf(&quot;main: begin\n&quot;);</span><br><span class="line">rc = pthread_create(&amp;p1, NULL, mythread, &quot;A&quot;);</span><br><span class="line">assert(rc == 0);</span><br><span class="line">rc = pthread_create(&amp;p2, NULL, mythread, &quot;B&quot;);</span><br><span class="line">assert(rc == 0);</span><br><span class="line">// join waits for the threads to finish</span><br><span class="line">rc = pthread_join(p1, NULL);</span><br><span class="line">assert(rc == 0);</span><br><span class="line">rc = pthread_join(p2, NULL);</span><br><span class="line">assert(rc == 0);</span><br><span class="line">printf(&quot;main: end\n&quot;);</span><br><span class="line">return 0;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="共享数据带来的麻烦"><a href="#共享数据带来的麻烦" class="headerlink" title="共享数据带来的麻烦"></a>共享数据带来的麻烦</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;pthread.h&gt;</span><br><span class="line">#include &quot;mythreads.h&quot;</span><br><span class="line"></span><br><span class="line">static volatile int counter = 0;</span><br><span class="line"></span><br><span class="line">//</span><br><span class="line">// mythread()</span><br><span class="line">//</span><br><span class="line">// Simply adds 1 to counter repeatedly, in a loop</span><br><span class="line">// No, this is not how you would add 10,000,000 to</span><br><span class="line">// a counter, but it shows the problem nicely.</span><br><span class="line">// void *</span><br><span class="line">mythread(void *arg)</span><br><span class="line">&#123;</span><br><span class="line">printf(&quot;%s: begin\n&quot;, (char *) arg);</span><br><span class="line">int i;</span><br><span class="line">for (i = 0; i &lt; 1e7; i++)</span><br><span class="line">&#123;</span><br><span class="line"> counter = counter + 1;</span><br><span class="line">&#125;</span><br><span class="line">printf(&quot;%s: done\n&quot;, (char *) arg); return NULL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Just launches two threads (pthread_create)</span><br><span class="line">// and then waits for them (pthread_join)</span><br><span class="line">//</span><br><span class="line">int</span><br><span class="line">main(int argc, char *argv[])</span><br><span class="line">&#123;</span><br><span class="line">pthread_t p1, p2;</span><br><span class="line">printf(&quot;main: begin (counter = %d)\n&quot;, counter); Pthread_create(&amp;p1, NULL, mythread, &quot;A&quot;);</span><br><span class="line">Pthread_create(&amp;p2, NULL, mythread, &quot;B&quot;);</span><br><span class="line"></span><br><span class="line">// join waits for the threads to finish</span><br><span class="line">Pthread_join(p1, NULL);</span><br><span class="line">Pthread_join(p2, NULL);</span><br><span class="line">printf(&quot;main: done with both (counter = %d)\n&quot;, counter); return 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>预期的最终结果是：20000000，但是每次运行的结果都不太符合预期且各不相同</p>
+<h4 id="核心问题：不可控的调度"><a href="#核心问题：不可控的调度" class="headerlink" title="核心问题：不可控的调度"></a>核心问题：不可控的调度</h4><p>两个线程访问的是共享数据，并试图修改共享数据，也就是进入了临界区。此时如何发生上下文切换，多个线程处于竞争状态，可能会造成不可知的错误。</p>
+<p>我们真正想要的代码就是所谓的互斥（mutual exclusion）。这个属性保证了如果一个线程在临界区内执行，其他线程将被阻止进入临界区。</p>
+<p><img src="https://s2.loli.net/2022/01/09/Gysa9uLkzYnShJp.png" alt="image-20211111225421897"></p>
+<h4 id="原子操作"><a href="#原子操作" class="headerlink" title="原子操作"></a>原子操作</h4><p><em>原子操作是构建计算机系统的最强大的基础技术之一，从计算机体系结构到并行代码（我们在这里研究的内容）、文件系统（我们将很快研究）、数据库管理系统，甚至分布式系统[L+93]。将一系列动作原子化（atomic）背后的想法可以简单用一个短语表达：“全部或没有”。看上去，要么你希望组合在一起的所有活动都发生了，要么它们都没有发生。不会看到中间状态。有时，将许多行</em><br><em>为组合为单个原子动作称为事务（transaction），这是一个在数据库和事务处理世界中非常详细地发展的概念</em></p>
+<h2 id="第-28-章-锁"><a href="#第-28-章-锁" class="headerlink" title="第 28 章 锁"></a>第 28 章 锁</h2><p>对于<a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B">并发编程</a>的一个最基本的问题：程序员希望原子式执行一系列指令，但由于单处理器上的中断(或多线程在多处理器上并发执行)，这变得不可实现，为了解决这个问题，<strong>在源代码中加锁，放在临界区周围，保证临界区能像单条原子指令一样执行</strong></p>
+<h2 id="第-30-章-条件变量"><a href="#第-30-章-条件变量" class="headerlink" title="第 30 章 条件变量"></a>第 30 章 条件变量</h2><h3 id="知识点-1"><a href="#知识点-1" class="headerlink" title="知识点"></a><strong>知识点</strong></h3><p>。锁并不是并发程序设计所需的唯一原语。在很多情况下，线程需要检查某一条件满足之后，才会继续运行。例如，父线程需要检查子线程是否执行完毕 [这常被称为 join()]。</p>
+<p><strong>方案一：原地自旋</strong></p>
+<p>效率低下，有些情况设置是错误的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">1 volatile int done = 0;</span><br><span class="line">2</span><br><span class="line">3 void *child(void *arg) &#123;</span><br><span class="line">4 printf(&quot;child\n&quot;);</span><br><span class="line">5 done = 1;</span><br><span class="line">6 return NULL;</span><br><span class="line">7 &#125;</span><br><span class="line">8</span><br><span class="line">9 int main(int argc, char *argv[]) &#123;</span><br><span class="line">10 printf(&quot;parent: begin\n&quot;);</span><br><span class="line">11 pthread_t c;</span><br><span class="line">12 Pthread_create(&amp;c, NULL, child, NULL); // create child</span><br><span class="line">13 while (done == 0)</span><br><span class="line">14 ; // spin</span><br><span class="line">15 printf(&quot;parent: end\n&quot;);</span><br><span class="line">16 return 0;</span><br><span class="line">17 &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>方案二：</strong></p>
+<p>可以使用条件变量（condition variable），来等待一个条件变成真。</p>
+<p>条件变量有两种相关操作：wait()和 signal()。线程要睡<br>眠的时候，调用 wait()。当线程想唤醒等待在某个条件变量上的睡眠线程时，调用 signal()。具体来说，POSIX 调用如图所示。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">pthread_cond_wait(pthread_cond_t *c, pthread_mutex_t *m);</span><br><span class="line">pthread_cond_signal(pthread_cond_t *c);</span><br><span class="line">1 int done = 0;</span><br><span class="line">2 pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;</span><br><span class="line">3 pthread_cond_t c = PTHREAD_COND_INITIALIZER;</span><br><span class="line">4</span><br><span class="line">5 void thr_exit() &#123;</span><br><span class="line">6 Pthread_mutex_lock(&amp;m);</span><br><span class="line">7 done = 1;</span><br><span class="line">8 Pthread_cond_signal(&amp;c);</span><br><span class="line">9 Pthread_mutex_unlock(&amp;m);</span><br><span class="line">10 &#125;</span><br><span class="line">11</span><br><span class="line">12 void *child(void *arg) &#123;</span><br><span class="line">13 printf(&quot;child\n&quot;);</span><br><span class="line">14 thr_exit();</span><br><span class="line">15 return NULL;</span><br><span class="line">16 &#125;</span><br><span class="line">30.1 定义和程序 251</span><br><span class="line">17</span><br><span class="line">18 void thr_join() &#123;</span><br><span class="line">19 Pthread_mutex_lock(&amp;m);</span><br><span class="line">20 while (done == 0)</span><br><span class="line">21 Pthread_cond_wait(&amp;c, &amp;m);</span><br><span class="line">22 Pthread_mutex_unlock(&amp;m);</span><br><span class="line">23 &#125;</span><br><span class="line">24</span><br><span class="line">25 int main(int argc, char *argv[]) &#123;</span><br><span class="line">26 printf(&quot;parent: begin\n&quot;);</span><br><span class="line">27 pthread_t p;</span><br><span class="line">28 Pthread_create(&amp;p, NULL, child, NULL);</span><br><span class="line">29 thr_join();</span><br><span class="line">30 printf(&quot;parent: end\n&quot;);</span><br><span class="line">31 return 0;</span><br><span class="line">32 &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="生产者-x2F-消费者问题"><a href="#生产者-x2F-消费者问题" class="headerlink" title="生产者&#x2F;消费者问题"></a><strong>生产者&#x2F;消费者问题</strong></h4><p>生产者&#x2F;消费者问题，也叫作有界缓冲区（bounded buffer）问题。假设有一个或多个生产者线程和一个或多个消费者线程。生产者把生成的数据项放入缓冲区；消费者从缓冲区取走数据项，以某种方式消费。</p>
+<h5 id="有问题的方案一"><a href="#有问题的方案一" class="headerlink" title="有问题的方案一"></a><strong>有问题的方案一</strong></h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">1 cond_t cond;</span><br><span class="line">2 mutex_t mutex;</span><br><span class="line">3‘</span><br><span class="line">4 void *producer(void *arg) &#123;</span><br><span class="line">5 int i;</span><br><span class="line">6 for (i = 0; i &lt; loops; i++) &#123;</span><br><span class="line">7 Pthread_mutex_lock(&amp;mutex); // p1</span><br><span class="line">8 if (count == 1) // p2</span><br><span class="line">9 Pthread_cond_wait(&amp;cond, &amp;mutex); // p3</span><br><span class="line">10 put(i); // p4</span><br><span class="line">11 Pthread_cond_signal(&amp;cond); // p5</span><br><span class="line">12 Pthread_mutex_unlock(&amp;mutex); // p6</span><br><span class="line">13 &#125;</span><br><span class="line">14 &#125;</span><br><span class="line">15</span><br><span class="line">16 void *consumer(void *arg) &#123;</span><br><span class="line">17 int i;</span><br><span class="line">18 for (i = 0; i &lt; loops; i++) &#123;</span><br><span class="line">19 Pthread_mutex_lock(&amp;mutex); // c1</span><br><span class="line">20 if (count == 0) // c2</span><br><span class="line">21 Pthread_cond_wait(&amp;cond, &amp;mutex); // c3</span><br><span class="line">22 int tmp = get(); // c4</span><br><span class="line">23 Pthread_cond_signal(&amp;cond); // c5</span><br><span class="line">24 Pthread_mutex_unlock(&amp;mutex); // c6</span><br><span class="line">30.2 生产者/消费者（有界缓冲区）问题 255</span><br><span class="line">25 printf(&quot;%d\n&quot;, tmp);</span><br><span class="line">26 &#125;</span><br><span class="line">27</span><br></pre></td></tr></table></figure>
+
+<p>出问题的例子：</p>
+<p><img src="https://s2.loli.net/2022/01/09/oGh1SzMmxZ7VpnB.png" alt="image-20211111145947333"></p>
+<p><img src="https://s2.loli.net/2022/01/09/iklyu4nr6AgZbQ5.png" alt="image-20211111150007868"></p>
+<p>问题产生的原因很简单：在 T c1 被生产者唤醒后，但在它运行之前，缓冲区的状态改变了（由于 T c2 ）。发信号给线程只是唤醒它们，暗示状态发生了变化（在这个例子中，就是值已被放入缓冲区），但并不会保证在它运行之前状态一直是期望的情况。</p>
+<h5 id="有问题的方案二"><a href="#有问题的方案二" class="headerlink" title="有问题的方案二"></a><strong>有问题的方案二</strong></h5><p>使用 While 语句替代 If</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">1 cond_t cond;</span><br><span class="line">2 mutex_t mutex;</span><br><span class="line">3</span><br><span class="line">4 void *producer(void *arg) &#123;</span><br><span class="line">5 int i;</span><br><span class="line">6 for (i = 0; i &lt; loops; i++) &#123;</span><br><span class="line">7 Pthread_mutex_lock(&amp;mutex); // p1</span><br><span class="line">8 while (count == 1) // p2</span><br><span class="line">9 Pthread_cond_wait(&amp;cond, &amp;mutex); // p3</span><br><span class="line">10 put(i); // p4</span><br><span class="line">11 Pthread_cond_signal(&amp;cond); // p5</span><br><span class="line">12 Pthread_mutex_unlock(&amp;mutex); // p6</span><br><span class="line">13 &#125;</span><br><span class="line">14 &#125;</span><br><span class="line">15</span><br><span class="line">16 void *consumer(void *arg) &#123;</span><br><span class="line">17 int i;</span><br><span class="line">18 for (i = 0; i &lt; loops; i++) &#123;</span><br><span class="line">19 Pthread_mutex_lock(&amp;mutex); // c1</span><br><span class="line">20 while (count == 0) // c2</span><br><span class="line">21 Pthread_cond_wait(&amp;cond, &amp;mutex); // c3</span><br><span class="line">22 int tmp = get(); // c4</span><br><span class="line">23 Pthread_cond_signal(&amp;cond); // c5</span><br><span class="line">24 Pthread_mutex_unlock(&amp;mutex); // c6</span><br><span class="line">25 printf(&quot;%d\n&quot;, tmp);</span><br><span class="line">26 &#125;</span><br><span class="line">27 &#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们要记住一条关于条件变量的简单规则：总是使用 while 循环（always use while loop）。虽然有时候不需要重新检查条件，但这样做总是安全的。</p>
+<p><strong>存在的问题：</strong></p>
+<p>因为消费者已经清空了缓冲区，很显然，应该唤醒生产者。但是，如果它唤醒了 T c2 （这绝对是可能的，取决于等待队列是如何管理的），问题就出现了。具体来说，消费者 T c2 会醒过来，发现队列为空（c2），又继续回去睡眠（c3）。生产者 T p 刚才在缓冲区中放了一个值，现在在睡眠。另一个消费者线程 T c1 也回去睡眠了。3 个线程都在睡眠，显然是一个缺陷。</p>
+<p><img src="https://s2.loli.net/2022/01/09/isgFNlt23zynRKq.png" alt="image-20211111150848091"></p>
+<p><img src="https://s2.loli.net/2022/01/09/uHFybaIhgnBNDit.png" alt="image-20211111150906666"></p>
+<p>信号显然需要，但必须更有指向性。消费者不应该唤醒消费者，而应该只唤醒生产者，反之亦然。</p>
+<p><strong>方案三：单值缓冲区的生产者&#x2F;消费者方案</strong></p>
+<p>生产者线程等待条件变量 empty，发信号给变量 fill。相应地，消费者线程等待 fill，发信号给 empty。这样做，从设计上避免了上述第二个问题：消费者再也不会唤醒消费者，生产者也不会唤醒生产者。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">1 cond_t empty, fill;</span><br><span class="line">2 mutex_t mutex;</span><br><span class="line">3</span><br><span class="line">4 void *producer(void *arg) &#123;</span><br><span class="line">5 int i;</span><br><span class="line">6 for (i = 0; i &lt; loops; i++) &#123;</span><br><span class="line">7 Pthread_mutex_lock(&amp;mutex);</span><br><span class="line">8 while (count == 1)</span><br><span class="line">9 Pthread_cond_wait(&amp;empty, &amp;mutex);</span><br><span class="line">10 put(i);</span><br><span class="line">11 Pthread_cond_signal(&amp;fill);</span><br><span class="line">12 Pthread_mutex_unlock(&amp;mutex);</span><br><span class="line">13 &#125;</span><br><span class="line">14 &#125;</span><br><span class="line">15</span><br><span class="line">16 void *consumer(void *arg) &#123;</span><br><span class="line">17 int i;</span><br><span class="line">18 for (i = 0; i &lt; loops; i++) &#123;</span><br><span class="line">19 Pthread_mutex_lock(&amp;mutex);</span><br><span class="line">20 while (count == 0)</span><br><span class="line">21 Pthread_cond_wait(&amp;fill, &amp;mutex);</span><br><span class="line">22 int tmp = get();</span><br><span class="line">23 Pthread_cond_signal(&amp;empty);</span><br><span class="line">24 Pthread_mutex_unlock(&amp;mutex);</span><br><span class="line">25 printf(&quot;%d\n&quot;, tmp);</span><br><span class="line">26 &#125;</span><br><span class="line">27 &#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="最终方案"><a href="#最终方案" class="headerlink" title="最终方案"></a><strong>最终方案</strong></h5><p><img src="https://s2.loli.net/2022/01/07/GHbpioTwRqa9tOM.png" alt="image-20220107140850903"></p>
+<p><img src="https://s2.loli.net/2022/01/07/z9F6rOUKJL8wli1.png" alt="image-20220107140841597"></p>
+<p>llll</p>
+<h2 id="第-31-章：信号量"><a href="#第-31-章：信号量" class="headerlink" title="第 31 章：信号量"></a>第 31 章：信号量</h2><h3 id="信号量定义"><a href="#信号量定义" class="headerlink" title="信号量定义"></a>信号量定义</h3><p>信号量作为锁和条件变量</p>
+<p>是有一个整数值的对象,可以用两个函数来操作它</p>
+<p>**sem_wait()**要么立刻返回（调用 sem_wait()时，信号量的值大于等于 1），要么会让调用线程挂起，直到之后的一个 post 操作。当然，也可能多个调用线程都调用 sem_wait()，因此都在队列中等待被唤醒。</p>
+<p><strong>sem_post()</strong> sem_post()并没有等待某些条件满足。它直接增加信号量的值，如果有等待线程，唤醒其中一个。当信号量的值为负数时，这个值就是等待线程的个数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">sem_wait</span><span class="params">(<span class="type">sem_t</span> *s)</span> &#123;</span><br><span class="line">decrement the value of semaphore s by one</span><br><span class="line">wait <span class="keyword">if</span> value of semaphore s is negative</span><br><span class="line">&#125;</span><br><span class="line"> <span class="type">int</span> <span class="title function_">sem_post</span><span class="params">(<span class="type">sem_t</span> *s)</span> &#123;</span><br><span class="line">increment the value of semaphore s by one</span><br><span class="line"><span class="keyword">if</span> there are one or more threads waiting, wake one</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="二值信号量（锁）"><a href="#二值信号量（锁）" class="headerlink" title="二值信号量（锁）"></a>二值信号量（锁）</h3><p>用信号量作为锁。信号量初始值为 1</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sem_t m;</span><br><span class="line">sem_init(&amp;m, 0, X); // initialize semaphore to X; what should X be?</span><br><span class="line"></span><br><span class="line">sem_wait(&amp;m);</span><br><span class="line">// critical section here</span><br><span class="line">sem_post(&amp;m);</span><br></pre></td></tr></table></figure>
+
+<p>考虑两种场景</p>
+<p>1.一个单线程,调用了 sem_wait()，它把信号量的值减为 0。然后，它只会在值小于 0 时等待。因为值是 0，调用线程从函数返回并继续，线程 0 现在可以自由进入临界区。线程 0 在临界区中，如果没有其他线程尝试获取锁，当它调用 sem_post()时，会将信号量重置为 1（因为没有等待线程，不会唤醒其他线程）。</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111171023858.png" alt="image-20211117102303687"></p>
+<h3 id="信号量用作条件变量"><a href="#信号量用作条件变量" class="headerlink" title="信号量用作条件变量"></a>信号量用作条件变量</h3><p>信号量初始值应为 0.</p>
+<p>有两种情况需要考虑</p>
+<p>第一种，父线程创建了子线程，但是子线程并没有运行。这种情况下（见表 31.3），父线程调用 sem_wait()会先于子线程调用 sem_post()。我们希望父线程等待子线程运行。为此，唯一的办法是让信号量的值不大于 0。因此，0 为初值。父线程运行，将信号量减为 −1，然后睡眠等待；子线程运行的时候，调用 sem_post()，信号量增加为 0，唤醒父线程，父线程然后从 sem_wait()返回，完成该程序。</p>
+<p>第二种情况是子线程在父线程调用 sem_wait()之前就运行结束（见表 31.4）。在这种情况下，子线程会先调用 sem_post()，将信号量从 0 增加到 1。然后当父线程有机会运行时，会调用 sem_wait()，发现信号量的值为 1。于是父线程将信号量从 1 减为 0，没有等待，直接从<br>sem_wait()返回，也达到了预期效果。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="type">sem_t</span> s;</span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span> <span class="type">void</span> *<span class="title function_">child</span><span class="params">(<span class="type">void</span> *arg)</span> &#123;</span><br><span class="line"><span class="number">5</span> <span class="built_in">printf</span>(<span class="string">&quot;child\n&quot;</span>);</span><br><span class="line"><span class="number">6</span> sem_post(&amp;s); <span class="comment">// signal here: child is done</span></span><br><span class="line"><span class="number">7</span> <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line"><span class="number">8</span> &#125;</span><br><span class="line"><span class="number">9</span></span><br><span class="line"><span class="number">10</span> <span class="type">int</span></span><br><span class="line"><span class="number">11</span> main(<span class="type">int</span> argc, <span class="type">char</span> *argv[]) &#123;</span><br><span class="line"><span class="number">12</span> sem_init(&amp;s, <span class="number">0</span>, X); <span class="comment">// what should X be?</span></span><br><span class="line"><span class="number">13</span> <span class="built_in">printf</span>(<span class="string">&quot;parent: begin\n&quot;</span>);</span><br><span class="line"><span class="number">14</span> <span class="type">pthread_t</span> c;</span><br><span class="line"><span class="number">15</span> Pthread_create(c, <span class="literal">NULL</span>, child, <span class="literal">NULL</span>);</span><br><span class="line"><span class="number">16</span> sem_wait(&amp;s); <span class="comment">// wait here for child</span></span><br><span class="line"><span class="number">17</span> <span class="built_in">printf</span>(<span class="string">&quot;parent: end\n&quot;</span>);</span><br><span class="line"><span class="number">18</span> <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"><span class="number">19</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="生产者-x2F-消费者问题-1"><a href="#生产者-x2F-消费者问题-1" class="headerlink" title="生产者&#x2F;消费者问题"></a>生产者&#x2F;消费者问题</h3><h4 id="初次尝试"><a href="#初次尝试" class="headerlink" title="初次尝试"></a>初次尝试</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="type">sem_t</span> empty;  <span class="comment">//生产者的等待条件判断变量,相当于缓冲区的剩余容量,被初始化为MAX</span></span><br><span class="line"><span class="number">2</span> <span class="type">sem_t</span> full;   <span class="comment">//消费者的等待条件判断变量,相当于缓冲区的数据数量,初始值为0</span></span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="number">4</span> <span class="type">void</span> *<span class="title function_">producer</span><span class="params">(<span class="type">void</span> *arg)</span> &#123;</span><br><span class="line"><span class="number">5</span> <span class="type">int</span> i;</span><br><span class="line"><span class="number">6</span> <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; loops; i++) &#123;</span><br><span class="line"><span class="number">7</span> sem_wait(&amp;empty);      <span class="comment">//line P1    //初始为MAX,函数返回,执行放入</span></span><br><span class="line"><span class="number">8</span> put(i);                <span class="comment">// line P2</span></span><br><span class="line"><span class="number">9</span> sem_post(&amp;full);       <span class="comment">// line P3  // full+1</span></span><br><span class="line"><span class="number">10</span> &#125;</span><br><span class="line"><span class="number">11</span> &#125;</span><br><span class="line"><span class="number">12</span></span><br><span class="line"><span class="number">13</span> <span class="type">void</span> *<span class="title function_">consumer</span><span class="params">(<span class="type">void</span> *arg)</span> &#123;</span><br><span class="line"><span class="number">14</span> <span class="type">int</span> i, tmp = <span class="number">0</span>;</span><br><span class="line"><span class="number">15</span> <span class="keyword">while</span> (tmp != <span class="number">-1</span>) &#123;</span><br><span class="line"><span class="number">16</span> sem_wait(&amp;full); <span class="comment">// line C1  //full初始值为0,缓冲区没有数据,wait函数将full-1,进入等待状态</span></span><br><span class="line"><span class="number">17</span> tmp = get(); <span class="comment">// line C2</span></span><br><span class="line"><span class="number">18</span> sem_post(&amp;empty); <span class="comment">// line C3</span></span><br><span class="line"><span class="number">19</span> <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, tmp);</span><br><span class="line"><span class="number">20</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="number">21</span> &#125;</span><br><span class="line"><span class="number">22</span></span><br><span class="line"><span class="number">23</span> <span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line"><span class="number">24</span> <span class="comment">// ...</span></span><br><span class="line"><span class="number">25</span> sem_init(&amp;empty, <span class="number">0</span>, MAX); <span class="comment">// MAX buffers are empty to begin with...</span></span><br><span class="line"><span class="number">26</span> sem_init(&amp;full, <span class="number">0</span>, <span class="number">0</span>); <span class="comment">// ... and 0 are full</span></span><br><span class="line"><span class="number">27</span> <span class="comment">// ...</span></span><br><span class="line"><span class="number">28</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>存在的问题:竞态条件</strong></p>
+<p>我们现在假设 MAX 大于 1（比如 MAX&#x3D;10）。对于这个例子，假定有多个生产者，多<br>个消费者。现在就有问题了：竞态条件。假设两个生产者（Pa 和 Pb）几乎同时调用 put()。当 Pa 先运行，在 f1 行先加入第一条数据（fill&#x3D;0），假设 Pa 在将 fill 计数器更新为 1 之前被中断，Pb 开始运行，也在 f1 行给缓冲区的 0 位置加入一条数据，这意味着那里的老数据被覆盖！</p>
+<h4 id="解决竞态-增加互斥"><a href="#解决竞态-增加互斥" class="headerlink" title="解决竞态:增加互斥"></a>解决竞态:增加互斥</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">1 sem_t empty;</span><br><span class="line">2 sem_t full;</span><br><span class="line">3 sem_t mutex;</span><br><span class="line">4</span><br><span class="line">5 void *producer(void *arg) &#123;</span><br><span class="line">6 int i;</span><br><span class="line">7 for (i = 0; i &lt; loops; i++) &#123;</span><br><span class="line">8 sem_wait(&amp;mutex); // line p0 (NEW LINE)</span><br><span class="line">9 sem_wait(&amp;empty); // line p1</span><br><span class="line">10 put(i); // line p2</span><br><span class="line">11 sem_post(&amp;full); // line p3</span><br><span class="line">12 sem_post(&amp;mutex); // line p4 (NEW LINE)</span><br><span class="line">13 &#125;</span><br><span class="line">14 &#125;</span><br><span class="line">15</span><br><span class="line">16 void *consumer(void *arg) &#123;</span><br><span class="line">17 int i;</span><br><span class="line">18 for (i = 0; i &lt; loops; i++) &#123;</span><br><span class="line">19 sem_wait(&amp;mutex); // line c0 (NEW LINE)</span><br><span class="line">20 sem_wait(&amp;full); // line c1</span><br><span class="line">21 int tmp = get(); // line c2</span><br><span class="line">22 sem_post(&amp;empty); // line c3</span><br><span class="line">23 sem_post(&amp;mutex); // line c4 (NEW LINE)</span><br><span class="line">24 printf(&quot;%d\n&quot;, tmp);</span><br><span class="line">25 &#125;</span><br><span class="line">26 &#125;</span><br><span class="line">27</span><br><span class="line">28 int main(int argc, char *argv[]) &#123;</span><br><span class="line">29 // ...</span><br><span class="line">30 sem_init(&amp;empty, 0, MAX); // MAX buffers are empty to begin with...</span><br><span class="line">31 sem_init(&amp;full, 0, 0); // ... and 0 are full</span><br><span class="line">32 sem_init(&amp;mutex, 0, 1); // mutex=1 because it is a lock (NEW LINE)</span><br><span class="line">33 // ...</span><br><span class="line">34 &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="存在的问题-死锁"><a href="#存在的问题-死锁" class="headerlink" title="存在的问题:死锁"></a>存在的问题:死锁</h4><p>假设有两个线程，一个生产者和一个消费者。消费者首先运行，获得锁（c0 行），然后对 full 信号量执行 sem_wait() （c1 行）。因为还没有数据，所以消费者阻塞，让出 CPU。但是，重要的是，此时消费者仍然持有锁。然后生产者运行。假如生产者能够运行，它就能生产数据并唤醒消费者线程。遗憾的是，它首先对二值互斥信号量调用 sem_wait()（p0 行）。锁已经被持有，因此生产者也被卡住。这里出现了一个循环等待。消费者持有互斥量，等待在 full 信号量上。生产者可以发送 full 信号，却在等待互斥量。因此，生产者和消费者互相等待对方——典型的死锁。</p>
+<h4 id="解决死锁-减少锁的作用域"><a href="#解决死锁-减少锁的作用域" class="headerlink" title="解决死锁:减少锁的作用域"></a>解决死锁:减少锁的作用域</h4><p><img src="https://s2.loli.net/2022/01/07/nPY936j5tzg8GKk.png" alt="image-20220107141050654"></p>
+<h3 id="读者—写者锁"><a href="#读者—写者锁" class="headerlink" title="读者—写者锁"></a>读者—写者锁</h3><p>不同的数据结构访问可能需要不同类型的锁。</p>
+<p>如果某个线程要更新数据结构，需要调用 rwlock_acquire_lock()获得写锁，调用 rwlock_release_writelock()释放锁。内部通过一个 writelock 的信号量保证只有一个写者能获得锁进入临界区，从而更新数据结构。</p>
+<p>但有一些缺陷，尤其是公平性。读者很容易饿死写者。存在复杂一些的解决方案，也许你可以想到更好的实现？提示：有写者等待时，如何能够避更多的读者进入并持有锁。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">rwlock_t</span> &#123;</span></span><br><span class="line"><span class="number">2</span> <span class="type">sem_t</span> lock; <span class="comment">// binary semaphore (basic lock)</span></span><br><span class="line"><span class="number">3</span> <span class="type">sem_t</span> writelock; <span class="comment">// used to allow ONE writer or MANY readers</span></span><br><span class="line"><span class="number">4</span> <span class="type">int</span> readers; <span class="comment">// count of readers reading in critical section</span></span><br><span class="line"><span class="number">5</span> &#125; <span class="type">rwlock_t</span>;</span><br><span class="line"><span class="number">6</span></span><br><span class="line"><span class="number">7</span> <span class="type">void</span> <span class="title function_">rwlock_init</span><span class="params">(<span class="type">rwlock_t</span> *rw)</span> &#123;</span><br><span class="line"><span class="number">8</span> rw-&gt;readers = <span class="number">0</span>;</span><br><span class="line"><span class="number">9</span> sem_init(&amp;rw-&gt;lock, <span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">10</span> sem_init(&amp;rw-&gt;writelock, <span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">11</span> &#125;</span><br><span class="line"><span class="number">12</span></span><br><span class="line"><span class="number">13</span> <span class="type">void</span> <span class="title function_">rwlock_acquire_readlock</span><span class="params">(<span class="type">rwlock_t</span> *rw)</span> &#123;</span><br><span class="line"><span class="number">14</span> sem_wait(&amp;rw-&gt;lock);</span><br><span class="line"><span class="number">15</span> rw-&gt;readers++;</span><br><span class="line"><span class="number">16</span> <span class="keyword">if</span> (rw-&gt;readers == <span class="number">1</span>)</span><br><span class="line"><span class="number">17</span> sem_wait(&amp;rw-&gt;writelock); <span class="comment">// first reader acquires writelock</span></span><br><span class="line"><span class="number">18</span> sem_post(&amp;rw-&gt;lock);</span><br><span class="line"><span class="number">19</span> &#125;</span><br><span class="line"><span class="number">20</span></span><br><span class="line"><span class="number">21</span> <span class="type">void</span> <span class="title function_">rwlock_release_readlock</span><span class="params">(<span class="type">rwlock_t</span> *rw)</span> &#123;</span><br><span class="line"><span class="number">22</span> sem_wait(&amp;rw-&gt;lock);</span><br><span class="line"><span class="number">23</span> rw-&gt;readers--;</span><br><span class="line"><span class="number">24</span> <span class="keyword">if</span> (rw-&gt;readers == <span class="number">0</span>)</span><br><span class="line"><span class="number">25</span> sem_post(&amp;rw-&gt;writelock); <span class="comment">// last reader releases writelock</span></span><br><span class="line"><span class="number">26</span> sem_post(&amp;rw-&gt;lock);</span><br><span class="line"><span class="number">27</span> &#125;</span><br><span class="line"><span class="number">28</span></span><br><span class="line"><span class="number">29</span> <span class="type">void</span> <span class="title function_">rwlock_acquire_writelock</span><span class="params">(<span class="type">rwlock_t</span> *rw)</span> &#123;</span><br><span class="line"><span class="number">30</span> sem_wait(&amp;rw-&gt;writelock);</span><br><span class="line"><span class="number">31</span> &#125;</span><br><span class="line"><span class="number">32</span></span><br><span class="line"><span class="number">33</span> <span class="type">void</span> <span class="title function_">rwlock_release_writelock</span><span class="params">(<span class="type">rwlock_t</span> *rw)</span> &#123;</span><br><span class="line"><span class="number">34</span> sem_post(&amp;rw-&gt;writelock);</span><br><span class="line"><span class="number">35</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="哲学家就餐问题"><a href="#哲学家就餐问题" class="headerlink" title="哲学家就餐问题"></a>哲学家就餐问题</h3><p>假定有 5 位“哲学家”围着一个圆桌。每两位哲学家之间有一把餐叉（一共 5 把）。哲学家有时要思考一会，不需要餐叉；有时又要就餐。而一位哲学家只有同时拿到了左手边和右手边的两把餐叉，才能吃到东西。关于餐叉的竞争以及随之而来的同步问题，就是我们在并发编程中研<br>究它的原因。</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111251057977.png" alt="image-20211117112437466"></p>
+<h4 id="有问题的解决方案"><a href="#有问题的解决方案" class="headerlink" title="有问题的解决方案"></a>有问题的解决方案</h4><p>如果哲学家 p 希望用左手边的叉子，他们就调用 left(p)。类似地，右手边的叉子就用<br>right(p)。模运算解决了最后一个哲学家（p &#x3D; 4）右手边叉子的编号问题，就是餐叉 0。</p>
+<p>为了拿到餐叉，我们依次获取每把餐叉的锁——先是左手边的，然后是右手边的。结束就餐时，释放掉锁</p>
+<p>**问题:死锁 ** 假设每个哲学家都拿到了左手边的餐叉，他们每个都会阻塞住，并且一直等待另一个餐叉。具体来说，哲学家 0 拿到了餐叉 0，哲学家 1 拿到了餐叉 1，哲学家 2 拿到餐叉 2，哲学家 3 拿到餐叉 3，哲学家 4 拿到餐叉 4。所有的餐叉都被占有了，所有的哲学家都阻塞着，并且等待另一个哲学家占有的餐叉</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1 void getforks() &#123;</span><br><span class="line">2 sem_wait(forks[left(p)]);</span><br><span class="line">3 sem_wait(forks[right(p)]);</span><br><span class="line">4 &#125;</span><br><span class="line">5</span><br><span class="line">6 void putforks() &#123;</span><br><span class="line">7 sem_post(forks[left(p)]);</span><br><span class="line">8 sem_post(forks[right(p)]);</span><br><span class="line">9 &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="解决方案-破除依赖"><a href="#解决方案-破除依赖" class="headerlink" title="解决方案:破除依赖"></a>解决方案:破除依赖</h4><p>改变某位哲学家的用餐顺序,因为最后一个哲学家会尝试先拿右手边的餐叉，然后拿左手边，所以不会出现每个哲学家都拿着一个餐叉，卡住等待另一个的情况，等待循环被打破了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1 void getforks() &#123;</span><br><span class="line">2 if (p == 4) &#123;</span><br><span class="line">3 sem_wait(forks[right(p)]);</span><br><span class="line">4 sem_wait(forks[left(p)]);</span><br><span class="line">5 &#125; else &#123;</span><br><span class="line">6 sem_wait(forks[left(p)]);</span><br><span class="line">7 sem_wait(forks[right(p)]);</span><br><span class="line">8 &#125;</span><br><span class="line">9 &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="如何实现信号量"><a href="#如何实现信号量" class="headerlink" title="如何实现信号量"></a>如何实现信号量</h3><p>我们用底层的同步原语（锁和条件变量），来实现自己的信号量，名字叫作 Zemaphore。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">Zem_t</span></span></span><br><span class="line"><span class="class"> &#123;</span> <span class="type">int</span> value;</span><br><span class="line">  <span class="type">pthread_cond_t</span> cond;</span><br><span class="line">  <span class="type">pthread_mutex_t</span> lock; &#125; Zem_t; <span class="comment">// only one thread can call this</span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">Zem_init</span><span class="params">(Zem_t *s, <span class="type">int</span> value)</span> &#123;</span><br><span class="line">    s-&gt;value = value;</span><br><span class="line">    Cond_init(&amp;s-&gt;cond);</span><br><span class="line">    Mutex_init(&amp;s-&gt;lock);</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">Zem_wait</span><span class="params">(Zem_t *s)</span> &#123;</span><br><span class="line"> Mutex_lock(&amp;s-&gt;lock);                                  <span class="keyword">while</span> (s-&gt;value &lt;= <span class="number">0</span>)                                  Cond_wait(&amp;s-&gt;cond, &amp;s-&gt;lock);</span><br><span class="line"> s-&gt;value--;</span><br><span class="line"> Mutex_unlock(&amp;s-&gt;lock);</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">Zem_post</span><span class="params">(Zem_t *s)</span></span><br><span class="line">&#123; Mutex_lock(&amp;s-&gt;lock);</span><br><span class="line"> s-&gt;value++;</span><br><span class="line"> Cond_signal(&amp;s-&gt;cond);</span><br><span class="line"> Mutex_unlock(&amp;s-&gt;lock);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>课后习题</strong></p>
+<h2 id="第-32-章-常见的并发问题"><a href="#第-32-章-常见的并发问题" class="headerlink" title="第 32 章 常见的并发问题"></a>第 32 章 常见的并发问题</h2><h3 id="非死锁缺陷"><a href="#非死锁缺陷" class="headerlink" title="非死锁缺陷"></a>非死锁缺陷</h3><h2 id="第-31-章：信号量-1"><a href="#第-31-章：信号量-1" class="headerlink" title="第 31 章：信号量"></a>第 31 章：信号量</h2><h3 id="信号量定义-1"><a href="#信号量定义-1" class="headerlink" title="信号量定义"></a>信号量定义</h3><p>信号量作为锁和条件变量</p>
+<p>是有一个整数值的对象,可以用两个函数来操作它</p>
+<p>**sem_wait()**要么立刻返回（调用 sem_wait()时，信号量的值大于等于 1），要么会让调用线程挂起，直到之后的一个 post 操作。当然，也可能多个调用线程都调用 sem_wait()，因此都在队列中等待被唤醒。</p>
+<p><strong>sem_post()</strong> sem_post()并没有等待某些条件满足。它直接增加信号量的值，如果有等待线程，唤醒其中一个。当信号量的值为负数时，这个值就是等待线程的个数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1 int sem_wait(sem_t *s) &#123;</span><br><span class="line">2 decrement the value of semaphore s by one</span><br><span class="line">3 wait if value of semaphore s is negative</span><br><span class="line">4 &#125; int sem_post(sem_t *s) &#123;</span><br><span class="line">7 increment the value of semaphore s by one</span><br><span class="line">8 if there are one or more threads waiting, wake one</span><br><span class="line">9 &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="二值信号量（锁）-1"><a href="#二值信号量（锁）-1" class="headerlink" title="二值信号量（锁）"></a>二值信号量（锁）</h3><p>用信号量作为锁。信号量初始值为 1</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sem_t m;</span><br><span class="line">sem_init(&amp;m, 0, X); // initialize semaphore to X; what should X be?</span><br><span class="line"></span><br><span class="line">sem_wait(&amp;m);</span><br><span class="line">// critical section here</span><br><span class="line">sem_post(&amp;m);</span><br></pre></td></tr></table></figure>
+
+<p>考虑两种场景</p>
+<p>1.一个单线程,调用了 sem_wait()，它把信号量的值减为 0。然后，它只会在值小于 0 时等待。因为值是 0，调用线程从函数返回并继续，线程 0 现在可以自由进入临界区。线程 0 在临界区中，如果没有其他线程尝试获取锁，当它调用 sem_post()时，会将信号量重置为 1（因为没有等待线程，不会唤醒其他线程）。</p>
+<p><img src="https://s2.loli.net/2022/01/09/jbrgBnfmG9HLztK.png" alt="image-20211117102303687"></p>
+<h3 id="信号量用作条件变量-1"><a href="#信号量用作条件变量-1" class="headerlink" title="信号量用作条件变量"></a>信号量用作条件变量</h3><p>信号量初始值应为 1.</p>
+<p>有两种情况需要考虑</p>
+<p>第一种，父线程创建了子线程，但是子线程并没有运行。这种情况下（见表 31.3），父线程调用 sem_wait()会先于子线程调用 sem_post()。我们希望父线程等待子线程运行。为此，唯一的办法是让信号量的值不大于 0。因此，0 为初值。父线程运行，将信号量减为 −1，然后睡眠等待；子线程运行的时候，调用 sem_post()，信号量增加为 0，唤醒父线程，父线程然后从 sem_wait()返回，完成该程序。</p>
+<p>第二种情况是子线程在父线程调用 sem_wait()之前就运行结束（见表 31.4）。在这种情况下，<br>子线程会先调用 sem_post()，将信号量从 0 增加到 1。然后当父线程有机会运行时，会调用<br>sem_wait()，发现信号量的值为 1。于是父线程将信号量从 1 减为 0，没有等待，直接从<br>sem_wait()返回，也达到了预期效果。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="type">sem_t</span> s;</span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span> <span class="type">void</span> *<span class="title function_">child</span><span class="params">(<span class="type">void</span> *arg)</span> &#123;</span><br><span class="line"><span class="number">5</span> <span class="built_in">printf</span>(<span class="string">&quot;child\n&quot;</span>);</span><br><span class="line"><span class="number">6</span> sem_post(&amp;s); <span class="comment">// signal here: child is done</span></span><br><span class="line"><span class="number">7</span> <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line"><span class="number">8</span> &#125;</span><br><span class="line"><span class="number">9</span></span><br><span class="line"><span class="number">10</span> <span class="type">int</span></span><br><span class="line"><span class="number">11</span> main(<span class="type">int</span> argc, <span class="type">char</span> *argv[]) &#123;</span><br><span class="line"><span class="number">12</span> sem_init(&amp;s, <span class="number">0</span>, X); <span class="comment">// what should X be?</span></span><br><span class="line"><span class="number">13</span> <span class="built_in">printf</span>(<span class="string">&quot;parent: begin\n&quot;</span>);</span><br><span class="line"><span class="number">14</span> <span class="type">pthread_t</span> c;</span><br><span class="line"><span class="number">15</span> Pthread_create(c, <span class="literal">NULL</span>, child, <span class="literal">NULL</span>);</span><br><span class="line"><span class="number">16</span> sem_wait(&amp;s); <span class="comment">// wait here for child</span></span><br><span class="line"><span class="number">17</span> <span class="built_in">printf</span>(<span class="string">&quot;parent: end\n&quot;</span>);</span><br><span class="line"><span class="number">18</span> <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"><span class="number">19</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="生产者-x2F-消费者（有界缓冲区）问题"><a href="#生产者-x2F-消费者（有界缓冲区）问题" class="headerlink" title="生产者&#x2F;消费者（有界缓冲区）问题"></a>生产者&#x2F;消费者（有界缓冲区）问题</h3><h4 id="初次尝试-1"><a href="#初次尝试-1" class="headerlink" title="初次尝试"></a>初次尝试</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="type">sem_t</span> empty;  <span class="comment">//生产者的条件判断变量,相当于缓冲区的剩余容量,被初始化为MAX</span></span><br><span class="line"><span class="number">2</span> <span class="type">sem_t</span> full;   <span class="comment">//消费者的条件判断变量,相当于缓冲区的数据数量,初始值为0</span></span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="number">4</span> <span class="type">void</span> *<span class="title function_">producer</span><span class="params">(<span class="type">void</span> *arg)</span> &#123;</span><br><span class="line"><span class="number">5</span> <span class="type">int</span> i;</span><br><span class="line"><span class="number">6</span> <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; loops; i++) &#123;</span><br><span class="line"><span class="number">7</span> sem_wait(&amp;empty);      <span class="comment">//line P1    //初始为MAX,函数返回,执行放入</span></span><br><span class="line"><span class="number">8</span> put(i);                <span class="comment">// line P2</span></span><br><span class="line"><span class="number">9</span> sem_post(&amp;full);       <span class="comment">// line P3  // full+1</span></span><br><span class="line"><span class="number">10</span> &#125;</span><br><span class="line"><span class="number">11</span> &#125;</span><br><span class="line"><span class="number">12</span></span><br><span class="line"><span class="number">13</span> <span class="type">void</span> *<span class="title function_">consumer</span><span class="params">(<span class="type">void</span> *arg)</span> &#123;</span><br><span class="line"><span class="number">14</span> <span class="type">int</span> i, tmp = <span class="number">0</span>;</span><br><span class="line"><span class="number">15</span> <span class="keyword">while</span> (tmp != <span class="number">-1</span>) &#123;</span><br><span class="line"><span class="number">16</span> sem_wait(&amp;full); <span class="comment">// line C1  //full初始值为0,缓冲区没有数据,wait函数将full-1,进入等待状态</span></span><br><span class="line"><span class="number">17</span> tmp = get(); <span class="comment">// line C2</span></span><br><span class="line"><span class="number">18</span> sem_post(&amp;empty); <span class="comment">// line C3</span></span><br><span class="line"><span class="number">19</span> <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, tmp);</span><br><span class="line"><span class="number">20</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="number">21</span> &#125;</span><br><span class="line"><span class="number">22</span></span><br><span class="line"><span class="number">23</span> <span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line"><span class="number">24</span> <span class="comment">// ...</span></span><br><span class="line"><span class="number">25</span> sem_init(&amp;empty, <span class="number">0</span>, MAX); <span class="comment">// MAX buffers are empty to begin with...</span></span><br><span class="line"><span class="number">26</span> sem_init(&amp;full, <span class="number">0</span>, <span class="number">0</span>); <span class="comment">// ... and 0 are full</span></span><br><span class="line"><span class="number">27</span> <span class="comment">// ...</span></span><br><span class="line"><span class="number">28</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>存在的问题:竞态条件</strong></p>
+<p>我们现在假设 MAX 大于 1（比如 MAX&#x3D;10）。对于这个例子，假定有多个生产者，多<br>个消费者。现在就有问题了：竞态条件。假设两个生产者（Pa 和 Pb）几乎同时调用 put()。当 Pa 先运行，在 f1 行先加入第一条数据（fill&#x3D;0），假设 Pa 在将 fill 计数器更新为 1 之前被中断，Pb 开始运行，也在 f1 行给缓冲区的 0 位置加入一条数据，这意味着那里的老数据被覆盖！</p>
+<h4 id="解决竞态-增加互斥-1"><a href="#解决竞态-增加互斥-1" class="headerlink" title="解决竞态:增加互斥"></a>解决竞态:增加互斥</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">1 sem_t empty;</span><br><span class="line">2 sem_t full;</span><br><span class="line">3 sem_t mutex;</span><br><span class="line">4</span><br><span class="line">5 void *producer(void *arg) &#123;</span><br><span class="line">6 int i;</span><br><span class="line">7 for (i = 0; i &lt; loops; i++) &#123;</span><br><span class="line">8 sem_wait(&amp;mutex); // line p0 (NEW LINE)</span><br><span class="line">9 sem_wait(&amp;empty); // line p1</span><br><span class="line">10 put(i); // line p2</span><br><span class="line">11 sem_post(&amp;full); // line p3</span><br><span class="line">12 sem_post(&amp;mutex); // line p4 (NEW LINE)</span><br><span class="line">13 &#125;</span><br><span class="line">14 &#125;</span><br><span class="line">15</span><br><span class="line">16 void *consumer(void *arg) &#123;</span><br><span class="line">17 int i;</span><br><span class="line">18 for (i = 0; i &lt; loops; i++) &#123;</span><br><span class="line">19 sem_wait(&amp;mutex); // line c0 (NEW LINE)</span><br><span class="line">20 sem_wait(&amp;full); // line c1</span><br><span class="line">21 int tmp = get(); // line c2</span><br><span class="line">22 sem_post(&amp;empty); // line c3</span><br><span class="line">23 sem_post(&amp;mutex); // line c4 (NEW LINE)</span><br><span class="line">24 printf(&quot;%d\n&quot;, tmp);</span><br><span class="line">25 &#125;</span><br><span class="line">26 &#125;</span><br><span class="line">27</span><br><span class="line">28 int main(int argc, char *argv[]) &#123;</span><br><span class="line">29 // ...</span><br><span class="line">30 sem_init(&amp;empty, 0, MAX); // MAX buffers are empty to begin with...</span><br><span class="line">31 sem_init(&amp;full, 0, 0); // ... and 0 are full</span><br><span class="line">32 sem_init(&amp;mutex, 0, 1); // mutex=1 because it is a lock (NEW LINE)</span><br><span class="line">33 // ...</span><br><span class="line">34 &#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="存在的问题-死锁-1"><a href="#存在的问题-死锁-1" class="headerlink" title="存在的问题:死锁"></a>存在的问题:死锁</h5><p>假设有两个线程，一个生产者和一个消费者。消费者首先运行，获得锁（c0 行），然后对 full 信号量执行 sem_wait() （c1 行）。因为还没有数据，所以消费者阻塞，让出 CPU。但是，重要的是，此时消费者仍然持有锁。然后生产者运行。假如生产者能够运行，它就能生产数据并唤醒消费者线程。遗憾的是，它首先对二值互斥信号量调用 sem_wait()（p0 行）。锁已经被持有，因此生产者也被卡住。这里出现了一个循环等待。消费者持有互斥量，等待在 full 信号量上。生产者可以发送 full 信号，却在等待互斥量。因此，生产者和消费者互相等待对方——典型的死锁。</p>
+<h4 id="解决死锁-减少锁的作用域-1"><a href="#解决死锁-减少锁的作用域-1" class="headerlink" title="解决死锁:减少锁的作用域"></a>解决死锁:减少锁的作用域</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">  <span class="type">void</span> *<span class="title function_">producer</span><span class="params">(<span class="type">void</span> *arg)</span> &#123;</span><br><span class="line"><span class="number">6</span> <span class="type">int</span> i;</span><br><span class="line"><span class="number">7</span> <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; loops; i++) &#123;</span><br><span class="line"><span class="number">8</span> sem_wait(&amp;empty); <span class="comment">// line p1</span></span><br><span class="line"><span class="number">9</span> sem_wait(&amp;mutex); <span class="comment">// line p1.5 (MOVED MUTEX HERE...)</span></span><br><span class="line"><span class="number">10</span> put(i); <span class="comment">// line p2</span></span><br><span class="line"><span class="number">11</span> sem_post(&amp;mutex); <span class="comment">// line p2.5 (... AND HERE)</span></span><br><span class="line"><span class="number">12</span> sem_post(&amp;full); <span class="comment">// line p3</span></span><br><span class="line"><span class="number">13</span> &#125;</span><br><span class="line"><span class="number">14</span> &#125;</span><br><span class="line"><span class="number">15</span></span><br><span class="line"><span class="number">16</span> <span class="type">void</span> *<span class="title function_">consumer</span><span class="params">(<span class="type">void</span> *arg)</span> &#123;</span><br><span class="line"><span class="number">17</span> <span class="type">int</span> i;</span><br><span class="line"><span class="number">18</span> <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; loops; i++) &#123;</span><br><span class="line"><span class="number">19</span> sem_wait(&amp;full); <span class="comment">// line c1</span></span><br><span class="line"><span class="number">20</span> sem_wait(&amp;mutex); <span class="comment">// line c1.5 (MOVED MUTEX HERE...)</span></span><br><span class="line"><span class="number">21</span> <span class="type">int</span> tmp = get(); <span class="comment">// line c2</span></span><br><span class="line"><span class="number">22</span> sem_post(&amp;mutex); <span class="comment">// line c2.5 (... AND HERE)</span></span><br><span class="line"><span class="number">23</span> sem_post(&amp;empty); <span class="comment">// line c3</span></span><br><span class="line"><span class="number">24</span> <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, tmp);</span><br><span class="line"><span class="number">25</span> &#125;</span><br><span class="line"><span class="number">26</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="读者—写者锁-1"><a href="#读者—写者锁-1" class="headerlink" title="读者—写者锁"></a>读者—写者锁</h3><p>不同的数据结构访问可能需要不同类型的锁。</p>
+<p>如果某个线程要更新数据结构，需要调用 rwlock_acquire_lock()获得写锁，调用 rwlock_release_writelock()释放锁。内部通过一个 writelock 的信号量保证只有一个写者能获得锁进入临界区，从而更新数据结构。</p>
+<p>但有一些缺陷，尤其是公平性。读者很容易饿死写者。存在复杂一些的解决方案，也许你可以想到更好的实现？提示：有写者等待时，如何能够避更多的读者进入并持有锁。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">rwlock_t</span> &#123;</span></span><br><span class="line"><span class="number">2</span> <span class="type">sem_t</span> lock; <span class="comment">// binary semaphore (basic lock)</span></span><br><span class="line"><span class="number">3</span> <span class="type">sem_t</span> writelock; <span class="comment">// used to allow ONE writer or MANY readers</span></span><br><span class="line"><span class="number">4</span> <span class="type">int</span> readers; <span class="comment">// count of readers reading in critical section</span></span><br><span class="line"><span class="number">5</span> &#125; <span class="type">rwlock_t</span>;</span><br><span class="line"><span class="number">6</span></span><br><span class="line"><span class="number">7</span> <span class="type">void</span> <span class="title function_">rwlock_init</span><span class="params">(<span class="type">rwlock_t</span> *rw)</span> &#123;</span><br><span class="line"><span class="number">8</span> rw-&gt;readers = <span class="number">0</span>;</span><br><span class="line"><span class="number">9</span> sem_init(&amp;rw-&gt;lock, <span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">10</span> sem_init(&amp;rw-&gt;writelock, <span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">11</span> &#125;</span><br><span class="line"><span class="number">12</span></span><br><span class="line"><span class="number">13</span> <span class="type">void</span> <span class="title function_">rwlock_acquire_readlock</span><span class="params">(<span class="type">rwlock_t</span> *rw)</span> &#123;</span><br><span class="line"><span class="number">14</span> sem_wait(&amp;rw-&gt;lock);</span><br><span class="line"><span class="number">15</span> rw-&gt;readers++;</span><br><span class="line"><span class="number">16</span> <span class="keyword">if</span> (rw-&gt;readers == <span class="number">1</span>)</span><br><span class="line"><span class="number">17</span> sem_wait(&amp;rw-&gt;writelock); <span class="comment">// first reader acquires writelock</span></span><br><span class="line"><span class="number">18</span> sem_post(&amp;rw-&gt;lock);</span><br><span class="line"><span class="number">19</span> &#125;</span><br><span class="line"><span class="number">20</span></span><br><span class="line"><span class="number">21</span> <span class="type">void</span> <span class="title function_">rwlock_release_readlock</span><span class="params">(<span class="type">rwlock_t</span> *rw)</span> &#123;</span><br><span class="line"><span class="number">22</span> sem_wait(&amp;rw-&gt;lock);</span><br><span class="line"><span class="number">23</span> rw-&gt;readers--;</span><br><span class="line"><span class="number">24</span> <span class="keyword">if</span> (rw-&gt;readers == <span class="number">0</span>)</span><br><span class="line"><span class="number">25</span> sem_post(&amp;rw-&gt;writelock); <span class="comment">// last reader releases writelock</span></span><br><span class="line"><span class="number">26</span> sem_post(&amp;rw-&gt;lock);</span><br><span class="line"><span class="number">27</span> &#125;</span><br><span class="line"><span class="number">28</span></span><br><span class="line"><span class="number">29</span> <span class="type">void</span> <span class="title function_">rwlock_acquire_writelock</span><span class="params">(<span class="type">rwlock_t</span> *rw)</span> &#123;</span><br><span class="line"><span class="number">30</span> sem_wait(&amp;rw-&gt;writelock);</span><br><span class="line"><span class="number">31</span> &#125;</span><br><span class="line"><span class="number">32</span></span><br><span class="line"><span class="number">33</span> <span class="type">void</span> <span class="title function_">rwlock_release_writelock</span><span class="params">(<span class="type">rwlock_t</span> *rw)</span> &#123;</span><br><span class="line"><span class="number">34</span> sem_post(&amp;rw-&gt;writelock);</span><br><span class="line"><span class="number">35</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="哲学家就餐问题-1"><a href="#哲学家就餐问题-1" class="headerlink" title="哲学家就餐问题"></a>哲学家就餐问题</h3><p>假定有 5 位“哲学家”围着一个圆桌。每两位哲学家之间有一把餐叉（一共 5 把）。哲学家有时要思考一会，不需要餐叉；有时又要就餐。而一位哲学家只有同时拿到了左手边和右手边的两把餐叉，才能吃到东西。关于餐叉的竞争以及随之而来的同步问题，就是我们在并发编程中研<br>究它的原因。</p>
+<p><img src="https://s2.loli.net/2022/01/09/VWqDckdmHh279oz.png" alt="image-20211117112437466"></p>
+<h4 id="有问题的解决方案-1"><a href="#有问题的解决方案-1" class="headerlink" title="有问题的解决方案"></a>有问题的解决方案</h4><p>如果哲学家 p 希望用左手边的叉子，他们就调用 left(p)。类似地，右手边的叉子就用<br>right(p)。模运算解决了最后一个哲学家（p &#x3D; 4）右手边叉子的编号问题，就是餐叉 0。</p>
+<p>为了拿到餐叉，我们依次获取每把餐叉的锁——先是左手边的，然后是右手边的。结束就餐时，释放掉锁</p>
+<p>**问题:死锁 ** 假设每个哲学家都拿到了左手边的餐叉，他们每个都会阻塞住，并且一直等待另一个餐叉。具体来说，哲学家 0 拿到了餐叉 0，哲学家 1 拿到了餐叉 1，哲学家 2 拿到餐叉 2，哲学家 3 拿到餐叉 3，哲学家 4 拿到餐叉 4。所有的餐叉都被占有了，所有的哲学家都阻塞着，并且等待另一个哲学家占有的餐叉</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1 void getforks() &#123;</span><br><span class="line">2 sem_wait(forks[left(p)]);</span><br><span class="line">3 sem_wait(forks[right(p)]);</span><br><span class="line">4 &#125;</span><br><span class="line">5</span><br><span class="line">6 void putforks() &#123;</span><br><span class="line">7 sem_post(forks[left(p)]);</span><br><span class="line">8 sem_post(forks[right(p)]);</span><br><span class="line">9 &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="解决方案-破除依赖-1"><a href="#解决方案-破除依赖-1" class="headerlink" title="解决方案:破除依赖"></a>解决方案:破除依赖</h4><p>改变某位哲学家的用餐顺序,因为最后一个哲学家会尝试先拿右手边的餐叉，然后拿左手边，所以不会出现每个哲学家都拿着一个餐叉，卡住等待另一个的情况，等待循环被打破了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1 void getforks() &#123;</span><br><span class="line">2 if (p == 4) &#123;</span><br><span class="line">3 sem_wait(forks[right(p)]);</span><br><span class="line">4 sem_wait(forks[left(p)]);</span><br><span class="line">5 &#125; else &#123;</span><br><span class="line">6 sem_wait(forks[left(p)]);</span><br><span class="line">7 sem_wait(forks[right(p)]);</span><br><span class="line">8 &#125;</span><br><span class="line">9 &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="如何实现信号量-1"><a href="#如何实现信号量-1" class="headerlink" title="如何实现信号量"></a>如何实现信号量</h3><p>我们用底层的同步原语（锁和条件变量），来实现自己的信号量，名字叫作 Zemaphore。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">Zem_t</span> &#123;</span></span><br><span class="line"> <span class="type">int</span> value;</span><br><span class="line"> <span class="type">pthread_cond_t</span> cond;</span><br><span class="line"> <span class="type">pthread_mutex_t</span> lock;</span><br><span class="line"> &#125; Zem_t;</span><br><span class="line"></span><br><span class="line"> <span class="comment">// only one thread can call this</span></span><br><span class="line"> <span class="type">void</span> <span class="title function_">Zem_init</span><span class="params">(Zem_t *s, <span class="type">int</span> value)</span> &#123;</span><br><span class="line"> s-&gt;value = value;</span><br><span class="line"> Cond_init(&amp;s-&gt;cond);</span><br><span class="line"> Mutex_init(&amp;s-&gt;lock);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="type">void</span> <span class="title function_">Zem_wait</span><span class="params">(Zem_t *s)</span> &#123;</span><br><span class="line"> Mutex_lock(&amp;s-&gt;lock);</span><br><span class="line"> <span class="keyword">while</span> (s-&gt;value &lt;= <span class="number">0</span>)</span><br><span class="line"> Cond_wait(&amp;s-&gt;cond, &amp;s-&gt;lock);</span><br><span class="line"> s-&gt;value--;</span><br><span class="line"> Mutex_unlock(&amp;s-&gt;lock);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="type">void</span> <span class="title function_">Zem_post</span><span class="params">(Zem_t *s)</span> &#123;</span><br><span class="line"></span><br><span class="line"> Mutex_lock(&amp;s-&gt;lock);</span><br><span class="line"> s-&gt;value++;</span><br><span class="line"> Cond_signal(&amp;s-&gt;cond);</span><br><span class="line"> Mutex_unlock(&amp;s-&gt;lock);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3> 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/03/15/%E5%B9%B6%E5%8F%91%E6%80%A7/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/operating-sysytem/" rel="tag">operating sysytem</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/03/23/%E8%99%9A%E6%8B%9F%E5%8C%96%E5%86%85%E5%AD%98/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            内存虚拟化
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/03/11/CPU%E8%99%9A%E6%8B%9F%E5%8C%96/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">CPU虚拟化</div>
+      </a>
+    
+  </nav>
+
+  
+   
+    
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2019-2022
+        <i class="ri-heart-fill heart_icon"></i> nnilk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>Visitors:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>Views:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="nnilk&#39;s blog"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>

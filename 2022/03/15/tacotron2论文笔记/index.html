@@ -13,10 +13,10 @@
         name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1"
       />
-      <title>Tacotron2声谱预测网络 |  nnilk&#39;s personal blog</title>
+      <title>Tacotron2声谱预测网络 |  nnilk&#39;s blog</title>
   <meta name="generator" content="hexo-theme-ayer">
       
-      <link rel="shortcut icon" href="/favicon.ico" />
+      <link rel="shortcut icon" href="/images/logo3.ico" />
        
 <link rel="stylesheet" href="/dist/main.css">
 
@@ -120,7 +120,7 @@
 <h2 id="模型概述"><a href="#模型概述" class="headerlink" title="模型概述"></a>模型概述</h2><p>该语音合成系统由两个组件组成，如下图所示</p>
 <ol>
 <li>一个循环 seq2seq 声谱特征预测网络，它从输入字符序列预测 mel 谱图帧的序列;</li>
-<li>一个改进的 WaveNet，它根据预测的 mel 谱图帧生成时域波形样本。</li>
+<li>一个改进的 WaveNet，它根据预测的 mel 谱图帧生成时域波形样本。<span id="more"></span></li>
 </ol>
 <p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202203031055188.png" alt="image-20220303105518888"></p>
 <p>我们选择了一个低电平的声学表示:梅尔-频谱图，以连接这两个成分。使用一种很容易从时域波形计算出来的表示形式，可以让我们分别训练这两个分量。这种表示也比波形样本更平滑，更容易训练使用平方误差损失，因为它是不变的相位在每一帧。mel 谱图与线性谱图有关，即短时傅里叶变换(STFT)幅度。</p>
@@ -153,12 +153,6 @@
 <h2 id="声码器（Vocoder）"><a href="#声码器（Vocoder）" class="headerlink" title="声码器（Vocoder）"></a>声码器（Vocoder）</h2><p>该论文使用的声码器是一个改进的 WaveNet，不是本次论文重点提出的模型，也不是我们本次项目使用到的声码器模型。故略。之后再对 melgan 等声码器进行分析。</p>
  
       <!-- reward -->
-      
-      <div id="reword-out">
-        <div id="reward-btn">
-          Donate
-        </div>
-      </div>
       
     </div>
     
@@ -226,12 +220,22 @@
 </div>
 
 <div id="share-mask"></div>  
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AI/" rel="tag">AI</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DL/" rel="tag">DL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ML/" rel="tag">ML</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TTS/" rel="tag">TTS</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AI/" rel="tag">AI</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/" rel="tag">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MachineLearning/" rel="tag">MachineLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TTS/" rel="tag">TTS</a></li></ul>
 
     </footer>
   </div>
 
    
+  <nav class="article-nav">
+    
+    
+      <a href="/2021/05/15/%E6%8C%81%E4%B9%85%E6%80%A7/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">并发性</div>
+      </a>
+    
+  </nav>
+
   
    
     
@@ -251,7 +255,7 @@
     <ul>
       <li>
         Copyrights &copy;
-        2015-2022
+        2019-2022
         <i class="ri-heart-fill heart_icon"></i> nnilk
       </li>
     </ul>
@@ -304,7 +308,7 @@
 <nav class="navbar">
   
   <div class="logo">
-    <a href="/"><img src="/images/ayer-side.svg" alt="nnilk&#39;s personal blog"></a>
+    <a href="/"><img src="/images/ayer-side.svg" alt="nnilk&#39;s blog"></a>
   </div>
   
   <ul class="nav nav-main">
@@ -339,10 +343,6 @@
         <i class="ri-search-line"></i>
       </a>
       
-      
-      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
-        <i class="ri-rss-line"></i>
-      </a>
       
     </li>
   </ul>
@@ -589,7 +589,9 @@
 </script>
  
 <!-- CanvasBackground -->
-
+ 
+<script src="/js/dz.js"></script>
+ 
 <script>
   if (window.mermaid) {
     mermaid.initialize({ theme: "forest" });

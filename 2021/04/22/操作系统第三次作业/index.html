@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta name="description" content="Welcome to nnilk&#39;s daily learning blog" />
+      
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>2.operating-systems-three-easy-pieces answers |  nnilk&#39;s blog</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/images/logo3.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-操作系统第三次作业"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  2.operating-systems-three-easy-pieces answers
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/04/22/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/" class="article-date">
+  <time datetime="2021-04-21T16:00:00.000Z" itemprop="datePublished">2021-04-22</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/The-Operating-System-Notes/">The-Operating-System-Notes</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">6.2k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">31 min</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="操作系统第三次作业"><a href="#操作系统第三次作业" class="headerlink" title="操作系统第三次作业"></a>操作系统第三次作业</h1><p>201908010224黄雅妮</p>
+<h2 id="第15章——地址转换"><a href="#第15章——地址转换" class="headerlink" title="第15章——地址转换"></a>第15章——地址转换</h2><h3 id="15-1"><a href="#15-1" class="headerlink" title="15.1"></a>15.1</h3><p><strong>用种子1、2 和3 运行，并计算进程生成的每个虚拟地址是处于界限内还是界限外?如果在界限内，请计算地址转换。</strong></p>
+<p>有效地址为</p>
+<p> VA  1: 0x00000105 (decimal:  261)</p>
+<p>转换后地址为 PA：0x00000105+ 0x0000363c&#x3D;261+13384&#x3D;   13645</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">//种子1</span><br><span class="line">python2 relocation.py -s 1</span><br><span class="line"></span><br><span class="line">ARG seed 1</span><br><span class="line">ARG address space size 1k</span><br><span class="line">ARG phys mem size 16k</span><br><span class="line"></span><br><span class="line">Base-and-Bounds register information:</span><br><span class="line"></span><br><span class="line">  Base   : 0x0000363c (decimal 13884)</span><br><span class="line">  Limit  : 290</span><br><span class="line"></span><br><span class="line">Virtual Address Trace</span><br><span class="line">  VA  0: 0x0000030e (decimal:  782) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  1: 0x00000105 (decimal:  261) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  2: 0x000001fb (decimal:  507) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  3: 0x000001cc (decimal:  460) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  4: 0x0000029b (decimal:  667) --&gt; PA or segmentation violation?</span><br></pre></td></tr></table></figure>
+
+<p><strong>种子    -s 2</strong></p>
+<p>以下地址有效</p>
+<p>  VA  0: 0x00000039 (decimal:   57)</p>
+<p>  VA  1: 0x00000056 (decimal:   86) </p>
+<p>转换后地址</p>
+<p>PA 0 :0x00000039 + 0x00003ca9 &#x3D;57+15529&#x3D;15586</p>
+<p>PA 1:0x00000056 + 0x00003ca9&#x3D;86+15529&#x3D;15615</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">nnilk@nnilk-VirtualBox:~/文档/ostep-homework/vm-mechanism$ python2 relocation.py -s 2</span><br><span class="line"></span><br><span class="line">ARG seed 2</span><br><span class="line">ARG address space size 1k</span><br><span class="line">ARG phys mem size 16k</span><br><span class="line"></span><br><span class="line">Base-and-Bounds register information:</span><br><span class="line"></span><br><span class="line">  Base   : 0x00003ca9 (decimal 15529)</span><br><span class="line">  Limit  : 500</span><br><span class="line"></span><br><span class="line">Virtual Address Trace</span><br><span class="line">  VA  0: 0x00000039 (decimal:   57) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  1: 0x00000056 (decimal:   86) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  2: 0x00000357 (decimal:  855) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  3: 0x000002f1 (decimal:  753) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  4: 0x000002ad (decimal:  685) --&gt; PA or segmentation violation?</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>种子    -s 3</strong></p>
+<p>以下地址有效</p>
+<p> VA  3: 0x00000043 (decimal:   67)</p>
+<p> VA  4: 0x0000000d (decimal:   13)</p>
+<p>转换后地址</p>
+<p>PA 3: 0x00000043  + 0x00003ca9 &#x3D;67+8916&#x3D;8983</p>
+<p>PA 4: 0x0000000d  + 0x00003ca9&#x3D;13+8916&#x3D;8929</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">nnilk@nnilk-VirtualBox:~/文档/ostep-homework/vm-mechanism$ python2 relocation.py -s 3</span><br><span class="line"></span><br><span class="line">ARG seed 3</span><br><span class="line">ARG address space size 1k</span><br><span class="line">ARG phys mem size 16k</span><br><span class="line"></span><br><span class="line">Base-and-Bounds register information:</span><br><span class="line"></span><br><span class="line">  Base   : 0x000022d4 (decimal 8916)</span><br><span class="line">  Limit  : 316</span><br><span class="line"></span><br><span class="line">Virtual Address Trace</span><br><span class="line">  VA  0: 0x0000017a (decimal:  378) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  1: 0x0000026a (decimal:  618) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  2: 0x00000280 (decimal:  640) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  3: 0x00000043 (decimal:   67) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  4: 0x0000000d (decimal:   13) --&gt; PA or segmentation violation?</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="15-3"><a href="#15-3" class="headerlink" title="15.3"></a>15.3</h3><p><strong>使用以下标志运行:-s1-n10-1100。可以设置基址寄存器界限的最大值是多少,以便地址空间仍然完全放在物理内存中?</strong></p>
+<p>物理内存大小为2^14^ B,要是地址完全放在物理内存中,基址寄存器最大值为 2^14^ - 100 &#x3D; 16284</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">nnilk@nnilk-VirtualBox:~/文档/ostep-homework/vm-mechanism$ python2 relocation.py -s 1 -n 10 -l 100</span><br><span class="line"></span><br><span class="line">ARG seed 1</span><br><span class="line">ARG address space size 1k</span><br><span class="line">ARG phys mem size 16k</span><br><span class="line"></span><br><span class="line">Base-and-Bounds register information:</span><br><span class="line"></span><br><span class="line">  Base   : 0x00000899 (decimal 2201)</span><br><span class="line">  Limit  : 100</span><br><span class="line"></span><br><span class="line">Virtual Address Trace</span><br><span class="line">  VA  0: 0x00000363 (decimal:  867) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  1: 0x0000030e (decimal:  782) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  2: 0x00000105 (decimal:  261) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  3: 0x000001fb (decimal:  507) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  4: 0x000001cc (decimal:  460) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  5: 0x0000029b (decimal:  667) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  6: 0x00000327 (decimal:  807) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  7: 0x00000060 (decimal:   96) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  8: 0x0000001d (decimal:   29) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  9: 0x00000357 (decimal:  855) --&gt; PA or segmentation violation?</span><br></pre></td></tr></table></figure>
+
+<h2 id="第16章——分段"><a href="#第16章——分段" class="headerlink" title="第16章——分段"></a>第16章——分段</h2><h3 id="16-1"><a href="#16-1" class="headerlink" title="16.1"></a>16.1</h3><p><strong>1．先让我们用一个小地址空间来转换一些地址。这里有一组简单的参数和几个不同的</strong><br><strong>随机种子。你可以转换这些地址吗？</strong><br><strong>segmentation.py -a 128 -p 512 -b 0 -l 20 -B 512 -L 20 -s 0</strong></p>
+<p>运行结果如下，转换后每个VA所在段计算如下</p>
+<p>VA  0: 0x0000006c (decimal:  108) –&gt; sPA(段1)(物理地址492)<br>VA  1: 0x00000061 (decimal:   97) –&gt; segmentation violation(段1)<br>VA  2: 0x00000035 (decimal:   53) –&gt; segmentation violation(段0)<br>VA  3: 0x00000021 (decimal:   33) –&gt; segmentation violation(段0)<br>VA  4: 0x00000041 (decimal:   65) –&gt; segmentation violation(段1)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">1.种子 s -0</span><br><span class="line">$ python2 segmentation.py -a 128 -p 512 -b 0 -l 20 -B 512 -L 20 -s 0</span><br><span class="line"></span><br><span class="line">ARG seed 0</span><br><span class="line">ARG address space size 128</span><br><span class="line">ARG phys mem size 512</span><br><span class="line"></span><br><span class="line">Segment register information:</span><br><span class="line"></span><br><span class="line">  Segment 0 base  (grows positive) : 0x00000000 (decimal 0)</span><br><span class="line">  Segment 0 limit                  : 20</span><br><span class="line"></span><br><span class="line">  Segment 1 base  (grows negative) : 0x00000200 (decimal 512)</span><br><span class="line">  Segment 1 limit                  : 20</span><br><span class="line"></span><br><span class="line">Virtual Address Trace</span><br><span class="line">  VA  0: 0x0000006c (decimal:  108) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  1: 0x00000061 (decimal:   97) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  2: 0x00000035 (decimal:   53) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  3: 0x00000021 (decimal:   33) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  4: 0x00000041 (decimal:   65) --&gt; PA or segmentation violation?</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>segmentation.py -a 128 -p 512 -b 0 -l 20 -B 512 -L 20 -s 1</strong></p>
+<p>运行结果如下，转换后每个VA所在段计算如下</p>
+<p>  VA  0: 0x00000011 (decimal:   17) –&gt; PA(段0)(物理地址:17)<br>  VA  1: 0x0000006c (decimal:  108) –&gt; PA(段1)(物理地址:492)<br>  VA  2: 0x00000061 (decimal:   97) –&gt; segmentation violation(段1)<br>  VA  3: 0x00000020 (decimal:   32) –&gt; segmentation violation(段0)<br>  VA  4: 0x0000003f (decimal:   63) –&gt; segmentation violation(段0)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ python2 segmentation.py -a 128 -p 512 -b 0 -l 20 -B 512 -L 20 -s 1</span><br><span class="line">ARG seed 1</span><br><span class="line">ARG address space size 128</span><br><span class="line">ARG phys mem size 512</span><br><span class="line"></span><br><span class="line">Segment register information:</span><br><span class="line"></span><br><span class="line">  Segment 0 base  (grows positive) : 0x00000000 (decimal 0)</span><br><span class="line">  Segment 0 limit                  : 20</span><br><span class="line"></span><br><span class="line">  Segment 1 base  (grows negative) : 0x00000200 (decimal 512)</span><br><span class="line">  Segment 1 limit                  : 20</span><br><span class="line"></span><br><span class="line">Virtual Address Trace</span><br><span class="line">  VA  0: 0x00000011 (decimal:   17) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  1: 0x0000006c (decimal:  108) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  2: 0x00000061 (decimal:   97) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  3: 0x00000020 (decimal:   32) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  4: 0x0000003f (decimal:   63) --&gt; PA or segmentation violation?</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>segmentation.py -a 128 -p 512 -b 0 -l 20 -B 512 -L 20 -s 2</strong></p>
+<p>运行结果如下，转换后每个VA所在段</p>
+<p>Virtual Address Trace：<br>  VA  0: 0x0000007a (decimal:  122) –&gt; PA(段1)(物理地址:506)<br>  VA  1: 0x00000079 (decimal:  121) –&gt; PA(段1)(物理地址:505)<br>  VA  2: 0x00000007 (decimal:    7) –&gt; PA(段0)(物理地址:7)<br>  VA  3: 0x0000000a (decimal:   10) –&gt; PA(段0)(物理地址:10)<br>  VA  4: 0x0000006a (decimal:  106) –&gt; segmentation violation(段1)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ python2 segmentation.py -a 128 -p 512 -b 0 -l 20 -B 512 -L 20 -s 2</span><br><span class="line">ARG seed 2</span><br><span class="line">ARG address space size 128</span><br><span class="line">ARG phys mem size 512</span><br><span class="line"></span><br><span class="line">Segment register information:</span><br><span class="line"></span><br><span class="line">  Segment 0 base  (grows positive) : 0x00000000 (decimal 0)</span><br><span class="line">  Segment 0 limit                  : 20</span><br><span class="line"></span><br><span class="line">  Segment 1 base  (grows negative) : 0x00000200 (decimal 512)</span><br><span class="line">  Segment 1 limit                  : 20</span><br><span class="line"></span><br><span class="line">Virtual Address Trace</span><br><span class="line">  VA  0: 0x0000007a (decimal:  122) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  1: 0x00000079 (decimal:  121) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  2: 0x00000007 (decimal:    7) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  3: 0x0000000a (decimal:   10) --&gt; PA or segmentation violation?</span><br><span class="line">  VA  4: 0x0000006a (decimal:  106) --&gt; PA or segmentation violation?</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="16-2"><a href="#16-2" class="headerlink" title="16.2"></a>16.2</h3><p><strong>现在，让我们看看是否理解了这个构建的小地址空间（使用上面问题的参数）。段0中最高的合法虚拟地址是什么？段1 中最低的合法虚拟地址是什么？在整个地址空间中，最低和最高的非法地址是什么？最后，如何运行带有-A 标志的segmentation.py 来测试你是否正确？</strong></p>
+<p>段0 中最高的合法虚拟地址 19,</p>
+<p>段 1 中最低的合法虚拟地址 108</p>
+<p>在整个地址空间中,最低和最高的非法地址是 20,107</p>
+<p>运行<code>python2 segmentation.py -a 128 -p 512 -b 0 -l 20 -B 512 -L 20 -s 1 -A 19,108,20,107 -c</code></p>
+<p>可以看到，虚拟地址19,108分别在段0和段1中是合法地址，虚拟地址20,107分别在段0和段1中是非法地址，验证正确</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ python2 segmentation.py -a <span class="number">128</span> -p <span class="number">512</span> -b <span class="number">0</span> -l <span class="number">20</span> -B <span class="number">512</span> -L <span class="number">20</span> -s <span class="number">1</span> -A </span><br><span class="line"><span class="number">19</span>,<span class="number">108</span>,<span class="number">20</span>,<span class="number">107</span> -c</span><br><span class="line">ARG seed <span class="number">1</span></span><br><span class="line">ARG address space size <span class="number">128</span></span><br><span class="line">ARG phys mem size <span class="number">512</span></span><br><span class="line"></span><br><span class="line">Segment <span class="keyword">register</span> information:</span><br><span class="line"></span><br><span class="line">  Segment <span class="number">0</span> base  (grows positive) : <span class="number">0x00000000</span> (decimal <span class="number">0</span>)</span><br><span class="line">  Segment <span class="number">0</span> limit                  : <span class="number">20</span></span><br><span class="line"></span><br><span class="line">  Segment <span class="number">1</span> base  (grows negative) : <span class="number">0x00000200</span> (decimal <span class="number">512</span>)</span><br><span class="line">  Segment <span class="number">1</span> limit                  : <span class="number">20</span></span><br><span class="line"></span><br><span class="line">Virtual Address Trace</span><br><span class="line">  VA  <span class="number">0</span>: <span class="number">0x00000013</span> (decimal:   <span class="number">19</span>) --&gt; VALID in SEG0: <span class="number">0x00000013</span> (decimal:   <span class="number">19</span>)</span><br><span class="line">  VA  <span class="number">1</span>: <span class="number">0x0000006c</span> (decimal:  <span class="number">108</span>) --&gt; VALID in SEG1: <span class="number">0x000001ec</span> (decimal:  <span class="number">492</span>)</span><br><span class="line">  VA  <span class="number">2</span>: <span class="number">0x00000014</span> (decimal:   <span class="number">20</span>) --&gt; SEGMENTATION <span class="title function_">VIOLATION</span> <span class="params">(SEG0)</span></span><br><span class="line">  VA  3: 0<span class="title function_">x0000006b</span> <span class="params">(decimal:  <span class="number">107</span>)</span> --&gt; SEGMENTATION <span class="title function_">VIOLATION</span> <span class="params">(SEG1)</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="16-3"><a href="#16-3" class="headerlink" title="16.3"></a>16.3</h3><p><strong>假设我们在一个128 字节的物理内存中有一个很小的16 字节地址空间。你会设置什么样的基址和界限，以便让模拟器为指定的地址流生成以下转换结果：有效，有效，违规，违反，有效，有效？假设用以下参数：</strong><br><strong>segmentation.py -a 16 -p 128 -A 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15</strong><br><strong>–b0 ? –l0 ? –b1 ? –l1 ?</strong></p>
+<p><em>注: 原书问题为:valid, valid, violation, …, violation, valid, valid,即要求 0,1,14,15 有效,其余无效</em></p>
+<p>段0只有虚拟地址为0和1有效，段1只有虚拟地址14,15有效，所以</p>
+<p>L0 &#x3D; L1 &#x3D; 2</p>
+<p>Base 0 &#x3D; 0</p>
+<p>Base 1 &#x3D; 15</p>
+<p>运行<code>python2 segmentation.py -a 16 -p 128 -A 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 --b0 0 --l0 2 --b1 15 --l1 2 -c</code></p>
+<p>可以看到只有虚拟地址0,1,14,15有效，验证正确</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">python2 segmentation.py -a <span class="number">16</span> -p <span class="number">128</span> -A <span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">10</span>,<span class="number">11</span>,<span class="number">12</span>,<span class="number">13</span>,<span class="number">14</span>,<span class="number">15</span> --b0 <span class="number">0</span> --l0 <span class="number">2</span> --b1 <span class="number">15</span> --l1 <span class="number">2</span> -c</span><br><span class="line">ARG seed <span class="number">0</span></span><br><span class="line">ARG address space size <span class="number">16</span></span><br><span class="line">ARG phys mem size <span class="number">128</span></span><br><span class="line"></span><br><span class="line">Segment <span class="keyword">register</span> information:</span><br><span class="line"></span><br><span class="line">  Segment <span class="number">0</span> base  (grows positive) : <span class="number">0x00000000</span> (decimal <span class="number">0</span>)</span><br><span class="line">  Segment <span class="number">0</span> limit                  : <span class="number">2</span></span><br><span class="line"></span><br><span class="line">  Segment <span class="number">1</span> base  (grows negative) : <span class="number">0x0000000f</span> (decimal <span class="number">15</span>)</span><br><span class="line">  Segment <span class="number">1</span> limit                  : <span class="number">2</span></span><br><span class="line"></span><br><span class="line">Virtual Address Trace</span><br><span class="line">  VA  <span class="number">0</span>: <span class="number">0x00000000</span> (decimal:    <span class="number">0</span>) --&gt; VALID in SEG0: <span class="number">0x00000000</span> (decimal:    <span class="number">0</span>)</span><br><span class="line">  VA  <span class="number">1</span>: <span class="number">0x00000001</span> (decimal:    <span class="number">1</span>) --&gt; VALID in SEG0: <span class="number">0x00000001</span> (decimal:    <span class="number">1</span>)</span><br><span class="line">  VA  <span class="number">2</span>: <span class="number">0x00000002</span> (decimal:    <span class="number">2</span>) --&gt; SEGMENTATION <span class="title function_">VIOLATION</span> <span class="params">(SEG0)</span></span><br><span class="line">  VA  3: 0<span class="title function_">x00000003</span> <span class="params">(decimal:    <span class="number">3</span>)</span> --&gt; SEGMENTATION <span class="title function_">VIOLATION</span> <span class="params">(SEG0)</span></span><br><span class="line">  VA  4: 0<span class="title function_">x00000004</span> <span class="params">(decimal:    <span class="number">4</span>)</span> --&gt; SEGMENTATION <span class="title function_">VIOLATION</span> <span class="params">(SEG0)</span></span><br><span class="line">  VA  5: 0<span class="title function_">x00000005</span> <span class="params">(decimal:    <span class="number">5</span>)</span> --&gt; SEGMENTATION <span class="title function_">VIOLATION</span> <span class="params">(SEG0)</span></span><br><span class="line">  VA  6: 0<span class="title function_">x00000006</span> <span class="params">(decimal:    <span class="number">6</span>)</span> --&gt; SEGMENTATION <span class="title function_">VIOLATION</span> <span class="params">(SEG0)</span></span><br><span class="line">  VA  7: 0<span class="title function_">x00000007</span> <span class="params">(decimal:    <span class="number">7</span>)</span> --&gt; SEGMENTATION <span class="title function_">VIOLATION</span> <span class="params">(SEG0)</span></span><br><span class="line">  VA  8: 0<span class="title function_">x00000008</span> <span class="params">(decimal:    <span class="number">8</span>)</span> --&gt; SEGMENTATION <span class="title function_">VIOLATION</span> <span class="params">(SEG1)</span></span><br><span class="line">  VA  9: 0<span class="title function_">x00000009</span> <span class="params">(decimal:    <span class="number">9</span>)</span> --&gt; SEGMENTATION <span class="title function_">VIOLATION</span> <span class="params">(SEG1)</span></span><br><span class="line">  VA 10: 0<span class="title function_">x0000000a</span> <span class="params">(decimal:   <span class="number">10</span>)</span> --&gt; SEGMENTATION <span class="title function_">VIOLATION</span> <span class="params">(SEG1)</span></span><br><span class="line">  VA 11: 0<span class="title function_">x0000000b</span> <span class="params">(decimal:   <span class="number">11</span>)</span> --&gt; SEGMENTATION <span class="title function_">VIOLATION</span> <span class="params">(SEG1)</span></span><br><span class="line">  VA 12: 0<span class="title function_">x0000000c</span> <span class="params">(decimal:   <span class="number">12</span>)</span> --&gt; SEGMENTATION <span class="title function_">VIOLATION</span> <span class="params">(SEG1)</span></span><br><span class="line">  VA 13: 0<span class="title function_">x0000000d</span> <span class="params">(decimal:   <span class="number">13</span>)</span> --&gt; SEGMENTATION <span class="title function_">VIOLATION</span> <span class="params">(SEG1)</span></span><br><span class="line">  VA 14: 0<span class="title function_">x0000000e</span> <span class="params">(decimal:   <span class="number">14</span>)</span> --&gt; VALID in SEG1: 0<span class="title function_">x0000000d</span> <span class="params">(decimal:   <span class="number">13</span>)</span></span><br><span class="line">  VA 15: 0<span class="title function_">x0000000f</span> <span class="params">(decimal:   <span class="number">15</span>)</span> --&gt; VALID in SEG1: 0<span class="title function_">x0000000e</span> <span class="params">(decimal:   <span class="number">14</span>)</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="第17章——空闲内存管理"><a href="#第17章——空闲内存管理" class="headerlink" title="第17章——空闲内存管理"></a>第17章——空闲内存管理</h2><h3 id="17-1"><a href="#17-1" class="headerlink" title="17.1"></a><strong>17.1</strong></h3><p><strong>首先运行flag -n 10 -H 0 -p BEST -s 0 来产生一些随机分配和释放。你能预测malloc()&#x2F;free()会返回什么吗？你可以在每次请求后猜测空闲列表的状态吗？随着时间的推移，你对空闲列表有什么发现？</strong></p>
+<p>1.ptr[0] &#x3D; Alloc(3) </p>
+<p>返回ptr[0]的起始地址空间1000</p>
+<p>空闲链表当前只有一块size&#x3D;97的空闲块</p>
+<p>2.free(ptr[0])</p>
+<p>返回0</p>
+<p>空闲链表当前有一块size&#x3D;3和size&#x3D;97的空闲块</p>
+<p>3.ptr[1] &#x3D; Alloc(5)</p>
+<p>返回ptr[1]的起始地址空间1003</p>
+<p>空闲链表当前有一块size&#x3D;3和size&#x3D;92的空闲块</p>
+<p>4.free(ptr[1]）</p>
+<p>返回0</p>
+<p>空闲链表当前有一块size&#x3D;3，一块size&#x3D;5和size&#x3D;92的空闲块</p>
+<p>5.ptr[2] &#x3D; Alloc(8)</p>
+<p>返回ptr[2]的起始地址空间1011</p>
+<p>空闲链表当前有三个空闲块，size1 &#x3D; 3，size2 &#x3D;5 ，size3 &#x3D; 84</p>
+<p>6.free(ptr[2]）</p>
+<p>返回0</p>
+<p>空闲链表当前有4个空闲块，size1 &#x3D; 3，size2 &#x3D;5 ，size3 &#x3D;8，size4 &#x3D; 84</p>
+<p>7.ptr[3] &#x3D; Alloc(8)</p>
+<p>返回ptr[3]的起始地址空间1016</p>
+<p>空闲链表当前有3个空闲块，size1 &#x3D; 3，size2 &#x3D;5 ，size4 &#x3D;84</p>
+<p>8.free(ptr[3]）</p>
+<p>返回0</p>
+<p>空闲链表当前有4个空闲块，size1 &#x3D; 3，size2 &#x3D;5 ，size3 &#x3D;8，size4 &#x3D; 84</p>
+<p>9.ptr[4] &#x3D; Alloc(2)</p>
+<p>返回1000</p>
+<p>空闲链表当前有4个空闲块，size1 &#x3D;1，size2 &#x3D;5 ，size3 &#x3D;8，size4 &#x3D; 84</p>
+<p>10.ptr[5] &#x3D; Alloc(7)</p>
+<p>返回1008</p>
+<p>空闲链表当前有4个空闲块，size1 &#x3D;1，size2 &#x3D;5 ，size3 &#x3D;1，size4 &#x3D; 84</p>
+<p>可以看出返回malloc和free，申请释放内存，空闲内存链表的空闲块增多，内存碎片在家</p>
+<p>运行<code>python2 malloc.py -n 10 -H 0 -p BEST -s 0 -c</code>，验证正确</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">$ python2 <span class="built_in">malloc</span>.py -n <span class="number">10</span> -H <span class="number">0</span> -p BEST -s <span class="number">0</span> -c</span><br><span class="line">seed <span class="number">0</span></span><br><span class="line">size <span class="number">100</span></span><br><span class="line">baseAddr <span class="number">1000</span></span><br><span class="line">headerSize <span class="number">0</span></span><br><span class="line">alignment <span class="number">-1</span></span><br><span class="line">policy BEST</span><br><span class="line">listOrder ADDRSORT</span><br><span class="line">coalesce False</span><br><span class="line">numOps <span class="number">10</span></span><br><span class="line">range <span class="number">10</span></span><br><span class="line">percentAlloc <span class="number">50</span></span><br><span class="line">allocList </span><br><span class="line">compute True</span><br><span class="line"></span><br><span class="line">ptr[<span class="number">0</span>] = Alloc(<span class="number">3</span>)  returned <span class="number">1000</span> (searched <span class="number">1</span> elements)</span><br><span class="line">Free List [ Size <span class="number">1</span> ]:  [ addr:<span class="number">1003</span> sz:<span class="number">97</span> ] </span><br><span class="line"></span><br><span class="line">Free(ptr[<span class="number">0</span>]) returned <span class="number">0</span></span><br><span class="line">Free List [ Size <span class="number">2</span> ]:  [ addr:<span class="number">1000</span> sz:<span class="number">3</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">97</span> ] </span><br><span class="line"></span><br><span class="line">ptr[<span class="number">1</span>] = Alloc(<span class="number">5</span>)  returned <span class="number">1003</span> (searched <span class="number">2</span> elements)</span><br><span class="line">Free List [ Size <span class="number">2</span> ]:  [ addr:<span class="number">1000</span> sz:<span class="number">3</span> ] [ addr:<span class="number">1008</span> sz:<span class="number">92</span> ] </span><br><span class="line"></span><br><span class="line">Free(ptr[<span class="number">1</span>]) returned <span class="number">0</span></span><br><span class="line">Free List [ Size <span class="number">3</span> ]:  [ addr:<span class="number">1000</span> sz:<span class="number">3</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">5</span> ] [ addr:<span class="number">1008</span> sz:<span class="number">92</span> ] </span><br><span class="line"></span><br><span class="line">ptr[<span class="number">2</span>] = Alloc(<span class="number">8</span>)  returned <span class="number">1008</span> (searched <span class="number">3</span> elements)</span><br><span class="line">Free List [ Size <span class="number">3</span> ]:  [ addr:<span class="number">1000</span> sz:<span class="number">3</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">5</span> ] [ addr:<span class="number">1016</span> sz:<span class="number">84</span> ] </span><br><span class="line"></span><br><span class="line">Free(ptr[<span class="number">2</span>]) returned <span class="number">0</span></span><br><span class="line">Free List [ Size <span class="number">4</span> ]:  [ addr:<span class="number">1000</span> sz:<span class="number">3</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">5</span> ] [ addr:<span class="number">1008</span> sz:<span class="number">8</span> ] [ addr:<span class="number">1016</span> sz:<span class="number">84</span> ] </span><br><span class="line"></span><br><span class="line">ptr[<span class="number">3</span>] = Alloc(<span class="number">8</span>)  returned <span class="number">1008</span> (searched <span class="number">4</span> elements)</span><br><span class="line">Free List [ Size <span class="number">3</span> ]:  [ addr:<span class="number">1000</span> sz:<span class="number">3</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">5</span> ] [ addr:<span class="number">1016</span> sz:<span class="number">84</span> ] </span><br><span class="line"></span><br><span class="line">Free(ptr[<span class="number">3</span>]) returned <span class="number">0</span></span><br><span class="line">Free List [ Size <span class="number">4</span> ]:  [ addr:<span class="number">1000</span> sz:<span class="number">3</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">5</span> ] [ addr:<span class="number">1008</span> sz:<span class="number">8</span> ] [ addr:<span class="number">1016</span> sz:<span class="number">84</span> ] </span><br><span class="line"></span><br><span class="line">ptr[<span class="number">4</span>] = Alloc(<span class="number">2</span>)  returned <span class="number">1000</span> (searched <span class="number">4</span> elements)</span><br><span class="line">Free List [ Size <span class="number">4</span> ]:  [ addr:<span class="number">1002</span> sz:<span class="number">1</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">5</span> ] [ addr:<span class="number">1008</span> sz:<span class="number">8</span> ] [ addr:<span class="number">1016</span> sz:<span class="number">84</span> ] </span><br><span class="line"></span><br><span class="line">ptr[<span class="number">5</span>] = Alloc(<span class="number">7</span>)  returned <span class="number">1008</span> (searched <span class="number">4</span> elements)</span><br><span class="line">Free List [ Size <span class="number">4</span> ]:  [ addr:<span class="number">1002</span> sz:<span class="number">1</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">5</span> ] [ addr:<span class="number">1015</span> sz:<span class="number">1</span> ] [ addr:<span class="number">1016</span> sz:<span class="number">84</span> ] </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="17-3"><a href="#17-3" class="headerlink" title="17.3"></a>17.3</h3><p><strong>如果使用首次匹配（-p FIRST）会如何？使用首次匹配时，什么变快了？</strong></p>
+<p>首次匹配（first fit）找到第一个足够大的块，将请求的空间返回给用户。，有速度优势。</p>
+<p>运行<code>python2 malloc.py -n 10 -H 0 -p FIRST -s 0 -c</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">python2 <span class="built_in">malloc</span>.py -n <span class="number">10</span> -H <span class="number">0</span> -p FIRST -s <span class="number">0</span> -c</span><br><span class="line">seed <span class="number">0</span></span><br><span class="line">size <span class="number">100</span></span><br><span class="line">baseAddr <span class="number">1000</span></span><br><span class="line">headerSize <span class="number">0</span></span><br><span class="line">alignment <span class="number">-1</span></span><br><span class="line">policy FIRST</span><br><span class="line">listOrder ADDRSORT</span><br><span class="line">coalesce False</span><br><span class="line">numOps <span class="number">10</span></span><br><span class="line">range <span class="number">10</span></span><br><span class="line">percentAlloc <span class="number">50</span></span><br><span class="line">allocList </span><br><span class="line">compute True</span><br><span class="line"></span><br><span class="line">ptr[<span class="number">0</span>] = Alloc(<span class="number">3</span>)  returned <span class="number">1000</span> (searched <span class="number">1</span> elements)</span><br><span class="line">Free List [ Size <span class="number">1</span> ]:  [ addr:<span class="number">1003</span> sz:<span class="number">97</span> ] </span><br><span class="line"></span><br><span class="line">Free(ptr[<span class="number">0</span>]) returned <span class="number">0</span></span><br><span class="line">Free List [ Size <span class="number">2</span> ]:  [ addr:<span class="number">1000</span> sz:<span class="number">3</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">97</span> ] </span><br><span class="line"></span><br><span class="line">ptr[<span class="number">1</span>] = Alloc(<span class="number">5</span>)  returned <span class="number">1003</span> (searched <span class="number">2</span> elements)</span><br><span class="line">Free List [ Size <span class="number">2</span> ]:  [ addr:<span class="number">1000</span> sz:<span class="number">3</span> ] [ addr:<span class="number">1008</span> sz:<span class="number">92</span> ] </span><br><span class="line"></span><br><span class="line">Free(ptr[<span class="number">1</span>]) returned <span class="number">0</span></span><br><span class="line">Free List [ Size <span class="number">3</span> ]:  [ addr:<span class="number">1000</span> sz:<span class="number">3</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">5</span> ] [ addr:<span class="number">1008</span> sz:<span class="number">92</span> ] </span><br><span class="line"></span><br><span class="line">ptr[<span class="number">2</span>] = Alloc(<span class="number">8</span>)  returned <span class="number">1008</span> (searched <span class="number">3</span> elements)</span><br><span class="line">Free List [ Size <span class="number">3</span> ]:  [ addr:<span class="number">1000</span> sz:<span class="number">3</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">5</span> ] [ addr:<span class="number">1016</span> sz:<span class="number">84</span> ] </span><br><span class="line"></span><br><span class="line">Free(ptr[<span class="number">2</span>]) returned <span class="number">0</span></span><br><span class="line">Free List [ Size <span class="number">4</span> ]:  [ addr:<span class="number">1000</span> sz:<span class="number">3</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">5</span> ] [ addr:<span class="number">1008</span> sz:<span class="number">8</span> ] [ addr:<span class="number">1016</span> sz:<span class="number">84</span> ] </span><br><span class="line"></span><br><span class="line">ptr[<span class="number">3</span>] = Alloc(<span class="number">8</span>)  returned <span class="number">1008</span> (searched <span class="number">3</span> elements)</span><br><span class="line">Free List [ Size <span class="number">3</span> ]:  [ addr:<span class="number">1000</span> sz:<span class="number">3</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">5</span> ] [ addr:<span class="number">1016</span> sz:<span class="number">84</span> ] </span><br><span class="line"></span><br><span class="line">Free(ptr[<span class="number">3</span>]) returned <span class="number">0</span></span><br><span class="line">Free List [ Size <span class="number">4</span> ]:  [ addr:<span class="number">1000</span> sz:<span class="number">3</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">5</span> ] [ addr:<span class="number">1008</span> sz:<span class="number">8</span> ] [ addr:<span class="number">1016</span> sz:<span class="number">84</span> ] </span><br><span class="line"></span><br><span class="line">ptr[<span class="number">4</span>] = Alloc(<span class="number">2</span>)  returned <span class="number">1000</span> (searched <span class="number">1</span> elements)</span><br><span class="line">Free List [ Size <span class="number">4</span> ]:  [ addr:<span class="number">1002</span> sz:<span class="number">1</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">5</span> ] [ addr:<span class="number">1008</span> sz:<span class="number">8</span> ] [ addr:<span class="number">1016</span> sz:<span class="number">84</span> ] </span><br><span class="line"></span><br><span class="line">ptr[<span class="number">5</span>] = Alloc(<span class="number">7</span>)  returned <span class="number">1008</span> (searched <span class="number">3</span> elements)</span><br><span class="line">Free List [ Size <span class="number">4</span> ]:  [ addr:<span class="number">1002</span> sz:<span class="number">1</span> ] [ addr:<span class="number">1003</span> sz:<span class="number">5</span> ] [ addr:<span class="number">1015</span> sz:<span class="number">1</span> ] [ addr:<span class="number">1016</span> sz:<span class="number">84</span> ] </span><br></pre></td></tr></table></figure>
+
+<h3 id="17-4"><a href="#17-4" class="headerlink" title="17.4"></a>17.4</h3><p><strong>对于上述问题，列表在保持有序时，可能会影响某些策略找到空闲位置所需的时间。使用不同的空闲列表排序（-l ADDRSORT，-l SIZESORT +，-l SIZESORT-）查看策略和列表排序如何相互影响。</strong></p>
+<p>对于这三种排序方式，bestfit策略的alloc运行速度都不会有变化。</p>
+<p>按照空闲块大小递减排序worstfit和firstfit的alloc运行速度会提升。</p>
+<p>三种排序方式在 free 时会变慢,因为插入空闲块时需要遍历空闲列表,来达成某种排序方式,</p>
+<p>默认按照地址排序</p>
+<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python2 malloc.py -n 10 -H 0 -p BEST -s 0 -l ADDRSORT</span><br></pre></td></tr></table></figure>
+
+<p>按照空闲块大小递增排序:</p>
+<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python2 malloc.py -n 10 -H 0 -p WORST -s 0 -l SIZESORT +</span><br></pre></td></tr></table></figure>
+
+<p>按照空闲块大小递减排序，该方式会让最差适应算法搜索更快</p>
+<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python2 malloc.py -n 10 -H 0 -p WORST -s 0 -l SIZESORT -</span><br></pre></td></tr></table></figure>
+
+<h2 id="第18章——分页"><a href="#第18章——分页" class="headerlink" title="第18章——分页"></a>第18章——分页</h2><h3 id="18-1"><a href="#18-1" class="headerlink" title="18.1"></a>18.1</h3><p><strong>在做地址转换之前，让我们用模拟器来研究线性页表在给定不同参数的情况下如何改变大小。在不同参数变化时，计算线性页表的大小。一些建议输入如下，通过使用-v 标志，你可以看到填充了多少个页表项。首先，要理解线性页表大小如何随着地址空间的增长而变化：</strong><br><strong><code>paging-linear-translate.py -P 1k -a 1m -p 512m -v -n 0</code></strong><br><strong><code>paging-linear-translate.py -P 1k -a 2m -p 512m -v -n 0</code></strong><br><strong><code>paging-linear-translate.py -P 1k -a 4m -p 512m -v -n 0</code></strong><br><strong>然后，理解线性页面大小如何随页大小的增长而变化：</strong><br><strong><code>paging-linear-translate.py -P 1k -a 1m -p 512m -v -n 0</code></strong><br><strong><code>paging-linear-translate.py -P 2k -a 1m -p 512m -v -n 0</code></strong><br><strong><code>paging-linear-translate.py -P 4k -a 1m -p 512m -v -n 0</code></strong><br><strong>在运行这些命令之前，请试着想想预期的趋势。页表大小如何随地址空间的增长而改变？随着页大小的增长呢？为什么一般来说，我们不应该使用很大的页呢？</strong></p>
+<p>Q1：页表大小如何随地址空间的增长而改变？随着页大小的增长呢？</p>
+<p>linear page table size&#x3D;addr size &#x2F;page size</p>
+<p>所有线性页面大小随地址空间增大而增大，随页面大小增大而减小。地址空间增长，页表大小也会增长；</p>
+<p>如，**<code>paging-linear-translate.py -P 1k -a 1m -p 512m -v -n 0</code>**，linear page table size&#x3D;1m&#x2F;1k&#x3D;1024</p>
+<p>Q2：为什么一般来说，我们不应该使用很大的页呢？</p>
+<p>过大的页会造成空间浪费</p>
+<h3 id="18-2"><a href="#18-2" class="headerlink" title="18.2"></a>18.2</h3><p><strong>现在让我们做一些地址转换。从一些小例子开始，使用-u 标志更改分配给地址空间</strong><br><strong>的页数。例如：</strong><br><strong><code>paging-linear-translate.py -P 1k -a 16k -p 32k -v -u 0</code></strong><br><strong><code>paging-linear-translate.py -P 1k -a 16k -p 32k -v -u 25</code></strong><br><strong><code>paging-linear-translate.py -P 1k -a 16k -p 32k -v -u 50</code></strong><br><strong><code>paging-linear-translate.py -P 1k -a 16k -p 32k -v -u 75</code></strong><br><strong><code>paging-linear-translate.py -P 1k -a 16k -p 32k -v -u 100</code></strong><br><strong>如果增加每个地址空间中的页的百分比，会发生什么？</strong></p>
+<p>依次运行以上案例，可以发现，页表中的有效页增多</p>
+<p><code>paging-linear-translate.py -P 1k -a 16k -p 32k -v -u 0</code>（0个有效页表项）<br><code>paging-linear-translate.py -P 1k -a 16k -p 32k -v -u 25</code>（5个有效页表项）<br><code>paging-linear-translate.py -P 1k -a 16k -p 32k -v -u 50</code>（8个有效页表项）<br><code>paging-linear-translate.py -P 1k -a 16k -p 32k -v -u 75</code>（15个有效页表项）<br><code>paging-linear-translate.py -P 1k -a 16k -p 32k -v -u 100</code>（15个有效页表项）</p>
+<h3 id="18-3"><a href="#18-3" class="headerlink" title="18.3"></a>18.3</h3><p><strong>现在让我们尝试一些不同的随机种子，以及一些不同的（有时相当疯狂的）地址空</strong><br><strong>间参数：</strong><br><strong>paging-linear-translate.py -P 8 -a 32 -p 1024 -v -s 1</strong><br><strong>paging-linear-translate.py -P 8k -a 32k -p 1m -v -s 2</strong><br><strong>paging-linear-translate.py -P 1m -a 256m -p 512m -v -s 3</strong><br><strong>哪些参数组合是不现实的？为什么？</strong></p>
+<p>第三个页太大，（页面默认大小为4KB）导致太多空间被浪费</p>
+<h2 id="第20章——分页：较小的表"><a href="#第20章——分页：较小的表" class="headerlink" title="第20章——分页：较小的表"></a>第20章——分页：较小的表</h2><h3 id="20-1"><a href="#20-1" class="headerlink" title="20.1"></a>20.1</h3><p><strong>对于线性页表，你需要一个寄存器来定位页表，假设硬件在TLB 未命中时进行查找。你需要多少个寄存器才能找到两级页表？三级页表呢？</strong></p>
+<p>不论是二级页表还是三级页表，都只需要一个寄存器就够</p>
+<h3 id="20-2"><a href="#20-2" class="headerlink" title="20.2"></a>20.2</h3><p><strong>使用模拟器对随机种子0、1 和2 执行翻译，并使用-c 标志检查你的答案。需要多少内存引用来执行每次查找？</strong></p>
+<p>分别执行命令行</p>
+<p><code>python2 paging-multilevel-translate.py -s 0</code></p>
+<p><code>python2 paging-multilevel-translate.py -s 1</code></p>
+<p><code>python2 paging-multilevel-translate.py -s 2</code></p>
+<p>从运行结果可以看出，每次都需要10次内存引用</p>
+<h3 id="20-3"><a href="#20-3" class="headerlink" title="20.3"></a>20.3</h3><p><strong>根据你对缓存内存的工作原理的理解，你认为对页表的内存引用如何在缓存中工作？它们是否会导致大量的缓存命中（并导致快速访问）或者很多未命中（并导致访问缓慢）？</strong></p>
+<p>经常访问和最近访问的数据一般会放在缓存中，所以会导致大量的缓存命中。当然这也去决定于缓存的替换算法和访问的行为模式，在一些情况下可能会导致极低的命中率。</p>
+<h2 id="第22章——超越物理内存：策略"><a href="#第22章——超越物理内存：策略" class="headerlink" title="第22章——超越物理内存：策略"></a>第22章——超越物理内存：策略</h2><h3 id="22-1"><a href="#22-1" class="headerlink" title="22.1"></a>22.1</h3><p><strong>使用以下参数生成随机地址：-s 0 -n 10，-s 1 -n 10 和-s 2 -n 10。将策略从FIFO 更改为LRU，并将其更改为OPT。计算所述地址追踪中的每个访问是否命中或未命中。</strong></p>
+<p><code>python2 paging-policy.py -s 0 -n 10</code></p>
+<p>一共10次访存，9次未命中，一次命中</p>
+<p>Access: 8  Miss  State of Memory:[8]<br>Access: 7  Miss  State of Memory:[8,7]<br>Access: 4  Miss  State of Memory:[8,7,4]<br>Access: 2  Miss  State of Memory:[7,4,2]<br>Access: 5  Miss  State of Memory:[4,2,5]<br>Access: 4  Hit   State of Memory:[4,2,5]<br>Access: 7  Miss  State of Memory:[2,5,7]<br>Access: 3  Miss  State of Memory:[5,7,3]<br>Access: 4  Miss  State of Memory:[7,3,4]<br>Access: 5  Miss  State of Memory:[3,4,5]</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Access: 8  MISS FirstIn -&gt;          [8] &lt;- Lastin  Replaced:- [Hits:0 Misses:1]</span><br><span class="line">Access: 7  MISS FirstIn -&gt;       [8, 7] &lt;- Lastin  Replaced:- [Hits:0 Misses:2]</span><br><span class="line">Access: 4  MISS FirstIn -&gt;    [8, 7, 4] &lt;- Lastin  Replaced:- [Hits:0 Misses:3]</span><br><span class="line">Access: 2  MISS FirstIn -&gt;    [7, 4, 2] &lt;- Lastin  Replaced:8 [Hits:0 Misses:4]</span><br><span class="line">Access: 5  MISS FirstIn -&gt;    [4, 2, 5] &lt;- Lastin  Replaced:7 [Hits:0 Misses:5]</span><br><span class="line">Access: 4  HIT  FirstIn -&gt;    [4, 2, 5] &lt;- Lastin  Replaced:- [Hits:1 Misses:5]</span><br><span class="line">Access: 7  MISS FirstIn -&gt;    [2, 5, 7] &lt;- Lastin  Replaced:4 [Hits:1 Misses:6]</span><br><span class="line">Access: 3  MISS FirstIn -&gt;    [5, 7, 3] &lt;- Lastin  Replaced:2 [Hits:1 Misses:7]</span><br><span class="line">Access: 4  MISS FirstIn -&gt;    [7, 3, 4] &lt;- Lastin  Replaced:5 [Hits:1 Misses:8]</span><br><span class="line">Access: 5  MISS FirstIn -&gt;    [3, 4, 5] &lt;- Lastin  Replaced:7 [Hits:1 Misses:9]</span><br><span class="line"></span><br><span class="line">FINALSTATS hits 1   misses 9   hitrate 10.00</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p> <code>python2 paging-policy.py -s 1 -n 10 -c</code></p>
+<p>8Miss，2Hit</p>
+<p>Access: 1  Miss  State of Memory:[1]<br>Access: 8  Miss  State of Memory:[1,8]<br>Access: 7  Miss  State of Memory:[1,8,7]<br>Access: 2  Miss  State of Memory:[8,7,2]<br>Access: 4  Miss  State of Memory:[7,2,4]<br>Access: 4  Hit   State of Memory:[7,2,4]<br>Access: 6  Miss  State of Memory:[2,4,6]<br>Access: 7  Miss  State of Memory:[4,6,7]<br>Access: 0  Miss  State of Memory:[6,7,0]<br>Access: 0  Hit   State of Memory:[6,7,0]</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">$ python2 paging-policy.py -s 1 -n 10 -c</span><br><span class="line">ARG addresses -1</span><br><span class="line">ARG addressfile </span><br><span class="line">ARG numaddrs 10</span><br><span class="line">ARG policy FIFO</span><br><span class="line">ARG clockbits 2</span><br><span class="line">ARG cachesize 3</span><br><span class="line">ARG maxpage 10</span><br><span class="line">ARG seed 1</span><br><span class="line">ARG notrace False</span><br><span class="line"></span><br><span class="line">Solving...</span><br><span class="line"></span><br><span class="line">Access: 1  MISS FirstIn -&gt;          [1] &lt;- Lastin  Replaced:- [Hits:0 Misses:1]</span><br><span class="line">Access: 8  MISS FirstIn -&gt;       [1, 8] &lt;- Lastin  Replaced:- [Hits:0 Misses:2]</span><br><span class="line">Access: 7  MISS FirstIn -&gt;    [1, 8, 7] &lt;- Lastin  Replaced:- [Hits:0 Misses:3]</span><br><span class="line">Access: 2  MISS FirstIn -&gt;    [8, 7, 2] &lt;- Lastin  Replaced:1 [Hits:0 Misses:4]</span><br><span class="line">Access: 4  MISS FirstIn -&gt;    [7, 2, 4] &lt;- Lastin  Replaced:8 [Hits:0 Misses:5]</span><br><span class="line">Access: 4  HIT  FirstIn -&gt;    [7, 2, 4] &lt;- Lastin  Replaced:- [Hits:1 Misses:5]</span><br><span class="line">Access: 6  MISS FirstIn -&gt;    [2, 4, 6] &lt;- Lastin  Replaced:7 [Hits:1 Misses:6]</span><br><span class="line">Access: 7  MISS FirstIn -&gt;    [4, 6, 7] &lt;- Lastin  Replaced:2 [Hits:1 Misses:7]</span><br><span class="line">Access: 0  MISS FirstIn -&gt;    [6, 7, 0] &lt;- Lastin  Replaced:4 [Hits:1 Misses:8]</span><br><span class="line">Access: 0  HIT  FirstIn -&gt;    [6, 7, 0] &lt;- Lastin  Replaced:- [Hits:2 Misses:8]</span><br><span class="line"></span><br><span class="line">FINALSTATS hits 2   misses 8   hitrate 20.00</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p> <code>python2 paging-policy.py -s 2 -n 10 -c</code></p>
+<p>6Miss，4Hit</p>
+<p>Access: 9  Miss  State of Memory:[9]<br>Access: 9  Hit   State of Memory:[9]<br>Access: 0  Miss  State of Memory:[9,0]<br>Access: 0  Hit   State of Memory:[9,0]<br>Access: 8  Miss  State of Memory:[9,0,8]<br>Access: 7  Miss  State of Memory:[0,8,7]<br>Access: 6  Miss  State of Memory:[8,7,6]<br>Access: 3  Miss  State of Memory:[7,6,3]<br>Access: 6  Hit   State of Memory:[7,6,3]<br>Access: 6  Hit   State of Memory:[7,6,3]</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">$ python2 paging-policy.py -s 2 -n 10 -c</span><br><span class="line">ARG addresses -1</span><br><span class="line">ARG addressfile </span><br><span class="line">ARG numaddrs 10</span><br><span class="line">ARG policy FIFO</span><br><span class="line">ARG clockbits 2</span><br><span class="line">ARG cachesize 3</span><br><span class="line">ARG maxpage 10</span><br><span class="line">ARG seed 2</span><br><span class="line">ARG notrace False</span><br><span class="line"></span><br><span class="line">Solving...</span><br><span class="line"></span><br><span class="line">Access: 9  MISS FirstIn -&gt;          [9] &lt;- Lastin  Replaced:- [Hits:0 Misses:1]</span><br><span class="line">Access: 9  HIT  FirstIn -&gt;          [9] &lt;- Lastin  Replaced:- [Hits:1 Misses:1]</span><br><span class="line">Access: 0  MISS FirstIn -&gt;       [9, 0] &lt;- Lastin  Replaced:- [Hits:1 Misses:2]</span><br><span class="line">Access: 0  HIT  FirstIn -&gt;       [9, 0] &lt;- Lastin  Replaced:- [Hits:2 Misses:2]</span><br><span class="line">Access: 8  MISS FirstIn -&gt;    [9, 0, 8] &lt;- Lastin  Replaced:- [Hits:2 Misses:3]</span><br><span class="line">Access: 7  MISS FirstIn -&gt;    [0, 8, 7] &lt;- Lastin  Replaced:9 [Hits:2 Misses:4]</span><br><span class="line">Access: 6  MISS FirstIn -&gt;    [8, 7, 6] &lt;- Lastin  Replaced:0 [Hits:2 Misses:5]</span><br><span class="line">Access: 3  MISS FirstIn -&gt;    [7, 6, 3] &lt;- Lastin  Replaced:8 [Hits:2 Misses:6]</span><br><span class="line">Access: 6  HIT  FirstIn -&gt;    [7, 6, 3] &lt;- Lastin  Replaced:- [Hits:3 Misses:6]</span><br><span class="line">Access: 6  HIT  FirstIn -&gt;    [7, 6, 3] &lt;- Lastin  Replaced:- [Hits:4 Misses:6]</span><br><span class="line"></span><br><span class="line">FINALSTATS hits 4   misses 6   hitrate 40.00</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="22-2"><a href="#22-2" class="headerlink" title="22.2"></a>22.2</h3><p><strong>对于大小为5 的高速缓存，为以下每个策略生成最差情况的地址引用序列：FIFO、LRU 和MRU（最差情况下的引用序列导致尽可能多的未命中）。对于最差情况下的引用序列，需要的缓存增大多少，才能大幅提高性能，并接近OPT？</strong></p>
+<p>FIFO:</p>
+<pre>
+python2 paging-policy.py -a 1,2,3,4,5,6,7,8 -C 5
+</pre>
+
+<p>LRU:</p>
+<pre>
+python2 paging-policy.py -a 1,2,3,4,5,6,7,8 -C 5 -p LRU
+</pre>
+
+<p>MRU:</p>
+<pre>
+python2 paging-policy.py -a 1,2,3,4,5,6,7,8 -C 5 -p MRU
+</pre>
+
+<p>最差情况需要缓存增大到与页号相同</p>
+<h3 id="22-3"><a href="#22-3" class="headerlink" title="22.3"></a>22.3</h3><p><strong>生成一个随机追踪序列（使用Python 或Perl）。你预计不同的策略在这样的追踪序列上的表现如何？</strong></p>
+<p>该序列在OPT策略中表现一般，在其他策略的表现都相当糟糕</p>
+<pre>
+❯ python2 paging-policy.py -s 0 -n 10 -c -p FIFO
+FINALSTATS hits 1   misses 9   hitrate 10.00
+</pre>
+
+<pre>
+❯ python2 paging-policy.py -s 0 -n 10 -c -p LRU
+FINALSTATS hits 2   misses 8   hitrate 20.00
+</pre>
+
+<pre>
+❯ python2 paging-policy.py -s 0 -n 10 -c -p OPT
+FINALSTATS hits 4   misses 6   hitrate 40.00
+</pre>
+
+<pre>
+❯ python2 paging-policy.py -s 0 -n 10 -c -p UNOPT
+FINALSTATS hits 0   misses 10   hitrate 0.00
+</pre>
+
+<pre>
+❯ python2 paging-policy.py -s 0 -n 10 -c -p RAND
+FINALSTATS hits 0   misses 10   hitrate 0.00
+</pre>
+
+<pre>
+❯ python2 paging-policy.py -s 0 -n 10 -c -p CLOCK
+FINALSTATS hits 1   misses 9   hitrate 10.00
+</pre>
+
+<h3 id="22-4"><a href="#22-4" class="headerlink" title="22.4"></a>22.4</h3><p><strong>现在生成一些局部性追踪序列。如何能够产生这样的追踪序列？LRU 表现如何？RAND比LRU 好多少？CLOCK 表现如何？CLOCK 使用不同数量的时钟位，表现如何？</strong></p>
+<p>可以使用tool.py生成具有空间和时间局部性序列</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#tool.py</span></span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line">numAddr = <span class="number">10</span></span><br><span class="line"><span class="comment"># 空间局部性</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_spatial_locality_trace</span>():</span><br><span class="line">    trace = [random.randint(<span class="number">0</span>, numAddr)]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">8</span>):</span><br><span class="line">        l = trace[-<span class="number">1</span>]</span><br><span class="line">        rand = [l, (l + <span class="number">1</span>) % numAddr, (l - <span class="number">1</span>) % numAddr, random.randint(<span class="number">0</span>, numAddr)]</span><br><span class="line">        trace.append(random.choice(rand))</span><br><span class="line">    <span class="comment"># 问题给的paging-policy.py -a参数里, 逗号后不能空格,因此拼接再打印</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;,&#x27;</span>.join([<span class="built_in">str</span>(i) <span class="keyword">for</span> i <span class="keyword">in</span> trace]))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 时间局部性</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_temporal_locality_trace</span>():</span><br><span class="line">    trace = [random.randint(<span class="number">0</span>, numAddr)]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">8</span>):</span><br><span class="line">        rand = [random.randint(<span class="number">0</span>, numAddr), random.choice(trace)]</span><br><span class="line">        trace.append(random.choice(rand))</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;,&#x27;</span>.join([<span class="built_in">str</span>(i) <span class="keyword">for</span> i <span class="keyword">in</span> trace]))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="built_in">len</span>(sys.argv) != <span class="number">1</span>:</span><br><span class="line">    <span class="keyword">if</span> sys.argv[<span class="number">1</span>] == <span class="string">&#x27;-t&#x27;</span>:</span><br><span class="line">        generate_temporal_locality_trace()</span><br><span class="line">    <span class="keyword">elif</span> sys.argv[<span class="number">1</span>] == <span class="string">&#x27;-s&#x27;</span>:</span><br><span class="line">        generate_spatial_locality_trace()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>tool.py 用法</p>
+<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python3 tool.py -s#产生具有空间局部性序列</span><br><span class="line">python3 tool.py -t#产生具有时间局部性序列</span><br></pre></td></tr></table></figure>
+
+<p>运行以下命令行，比较各个策略的表现</p>
+<p>可以看到LRU在具有空间局部性序列的内存访问中表现更好。时间局部性序列的命中率在44%左右</p>
+<p>Rand策略在时间局部性的策略上优于LRU策略，高了11%的命中率，然而在空间局部性序列中表现不如LRU</p>
+<p>CLOCK bit为2时表现差于LRU，提高bit时出现好于LRU的情况，且在一定数值内（5左右）bit越高表现越好。</p>
+<figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">python2 paging-policy.py -p LRU -c -a  $(python3 tool.py -t)</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;FINALSTATS hits 4   misses 5   hitrate 44.44</span></span><br><span class="line"></span><br><span class="line">python2 paging-policy.py -p LRU -c -a  $(python3 tool.py -s)</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;FINALSTATS hits 6   misses 3   hitrate 66.67</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">python2 paging-policy.py -p RAND -c -a  $(python3 tool.py -t)</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;FINALSTATS hits 5   misses 4   hitrate 55.56</span></span><br><span class="line"></span><br><span class="line">python2 paging-policy.py -p RAND -c -a  $(python3 tool.py -s)</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;FINALSTATS hits 3   misses 6   hitrate 33.33</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">python2 paging-policy.py -p CLOCK -c -a  $(python3 tool.py -t)</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;FINALSTATS hits 1   misses 8   hitrate 11.11</span></span><br><span class="line"></span><br><span class="line">python2 paging-policy.py -p CLOCK -c -a  $(python3 tool.py -s)</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;FINALSTATS hits 1   misses 8   hitrate 11.11</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/04/22/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/operating-sysytem/" rel="tag">operating sysytem</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/05/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%AC4%E6%AC%A1%E4%BD%9C%E4%B8%9A/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            3.operating-systems-three-easy-pieces answers
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/04/20/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%AC2%E6%AC%A1%E4%BD%9C%E4%B8%9A/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">1.operating-systems-three-easy-pieces answers</div>
+      </a>
+    
+  </nav>
+
+  
+   
+    
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2019-2022
+        <i class="ri-heart-fill heart_icon"></i> nnilk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>Visitors:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>Views:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="nnilk&#39;s blog"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>

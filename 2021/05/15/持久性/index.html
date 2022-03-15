@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta name="description" content="Welcome to nnilk&#39;s daily learning blog" />
+      
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>并发性 |  nnilk&#39;s blog</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/images/logo3.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-持久性"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  并发性
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/05/15/%E6%8C%81%E4%B9%85%E6%80%A7/" class="article-date">
+  <time datetime="2021-05-14T16:00:00.000Z" itemprop="datePublished">2021-05-15</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/The-Operating-System-Notes/">The-Operating-System-Notes</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">11.2k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">39 min</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="持久性"><a href="#持久性" class="headerlink" title="持久性"></a>持久性</h1><h2 id="第-36-章-I-x2F-O-设备"><a href="#第-36-章-I-x2F-O-设备" class="headerlink" title="第 36 章 I&#x2F;O 设备"></a>第 36 章 I&#x2F;O 设备</h2><h3 id="系统架构"><a href="#系统架构" class="headerlink" title="系统架构"></a>系统架构</h3><p>先看一个典型系统的架构：</p>
+<p><img src="https://s2.loli.net/2022/01/04/6VZGklTiugHsnxY.png" alt="image-20220104191656489"></p>
+<p>CPU 通过内存总线连接到系统内存，图像或者其它高性能 I&#x2F;O 设备通过常规的 I&#x2F;O 总线连接到系统，外围总线(SCSI,SATA,USB)将最慢的设备连接到系统中</p>
+<p>采用这样的布局，是因为越短的总线越快，因此高性能的内存总线没有足够的空间连接太多设备，且高性能总线的造价很高，所以采用这种分层的布局，让要求高性能的设备(显卡)离 CPU 更近一点，低性能的设备离 CPU 远一点，将磁盘和其它低速设备连接到外围总线的好处有很多，如你可以在外围总线上连接大量的设备</p>
+<h3 id="标准设备"><a href="#标准设备" class="headerlink" title="标准设备"></a>标准设备</h3><p>这是一个标准设备，通过它可以理解设备交互的机制，这个标准设备包含两部分重要组件</p>
+<p><strong>硬件接口</strong>：同软件一样，硬件也需要一些接口，让系统来控制它的操作，所有的设备都有自己的特定接口以及特有的交互协议</p>
+<p><strong>内部结构</strong>：包含设备功能的实现，一些非常简单的设备通常用一个或几个芯片来实现它们的功能，更复杂的设备会包含简单的 CPU，一些通用内存，设备相关的特定芯片，来完成它们的工作，如现代 RAID 控制器通常包含上千行固件(硬件中的软件)<br><img src="https://s2.loli.net/2022/01/04/Rs5MnIegQawJZuK.png" alt="image-20220104191807544"></p>
+<h3 id="标准协议"><a href="#标准协议" class="headerlink" title="标准协议"></a>标准协议</h3><p>在标准设备的示意图中，设备接口包含了 3 个寄存器，一个状态寄存器(用于读取并查看当前设备的状态)，一个命令寄存器(用于通知设备执行某项任务)，一个数据寄存器(将数据传给设备或者从设备接收数据)，通过读写标准设备的这些寄存器，操作系统就可以控制该设备的行为</p>
+<p>一个简单的交互协议：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//轮询设备当前状态</span><br><span class="line">while(STATUS == BUSY) &#123;</span><br><span class="line">	;</span><br><span class="line">&#125;</span><br><span class="line">//向数据寄存器和命令寄存器写入数据</span><br><span class="line">Write data to DATA register</span><br><span class="line">Write Command to COMMAND register</span><br><span class="line">//轮询设备是否成功执行命令</span><br><span class="line">while(STATUS == BUSY) &#123;</span><br><span class="line">	;</span><br></pre></td></tr></table></figure>
+
+<p>这个简单的标准协议包含 4 步：<br>1，操作系统反复读取状态寄存器，等待设备进入可以直接接收命令的就绪状态，称为轮询设备<br>2，操作系统下发数据到数据寄存器<br>3，操作系统将命令写入命令寄存器，这时设备就知道数据已经准备好了，它开始执行命令<br>4，操作系统不断轮询设备，等待并判断设备是否完成了命令(可能得到一个代表执行成功或失败的数据)</p>
+<p>这个协议简单且有效，但难免有些低效和不方便，第一个问题就是轮询比较低效，在等待设备执行完成命令时浪费了大量 CPU 时间，如果此时操作系统切换到下一个就绪进程，就可以大大提高 CPU 的利用率</p>
+<h3 id="用中断减少-CPU-开销"><a href="#用中断减少-CPU-开销" class="headerlink" title="用中断减少 CPU 开销"></a>用中断减少 CPU 开销</h3><p>利用中断可以减少 CPU 的开销，在上述的标准协议中，有了中断，CPU 可以不用通过轮询设备来判断设备是否成功执行命令，而是向设备发出一个请求，然后让当前发起 I&#x2F;O 的进程睡眠，切换执行其它进程，当设备执行完命令后，会抛出一个硬件中断，引发 CPU 跳转执行系统预先定义好的中断服务例程或中断处理程序，它会唤醒先前发起 I&#x2F;O 的进程继续执行</p>
+<p>因此中断允许计算与 I&#x2F;O 重叠，这是提高 CPU 利用率的关键</p>
+<p>但是使用中断也<strong>并非是最佳</strong>方案，考虑下面两个场景：<br>1，如果有一个非常高性能的设备，它处理请求很快，通常在 CPU 第一次轮询就能返回结果，如果此时使用中断，反而会让系统变慢，使用中断切换到其它进程，处理中断再切换回来带来了进程切换的开销，如果设备很快，那么最好的方法反而是轮询，如果设备较慢，那么采用允许发生重叠的中断更好，如果设备速度时慢时快，那么可以采用<strong>混合策略，先轮询一小段时间，设备还没有完成命令时，再使用中断</strong><br>2，在网络中，网络端收到大量数据包，如果每个包引发一次中断，那么可能导致操作系统不断处理中断而无法处理用户的请求，<strong>这种情况下，采用轮询可以更好控制系统的行为，让服务器先处理一些请求，再轮询网卡是否有数据包到达</strong></p>
+<p>对于中断的处理也可以优化，通过合并，设备在抛出中断前先等待一小段时间，在此期间其它请求可能也会完成，就可以将多个中断合并成一次中断抛出，从而降低处理中断的代价</p>
+<h3 id="利用-DMA-进行更高效的数据传送"><a href="#利用-DMA-进行更高效的数据传送" class="headerlink" title="利用 DMA 进行更高效的数据传送"></a>利用 DMA 进行更高效的数据传送</h3><p>DMA 引擎是操作系统中的一个特殊设备，它可以协调完成内存和设备间的数据传递，不需要 CPU 介入</p>
+<p>DMA 的工作过程：为了将数据传送给设备，操作系统通过编程告诉 DMA 引擎需要的数据所在内存的位置，要拷贝的大小以及要拷贝到哪个设备，之后操作系统就可以处理其他请求了，当 DMA 的任务完成后，DMA 控制器会抛出一个中断告诉操作系统自己已经完成了数据传输</p>
+<p>数据的拷贝都是由 DMA 完成的，因此 CPU 在此时是空闲的，所以操作系统可以让它做一些其它事情，如调度其它进程法</p>
+<h3 id="设备交互方法"><a href="#设备交互方法" class="headerlink" title="设备交互方法"></a>设备交互方法</h3><p><strong>使用明确的 I&#x2F;O 指令</strong>：这些 I&#x2F;O 指令规定了操作系统将数据发送到特定设备寄存器的方法，从而允许构造上文提到的协议</p>
+<p>如在 x86 上，in 和 out 指令都可以用来与设备进行交互，当需要发送数据给设备时，调用 in 指令指定一个存入数据的特定寄存器和一个代表设备的特定端口，执行这个指令就可以实现期望的行为</p>
+<p>这些指令通常是特权指令，操作系统是唯一可以直接与设备交互的实体，不允许其它的程序直接读写磁盘，控制外设，这样会变得一团糟</p>
+<p><strong>内存映射 I&#x2F;O</strong>：通过这种方式，硬件将设备寄存器作为内存地址提供，当需要访问设备寄存器时，操作系统装载(读取)或者存入(写入)到该内存地址，然后硬件会将装载&#x2F;存入转移到设备上，而不是物理内存</p>
+<p>这两种方式没有一种具有极大的优势，内存映射 I&#x2F;O 的好处是不需要引入新指令来实现设备交互，但两种方法都在使用</p>
+<h3 id="入操作系统：设备驱动程序"><a href="#入操作系统：设备驱动程序" class="headerlink" title="入操作系统：设备驱动程序"></a>入操作系统：设备驱动程序</h3><p>我们希望操作系统尽可能地通用，例如文件系统，我们希望开发一个文件系统可以工作在 SCSI 硬盘，IDE 硬盘，USB 设备等设备之上，并且希望这个文件系统不那么清楚对这些不同设备发出读写地全部细节</p>
+<p>这个问题可以通过抽象来解决，在最底层，操作系统的一部分软件清楚地知道设备如何工作，将这部分软件称为<strong>设备驱动程序</strong>，所有设备交互的细节都封装在其中</p>
+<p>Linux 的文件系统栈：<br>文件系统完全不清楚它使用的是什么类型的磁盘，它只需要简单地向通用块设备层发送读写请求即可，设备层将这些请求交给设备驱动，然后设备驱动来完成真正的底层操作</p>
+<p>这种封装也有不足的地方<br>1、如果一个设备可以提供很多特殊的功能，但因为兼容了大多数操作系统，它不得不提供一个通用的接口，<strong>这样就使得自身的特殊功能无处使用</strong></p>
+<p>2、因为所有需要插入系统的设备都需要安装对应的驱动程序，所以久而久之，<strong>驱动程序在内核代码中占的比重越来越大</strong>，Linux 内核中 70%都是各种驱动程序，因为驱动程序的开发者不是专业的内核开发人员，所以他们更容易写出缺陷，因此他们是<strong>内核崩溃的主要贡献者</strong></p>
+<h3 id="简单的-IDE-磁盘驱动程序"><a href="#简单的-IDE-磁盘驱动程序" class="headerlink" title="简单的 IDE 磁盘驱动程序"></a>简单的 IDE 磁盘驱动程序</h3><p>看一个真实的设备-IDE 磁盘驱动程序，IDE 磁盘暴露给操作系统的接口比较简单，包含 4 种类型的寄存器，即控制，命令块，状态，错误，在 x86 上，利用 I&#x2F;O 指令 in 和 out 向特定的 I&#x2F;O 地址读取或写入时，可以访问这些寄存器</p>
+<p>下面是与设备交互的简单协议，假设它已经初始化了：<br>1，<strong>等待驱动就绪</strong>，读取状态寄存器，直到驱动 READY 而非忙碌<br>2，<strong>向命令寄存器写入参数</strong>，写入扇区数，待访问扇区对应的逻辑块地址，并将驱动编号写入命令寄存器<br>3，<strong>开启 I&#x2F;O</strong>，发送读写命令到命令寄存器<br>4，<strong>数据传送</strong>(针对写请求)，等待驱动状态为 READY<br>5，<strong>中断处理</strong>，完成后触发中断，恢复进程<br>6，<strong>错误处理</strong>，每次操作后读取状态寄存器，如果 ERROR 被置位，就可以读取错误寄存器获取详细信息</p>
+<p>IDE 读写主要通过 4 个函数实现：<br>1，ide_rw()，它会将一个请求加入队列，调用它的进程睡眠<br>2，ide_wait_ready()，确保驱动处于就绪状态<br>3，ide_start_request()，将请求发送到磁盘，进行 in&#x2F;out 指令<br>4，ide intr()，完成后，发生中断，唤醒发起 I&#x2F;O 的进程</p>
+<h2 id="第-37-章磁盘驱动器"><a href="#第-37-章磁盘驱动器" class="headerlink" title="第 37 章磁盘驱动器"></a>第 37 章磁盘驱动器</h2><p>磁盘驱动器（Hard Disk Driver）又称“磁盘机”，是以磁盘作为记录信息媒体的存储装置。它既是输入设备，又是输出设备</p>
+<h3 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h3><p>现代磁盘驱动器的接口都很简单，磁盘驱动器由大量扇区(512 字节)组成，每个扇区都可以读取或写入，在具有 n 个扇区的磁盘上，扇区从 0 到 n-1 编号，因此可以将磁盘视为一组扇区，从 0 到 n-1 是驱动器的地址空间</p>
+<p>通常可以假设访问驱动器地址空间内两个彼此靠近的块比访问两个相隔很远的块更快，也可以假设访问连续块，是最快的访问模式，并且通常比任何随机的访问模式快得多</p>
+<h3 id="基本几何形状"><a href="#基本几何形状" class="headerlink" title="基本几何形状"></a>基本几何形状</h3><p><img src="https://s2.loli.net/2022/01/04/Giyt2adqlFPVsO7.png" alt="image-20220104192611954"></p>
+<h3 id="简单的磁盘驱动器"><a href="#简单的磁盘驱动器" class="headerlink" title="简单的磁盘驱动器"></a>简单的磁盘驱动器</h3><p>现在假设有一个单一磁道的简单磁盘：</p>
+<p>该磁道只有 12 个扇区，每个扇区大小为 512 字节，用 0-11 表示这些扇区，这里的单个盘片围绕主轴旋转，电机连接到主轴，为了能读取或写入这些扇区，因此需要一个连接到磁盘臂上的磁头，磁盘表面逆时针旋转</p>
+<p><img src="https://s2.loli.net/2022/01/04/mgs2NWxERiGqZY9.png" alt="image-20220104192735115"></p>
+<p>(<strong>1) 单磁道延迟：旋转延迟</strong></p>
+<p>现在加入收到了读取块 0 的请求，磁盘必须等待期望的扇区旋转到磁头下，这种等待在现代驱动器中经常发生，并且是 I&#x2F;O 服务时间的重要组成部分，它有一个特殊的名称：旋转延迟</p>
+<p><strong>(2) 多磁道：寻道时间</strong></p>
+<p><img src="https://s2.loli.net/2022/01/04/8MkQ3C2UDJoEwIn.png" alt="image-20220104192913854">单磁道是不现实的，现代磁盘有数以百万计的磁道，来看一个具有 3 条磁道的盘片表面：</p>
+<p>现在追踪请求发生在远处扇区的情况，例如读取扇区 11，此时磁头处于扇区 30，在最内层的磁道，为了服务这个请求，驱动器首先将磁盘臂移动到正确的磁道，通过寻道过程，磁头被定位到了正确的磁道，接下来等待块 11 旋转经过磁头，当扇区 11 经过磁头时，I&#x2F;O 的最后阶段将发生，称为传输，数据从表面读取或写入表面</p>
+<p>完整的 I&#x2F;O 时间轨迹：寻道-&gt;等待转动延迟-&gt;传输</p>
+<p><strong>(3) 一些其它细节</strong><br>1，外圈磁道通常比内圈磁道具有更多扇区，这是几何结构的结果，外圈磁道的空间更大<br>2，任何现代磁盘驱动器都有一个重要组成部分，即它的缓存，该缓存只是很少的内存，驱动器可以用这些内存来保存磁盘读取或写入磁盘的数据，</p>
+<h3 id="I-x2F-O-时间"><a href="#I-x2F-O-时间" class="headerlink" title="I&#x2F;O 时间"></a>I&#x2F;O 时间</h3><p>寻道：磁头从开始移动到数据所在<strong>磁道</strong>所需要的时间。寻道时间越短，I&#x2F;O 操作越快，</p>
+<p>旋转延迟：盘片旋转将请求数据所在 扇区 移至读写 磁头 下方所需要的时间</p>
+<p>数据传输时间：完成传输所请求的数据所需要的时间。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">I/O时间T</span><br><span class="line">T = T寻道 + T旋转 + T传输</span><br><span class="line"></span><br><span class="line">I/O速率R</span><br><span class="line">R = 传输大小 / T</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>假设有两个工作负载，一个称为随机工作负载，它向磁盘上的随机位置发出小的读取请求，随机工作负载在许多重要的程序中很常见，包括数据库，第二种称为顺序工作负载，只是从磁盘连续读取大量的扇区，不会跳过，顺序访问也很常见</p>
+<p>现在对希捷的一个高性能磁盘和一个大容量磁盘来估计这两个工作负载：</p>
+<p>1，随机工作负载：<br>假设容量为 4kb，在 Cheetah 上</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">T寻道 = 4ms //采用数据中的平均寻道时间</span><br><span class="line">T旋转 = 2ms	//PRM=15000，则每次旋转需要4ms，半圈平均为2ms</span><br><span class="line">T传输 = 30μs //传输大小除以最大传输速率</span><br><span class="line">Cheetah的T = T寻道 + T旋转 + T传输 = 6ms</span><br><span class="line">Cheetah的R = 4kb / T = 0.66MB/s</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>在 Barracuda 上</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Barracuda的T = T寻道 + T旋转 + T传输 = 13.2ms</span><br><span class="line">Barracuda的R = 4kb / T = 0.31MB/s</span><br></pre></td></tr></table></figure>
+
+<p>顺序工作负载：<br>假设容量为 100MB，在 Cheetah 上</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Cheetah的T = T寻道 + T旋转 + T传输 = 800ms</span><br><span class="line">Cheetah的R = 100MB / T = 125MB/s</span><br></pre></td></tr></table></figure>
+
+<p>在 Barracuda 上</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Barracuda的T = T寻道 + T旋转 + T传输 = 950ms</span><br><span class="line">Barracuda的R = 100MB / T = 105MB/s</span><br></pre></td></tr></table></figure>
+
+<p>随机和顺序工作负载之间的驱动性能很大，对于 Cheetah 来说几乎是 200 倍左右，对于对于 Barracuda 来说差不多是 300 倍</p>
+<h3 id="磁盘调度"><a href="#磁盘调度" class="headerlink" title="磁盘调度"></a>磁盘调度</h3><p>由于 I&#x2F;O 的高成本，操作系统决定发送给 I 磁盘的 I&#x2F;O 顺序方面发挥作用，即给定一组 I&#x2F;O 请求，磁盘调度程序检查请求并决定下一个要调度的请求</p>
+<p>与任务调度不同，每个任务的长度通常是不知道的，对于磁盘调度，可以很好的检测每个任务 I&#x2F;O 请求的时间，通过估计请求的查找和可能的旋转延迟，磁盘调度程序可以知道每个请求会花费多长时间，因此将优先服务花费时间少的请求，因此磁盘调度程序对于一组 I&#x2F;O 请求将尝试遵循 SJF(最短任务优先)原则</p>
+<p><strong>SSTF：最短寻道时间优先</strong><br>一种早期的调度方法被称为 SSTF shortest seek time first，即最短寻道时间优先，SSTF 按磁道对 I&#x2F;O 请求队列排序，选择在最近磁道上的请求先完成</p>
+<p>假设磁头在处于 30 扇区，现在的请求有 21 和 2，根据 SSTF，那么就会率先完成对 21 的请求，待扇区 21 的读写完成后，再处理对扇区 2 的请求</p>
+<p>但是 SSTF 也存在一些缺陷：<br>1，操作系统并不知道驱动器的几何结构，在操作系统眼里整个驱动器只是一系列的块，采用 SSTF 并不能满足现代驱动器<br>2，饥饿，如果采用了 SSTF，现在对邻近磁道上的块一直有请求，那么距离远的块的请求，就无法得到服务</p>
+<p><strong>SCAN：跨越磁道顺序</strong><br>为了解决饥饿，有一种算法称为 SCAN，简单地以跨越磁道顺序来服务磁盘请求，将一次跨越磁盘称为扫一遍，如果请求的块所属的磁道在这次扫一遍中已经服务过了那么它就不会立刻处理，而是排队等待下次扫一遍</p>
+<p>SCAN 虽然能避免饥饿，但并没有严格遵循 SJF 原则，它忽视了旋转</p>
+<p><strong>SPTF：最短定位时间优先</strong><br>SPTF shortest positioning time first，即最短定位时间优先，现代驱动器中，寻道和旋转大致相当，使用 SPTF 能提高性能</p>
+<h2 id="第-38-章——-廉价冗余磁盘阵列-RAID"><a href="#第-38-章——-廉价冗余磁盘阵列-RAID" class="headerlink" title="第 38 章—— 廉价冗余磁盘阵列 RAID"></a>第 38 章—— 廉价冗余磁盘阵列 RAID</h2><p>廉价冗余磁盘阵列(RAID)，这种技术使用多个磁盘一起构建更快，更大，更可靠的磁盘系统</p>
+<p>RAID 有许多好处，一个好处就是<strong>性能</strong>，并行使用多个磁盘可以大大加快 I&#x2F;O 时间，另一个好处是<strong>容量</strong>，大型数据集需要大型磁盘，最后 RAID 可以提高<strong>可靠性</strong>，通过冗余，RAID 允许损失一个磁盘并继续工作</p>
+<h3 id="接口和-RAID-内部"><a href="#接口和-RAID-内部" class="headerlink" title="接口和 RAID 内部"></a>接口和 RAID 内部</h3><p>RAID 看起来是一个快速的，可靠的，很大的磁盘。<strong>它将自己展现为线性的块数组，每个块都可以通过文件系统读取或写入</strong></p>
+<p><strong>当文件系统向 RAID 发出逻辑 I&#x2F;O 请求时，RAID 内部必须计算要访问的磁盘以完成请求，然后发出一个或多个物理 I&#x2F;O 来执行此操作</strong></p>
+<h3 id="RAID-的简单评估标准"><a href="#RAID-的简单评估标准" class="headerlink" title="RAID 的简单评估标准"></a>RAID 的简单评估标准</h3><p>容量，性能，可靠性</p>
+<h3 id="RAID-0-级：条带化"><a href="#RAID-0-级：条带化" class="headerlink" title="RAID 0 级：条带化"></a>RAID 0 级：条带化</h3><p>第一个 RAID 级别实际上不是 RAID 级别，因为没有<strong>冗余</strong>，但是 RAID 0 级拥有高性能和大容量，所以值得了解</p>
+<p><strong>RAID 0 级的原理</strong></p>
+<p>以轮转的方式将磁盘阵列的块分布在磁盘上，这种方法的目的是在对数组的连续块进行请求时，从阵列中获取最大的并行性(如在一个大的顺序读取中)，将同一行中的块称为条带，因此块 0，1，2，3 在相同的条带中</p>
+<p>上述的示例中，假设同一行条带的每个磁盘只有一个块(4KB)，但是这不是必要的，也可以增大块的大小：</p>
+<p><img src="https://s2.loli.net/2022/01/04/P4qUnMiv3ZmDHfh.png" alt="image-20220104194624669"></p>
+<p>大块大小不同的结果<br><strong>一方面，大块大小主要影响阵列的性能</strong>，如大小较小的大块意为着许多文件将跨多个磁盘进行条带化，从而增加了对单个文件的读取和写入的并行性，但是跨多个磁盘访问块的定位时间会增加</p>
+<p><strong>另一方面，较大的大块大小减少了这种文件内的并行性</strong>，因此依靠多个并发请求来实现高吞吐量，但是较大的大块减少了定位时间</p>
+<p>因此确定“最佳”大块大小是很难做到的，因为需要大量关于提供给磁盘系统的工作负载的知识<br><strong>RAID 0 级的评估</strong></p>
+<p>从容量的角度来看，RAID 0 级是顶级的，给定 N 个磁盘，就有 N 个磁盘的可用空间.</p>
+<p>从可靠性的角度来看，条带化最糟糕的是：任何磁盘故障都会导致数据丢失。</p>
+<p>最后，其性能非常好，通常并行使用所有磁盘来为用户 I&#x2F;O 请求提供服务</p>
+<h3 id="RAID-1-级：镜像"><a href="#RAID-1-级：镜像" class="headerlink" title="RAID 1 级：镜像"></a>RAID 1 级：镜像</h3><p>即<strong>镜像</strong>，对于镜像系统，只需要<strong>生成系统中每个块的多个副本，每个副本放在一个单独的磁盘上，通过这样做，可以容许磁盘故障</strong></p>
+<p><strong>RAID 1 级的原理</strong></p>
+<p>从镜像阵列读取块时，RAID 有一个选择，它可以读取任一副本，如对 RAID 发出逻辑块 5 的读取，则可以自由地从磁盘 2 或磁盘 3 读取它，但是在<strong>写入块时，RAID 必须更新两个副本的数据，以保证可靠性，这种写入可以并行执行</strong></p>
+<p><img src="https://s2.loli.net/2022/01/04/7aGN2yKT6znlgbX.png" alt="image-20220104195048374"></p>
+<p><strong>RAID 1 级的评估</strong></p>
+<p>从容量角度看，RAID 1 级价格昂贵，在镜像级别等于 2 的情况下，只能获得峰值有用容量的一半，因此对于 N 个磁盘，镜像的有用容量为 N&#x2F;2。</p>
+<p>从可靠性的角度看，RAID 1 级表现良好，它可以容许任何一个磁盘的故障</p>
+<p>最后，我们分析性能。从单个读取请求的延迟角度来看，我们可以看到它与单个磁盘上的延迟相同。写入有点不同：以它遭遇到两个请求中最差的寻道和旋转延迟，因此（平均而言）比写入单个磁盘略高。</p>
+<h3 id="RAID-4-级：通过奇偶校验节省空间"><a href="#RAID-4-级：通过奇偶校验节省空间" class="headerlink" title="RAID 4 级：通过奇偶校验节省空间"></a>RAID 4 级：通过奇偶校验节省空间</h3><p><strong>RAID 4 级的原理</strong><br>现在有一种向磁盘阵列添加冗余的不同方法，称为奇偶校验，基于奇偶校验的方法视图使用较少的容量，从而克服由镜像系统付出的巨大空间损失，不过这也会降低性能对于每一条数据，都添加一个奇偶校验块，用于存储该条块的冗余信息，如奇偶校验块 P1 具有块 4，5，6，7 计算出的冗余信息：<br><img src="https://s2.loli.net/2022/01/04/CYT53n2zhWbHdVP.png" alt="image-20220104195611490"></p>
+<p><strong>RAID 4 级的评估</strong></p>
+<p>从容量的角度来看，RAID 4 级使用 1 个磁盘作为它所保护的每组磁盘的奇偶校验信息，因此 RAID 组的有效容量是 N-1.</p>
+<p>可靠性也很容易理解，RAID 4 级允许 1 个磁盘故障，不允许更多，如果丢失多个磁盘，则无法重建丢失的数据</p>
+<p>性能：</p>
+<p>这些磁盘的数据位于磁盘 0 和 1 上，因此对数据的读写操作可以并行进行，这很好。出现的问题是奇偶校验磁盘。这两个请求都必须读取 4 和 13 的奇偶校验块，即奇偶校验块 1 和 3（用+标记）。估计你已明白了这个问题：在这种类型的工作负载下，奇偶校验磁盘是瓶颈。因此我们有时将它称为基于奇偶校验的 RAID 的小写入问题（small-write problem）。<br>因此，即使可以并行访问数据磁盘，奇偶校验磁盘也不会实现任何并行。由于奇偶校验磁盘，所有对系统的写操作都将被序列化。由于奇偶校验磁盘必须为每个逻辑 I&#x2F;O 执行两次 I&#x2F;O（一次读取，一次写入），我们可以通过计算奇偶校验磁盘在这两个 I&#x2F;O 上的性能来计算 RAID-4 中的小的随机写入的性能，从而得到（R &#x2F; 2）MB&#x2F;s。随机小写入下的 RAID-4 吞吐量很糟糕，向系统添加磁盘也不会改善。</p>
+<p><img src="https://s2.loli.net/2022/01/04/6v4H7OkAgUdFlNB.png" alt="image-20220104200703836"></p>
+<p>**延迟:**你现在知道，单次读取（假设没有失败）只映射到单个磁盘，因此其延迟等同于单个磁盘请求的延迟。单次写入的延迟需要两次读取，<br>然后两次写入。读操作可以并行进行，写操作也是如此，因此总延迟大约是单个磁盘的两<br>倍。（有一些差异，因为我们必须等待两个读取操作完成，所以会得到最差的定位时间，但<br>是之后，更新不会导致寻道成本，因此可能是比平均水平更好的定位成本。）</p>
+<h3 id="RAID-5-级：旋转奇偶校验"><a href="#RAID-5-级：旋转奇偶校验" class="headerlink" title="RAID 5 级：旋转奇偶校验"></a>RAID 5 级：旋转奇偶校验</h3><p><strong>RAID5 与 RAID4 原理几乎相同，只是它将奇偶校验块跨驱动器旋转</strong></p>
+<p>如你所见，每个条带的奇偶校验块现在都在磁盘上旋转，以消除 RAID-4 的奇偶校验磁盘瓶颈。</p>
+<p><img src="https://s2.loli.net/2022/01/04/yRzGsjq7VPZ2UC6.png" alt="image-20220104200939827"></p>
+<p><strong>RAID 5 级的评估</strong></p>
+<p>RAID 5 大部分与 RAID 4 相同，如两级的有效容量和容错能力是相同的，顺序读写性能也是如此，单个请求的延迟也与 RAID 4 相同</p>
+<p>由于 RAID 5 基本上和 RAID 4 相同，只是少数情况下它更好，所以它几乎完全取代了市场上的 RAID 4，唯一没有取代的地方是系统知道自己绝对不会执行大写入以外的任何事情，从而完全避免小写入问题</p>
+<h3 id="RAID-性能比较"><a href="#RAID-性能比较" class="headerlink" title="RAID 性能比较"></a>RAID 性能比较</h3><p>我们将假设磁盘可以在连续工作负载下以 S MB&#x2F;s 传输数据，并且在随机工作负载下以 R MB&#x2F;s 传输数据。一般来说，S 比 R 大得多。</p>
+<p><img src="https://s2.loli.net/2022/01/08/2acJ57dMneEFOrv.png" alt="image-20220108210313664"></p>
+<p><img src="https://s2.loli.net/2022/01/08/FE8QVhLjwtJaNZD.png" alt="image-20220108210340613"></p>
+<h2 id="第-40-章——文件系统的实现"><a href="#第-40-章——文件系统的实现" class="headerlink" title="第 40 章——文件系统的实现"></a>第 40 章——文件系统的实现</h2><p>关于文件系统的两个问题<br>理解文件系统时，需要考虑它们的两个不同方面：</p>
+<p><strong>文件系统的数据结构</strong>，即文件系统在磁盘上采用哪些类型的数据结构来组织其数据和元数据？较为简单的文件系统(如 VSFS)采用简单的数据结构，如块和其它对象的数组，而复杂些的文件系统(如 XFS)使用更复杂的基于树的结构</p>
+<p><strong>访问方法</strong>，即如何将进程发出的调用，如 open()，read()，write()等映射到它的数据结构上？在执行特定系统调用期间读取哪些结构？改写哪些结构？这些步骤的执行效率如何？</p>
+<h3 id="VSFS-的整体组织"><a href="#VSFS-的整体组织" class="headerlink" title="VSFS 的整体组织"></a>VSFS 的整体组织</h3><p><strong>1、将磁盘分成块</strong></p>
+<p>简单的文件系统只使用一种块大小，这里也是这样，块大小选择 4KB，对于构建简单文件系统的磁盘分区的做法很简单，<strong>即将磁盘看成线性的一些块，每块大小为 4KB</strong></p>
+<p>在大小为 N 个 4KB 块的分区中，这些块的地址从 0~N-1，假设有一个非常小的磁盘，只有 64 块</p>
+<p><img src="https://s2.loli.net/2022/01/04/AicRfgk2qUDF5aM.png" alt="image-20220104202058947"></p>
+<p><strong>2、 用户数据的存放：数据区域</strong></p>
+<p>有了一系列等大的线性块后，接着要像其中存储数据，首先是用户数据，<strong>任何文件系统中大多数空间都应该是用户数据</strong>，将用于存放用户数据的磁盘区域称为<strong>数据区域</strong>，这里将最后 56 个块作为数据区域：</p>
+<p><img src="https://s2.loli.net/2022/01/04/7ob1WJAqGM3BkTQ.png" alt="image-20220104202210608"></p>
+<p><strong>3、记录每个文件的详细信息：inode 表</strong></p>
+<p>inode：记录了文件中包含哪些数据块，文件的大小，文件的所有者和访问权限，访问和修改时间等类似的详细信息，为了存储这些信息</p>
+<p>为了存放 inode，还需要在磁盘上留出一些空间，称这部分磁盘空间为 inode 表（inodemap），它只是保存了一个磁盘上 inode 的数组，假设 inode 表大小为 5 个块，磁盘看起来如下：</p>
+<p><img src="https://s2.loli.net/2022/01/04/q8uIwKtBgkRbC6E.png" alt="image-20220104202429458"></p>
+<p><strong>4、空闲空间的记录：位图</strong></p>
+<p>目前为止，文件系统有了数据块和 inode 表，但是还需要某种方法记录 inode 或数据块是空闲还是已分配，因此这种分配结构是所有文件系统中必需的部分</p>
+<p>存在很多可行的分配方法，如采用空闲列表，指向第一个空闲块，然后它又指向下一个空闲块，这里采用一种简单又流行的结构<br>位图(位图是一种简单的结构，每个位用于指示相应的块是否空闲)，一种用于数据区域，一种用于 inode 表<br><img src="https://s2.loli.net/2022/01/04/Aucng1mHXMvUsWe.png" alt="image-20220104202532655"></p>
+<p><strong>文件系统信息的存储：超级块</strong></p>
+<p>对于上述的磁盘布局，还有一块，这块留给<strong>超级块</strong>，<strong>超级块包含关于该特定文件系统的信息</strong>，包括例如文件系统中有多少个 inode 和数据块，inode 表的开始位置，还可能包括一些幻数用来标识文件系统的类型(如 VSFS)</p>
+<p><img src="https://s2.loli.net/2022/01/04/6bhgijvTuw4YcUN.png" alt="image-20220104202851081"></p>
+<h3 id="文件组织：inode-index-node-索引节点"><a href="#文件组织：inode-index-node-索引节点" class="headerlink" title="文件组织：inode(index node 索引节点)"></a>文件组织：inode(index node 索引节点)</h3><p><strong>(1) inode 结构寻址</strong><br>每个 inode 都由一个数字隐式引用，也称为文件的低级名称，如在 VSFS 中，给定一个文件低级名称，应该可以计算出该文件的 inode 结构在磁盘上的位置，根据之前的磁盘结构，假设 inode 表为 20KB，因此最多存在 80 个 inode 结构，假设 inode 表从 12KB 开始，读取 inode 号 32 号：<br>文件系统首先开始计算 inode 区域的偏移量</p>
+<p><img src="https://s2.loli.net/2022/01/04/kJrB6mL9S3fcW8I.png" alt="image-20220104203031326"></p>
+<p>(32*inode 的大小 1&#x2F;4KB &#x3D; 8192B)，<br>将它加上磁盘 inode 表的其实地址(12KB)，从而得到 20KB<br>inode 号为 32 的 inode 结构</p>
+<p><strong>(3) inode 结构中的内容</strong></p>
+<p>在每个 inode 中，实际上是关于对应文件的所有信息：文件类型，大小，所得数据块数，权限，时间信息等</p>
+<p><img src="https://s2.loli.net/2022/01/04/LgKrTwuYmNjeVaC.png" alt="image-20220104203210640"></p>
+<p><strong>(3) 多级索引</strong></p>
+<p>设计 inode 时，最重要的决定之一是它如何引用数据块的位置，一种简单的方法是在 inode 中有一个或多个直接指针，每个指针指向属于该文件的一个磁盘，但当面对大文件时，直接指针不能满足需要：</p>
+<p>当文件足够大时，分配一个间接块里面存储指向文件的块的指针，而 inode 结构中的间接指针则指向这个块，如果想支持更大的文件，可以使用双重间接指针，双重间接指针允许访问最大为 102410244KB 的文件，即所支持访问的文件大小超过了 4GB，如果不够，还可以使用三重间接指针</p>
+<p>许多文件系统使用多级索引，包括常用的文件系统，Linux 的 ext2 和 ext3，以及原始的 UNIX 等，多级索引的机制能让 inode 直接指向较小的文件，也可以通过一个或多个间接块指向大文件</p>
+<h3 id="目录组织"><a href="#目录组织" class="headerlink" title="目录组织"></a>目录组织</h3><p><strong>一个目录基本上只包含一个二元组(条目名称，inode 号)的列表</strong></p>
+<p>加上 dir 中有 3 个文件，dir 在磁盘上的数据可能如下显示：</p>
+<p><img src="https://s2.loli.net/2022/01/04/vEtcr8KV5zJPOe9.png" alt="image-20220104204232785"></p>
+<p><strong>每个目录都有两个额外的条目，.(当前目录 dir) 和 …(父目录 &#x2F;)</strong></p>
+<p>通常文件系统将目录视为特殊类型的文件，目录有一个 inode，位于 inode 表，该目录也有 inode 指向的数据块，这些数据块存在于我们简单文件系统的数据区域中</p>
+<h3 id="空闲空间管理"><a href="#空闲空间管理" class="headerlink" title="空闲空间管理"></a>空闲空间管理</h3><p>文件系统必须要记录哪些 inode 和数据块是空闲的，哪些不是，这样在分配文件或目录时，就可以为它找到空间，空闲空间管理对于所有文件系统都很重要，VSFS 采用两个位图来完成</p>
+<p>当创建一个文件时，必须为该文件分配一个 inode，文件系统将通过位图来搜索一个空闲的 inode 结构并分配个该文件，文件系统将该 inode 结构标记为已经使用(位图中置 1)<br>接着分配数据块时，大致是相同的，不过是根据数据块位图来寻找空闲空间，但是一些 LInux 文件系统在创建文件并需要数据块时，会寻找一系列数据块，通过查找一系列的数据块，将它们分配给创建的文件，文件系统保证该文件的一部分在磁盘上是连续的，从而提高性能，这种预分配策略，是为数据块分配空间时的常用方法</p>
+<h3 id="访问路径：读取和写入"><a href="#访问路径：读取和写入" class="headerlink" title="访问路径：读取和写入"></a>访问路径：读取和写入</h3><p><strong>(1) 从磁盘读取</strong><br>假设要打开一个文件(如&#x2F;foo&#x2F;bar，该文件只有 4KB)，读取后并关闭</p>
+<p>第 1 步：<strong>发出一个 open(“&#x2F;foo&#x2F;bar”, O_RDONLY)调用时</strong>，文件系统先要找到文件 bar 的 inode</p>
+<p>第 2 步：<strong>开始遍历，从根目录 &#x2F; 开始</strong>，文件系统第一次磁盘读取是根目录的 inode&#x3D;2</p>
+<p>第 3 步：根<strong>据 inode 中指向数据块的指针来查找条目 foo</strong>，一旦找到，文件系统也会找到下一个需要的 foo 的 inode 号</p>
+<p>第 4 步：<strong>递归遍历路径名，直到找到所需的 inode</strong>，本例中，文件系统读取包含 foo 的 inode 及其目录的数据的块，最后找到 bar 的 inode</p>
+<p>第 5 步：<strong>open()将 bar 的 inode 读入内存</strong>，然后文件系统对它进行最后的权限检查，在每个进程的打开文件表中，<strong>为此进程分配一个文件描述符</strong>，并将它返回给用户</p>
+<p>第 6 步：<strong>发出 read()调用，从文件中读取</strong>，第一次读取将在文件的第一个块中，读取将进一步更新此文件描述符在内存中的打开文件表，更新文件偏移量，以便下一次读取会读取第二个文件块</p>
+<p>第 7 步：<strong>关闭文件</strong>，文件描述符被释放</p>
+<p>整个过程中，打开文件导致了多次读取，以便找到目标文件的 inode，之后，读取每个块需要文件系统先查询 inode，然后读取该块，再使用写入更新 inode 的最后访问时间字段</p>
+<p><strong>open()导致的 I&#x2F;O 量与路径长度成正比</strong>，对于路径中每个增加的目录，都需要读取它的 inode 及其数据，更糟的是会出现大型目录，对于大型目录需要读取更多的块</p>
+<p><strong>(2) 向磁盘写入</strong><br>写入文件是一个类似的过程，首先文件必须被找到且打开，其次应用程序可以发出 write()调用以更新文件内容，最后关闭文件</p>
+<p>与读取不同，写入文件时可能会分配一个块，当写入一个新文件时，每次的操作不仅要将数据写入磁盘，还要先先决定将那个块分配给文件，从而更新磁盘的其它结构(数位图，inode 表)，因此每次<strong>写入文件在逻辑上有 5 个 I&#x2F;O：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1，一个读取数据位图</span><br><span class="line">2，一个写入位图</span><br><span class="line">3，读取inode</span><br><span class="line">4，写inode</span><br><span class="line">5，写入数据块</span><br></pre></td></tr></table></figure>
+
+<p>创建一个文件的工作量比向已存在的文件中写数据更大，要创建一个文件，文件系统不仅要分别配一个 inode，还要在包含新文件的目录中分配空间，这样的 I&#x2F;O 总量非常大</p>
+<h3 id="缓存和缓冲"><a href="#缓存和缓冲" class="headerlink" title="缓存和缓冲"></a>缓存和缓冲</h3><p><strong>减少读的 I&#x2F;O：缓存</strong></p>
+<p>读取和写入文件是昂贵的，会导致磁盘有很多 I&#x2F;O，因此降低性能，为了弥补这个问题，大多数文件系统积极使用系统内存 DRAM 来缓存重要的块</p>
+<p>想象一个有缓存的文件打开的例子，第一次可能引起很多 I&#x2F;O，来读取目录中的 inode 和数据，但是随后打开该文件，大部分会命中缓存，因此不需要或只进行少量 I&#x2F;O</p>
+<p><strong>减少写的 I&#x2F;O：缓冲</strong><br>尽管可以通过足够大的缓存来避免读取&#x2F;O，但写入操作必须进入磁盘，高速缓存不能减少写流量，可以通过写缓冲来弥补，首先，通过延迟写入，文件系统可以将零碎的一些更新积攒成一批，放入一组较小的 I&#x2F;O 中，通过减少写 I&#x2F;O 的次数来减少写 I&#x2F;O 引起的问题</p>
+<p>如果一在创建一个文件时，inode 位图被更新，稍后再创建另一个文件时又被更新，则文件系统可以再第一次更新后延迟写入，从而节省一次 I&#x2F;O，其次，通过将一些写入缓冲的内存中，系统可以调度后续的 I&#x2F;O，从而提高性能</p>
+<p>由于上述原因，大多数现代文件系统将写入在内存中缓冲 5~30s，这代表了另一种折中，如果系统在更新传递到磁盘之前崩溃，更新就会丢失，但是如果时间延长，则可以通过批处理，调度甚至避免写入来提高性能，而像数据库管理系统这种软件不喜欢这种折中，它会调用 fsync()立刻强制写入磁盘，以保证数据更新不会丢失</p>
+<h2 id="第-42-章——崩溃一致性：FSCK-和日志"><a href="#第-42-章——崩溃一致性：FSCK-和日志" class="headerlink" title="第 42 章——崩溃一致性：FSCK 和日志"></a>第 42 章——崩溃一致性：FSCK 和日志</h2><p>文件系统面临的一个主要挑战在于，如何在出现断电（power loss）或系统崩溃（system crash）的情况下，更新持久数据结构。（为崩溃一致性问题（crash-consistency problem）。）</p>
+<h3 id="崩溃场景"><a href="#崩溃场景" class="headerlink" title="崩溃场景"></a><strong>崩溃场景</strong></h3><ul>
+<li>只将数据块（Db）写入磁盘</li>
+<li>只有更新的 inode（I[v2]）写入了磁盘</li>
+<li>只有更新后的位图（B [v2]）写入了磁盘</li>
+<li>inode（I[v2]）和位图（B[v2]）写入了磁盘，但没有写入数据（Db）</li>
+<li>写入了 inode（I[v2]）和数据块（Db），但没有写入位图（B[v2]）</li>
+<li>写入了位图（B[v2]）和数据块（Db），但没有写入 inode（I[v2]）</li>
+</ul>
+<p>在文件系统数据结构中可能存在不一致性。可能有<strong>空间泄露</strong>，可能<strong>将垃圾数据返回给用户</strong>，等等。理想的做法是将文件系统从一个一致状态（在文件被追加之前），原子地（atomically）移动到另一个状态（在 inode、位图和新数据块被写入磁盘之后）。遗憾的是这不容易实现</p>
+<h3 id="解决方案-1：文件系统检查程序"><a href="#解决方案-1：文件系统检查程序" class="headerlink" title="解决方案 1：文件系统检查程序"></a>解决方案 1：文件系统检查程序</h3><p>fsck 是一个 UNIX 工具，用于查找这些不一致并修复它们。它在文件系<br>统挂载并可用之前运行（fsck 假定在运行时没有其他文件系统活动正在进行）。</p>
+<p>以下是 fsck 的基本总结：<br><strong>超级块</strong>：fsck 首先检查超级块是否合理，主要是进行健全性检查，例如确保文件系统大小大于分配的块数。通常，这些健全性检查的目的是找到一个可疑的（冲突的）超级块。在这种情况下，系统（或管理员）可以决定使用超级块的备用副本。<br><strong>空闲块</strong>：接下来，fsck 扫描 inode、间接块、双重间接块等，以了解当前在文件系统中分配的块。它利用这些知识生成正确版本的分配位图。因此，如果位图和 inode 之间存在任何不一致，则通过信任 inode 内的信息来解决它。对所有 inode 执行相同类型的检查，确保所有看起来像在用的 inode，都在 inode 位图中有标记。<br><strong>inode 状态</strong>：检查每个 inode 是否存在损坏或其他问题。例如，fsck 确保每个分配的 inode 具有有效的类型字段（即常规文件、目录、符号链接等）。如果 inode 字段存在问题，不易修复，则 inode 被认为是可疑的，并被 fsck 清除，inode 位图相应地更新。<br><strong>inode 链接</strong>：fsck 还会验证每个已分配的 inode 的链接数<br><strong>重复</strong>：fsck 还检查重复指针，即两个不同的 inode 引用同一个块的情况。<br><strong>坏块</strong>：在扫描所有指针列表时，还会检查坏块指针。如果指针显然指向超出其有效范围的某个指针，则该指针被认为是“坏的”，例如，它的地址指向大于分区大小的块。在这种情况下，fsck 不能做任何太聪明的事情。它只是从 inode 或间接块中删除（清除）该指针。<br><strong>目录检查</strong>：fsck 对每个目录的内容执行额外的完整性检查，确保“.”和“..”是前面的条目，目录条目中引用的每个 inode 都已分配，并确保整个层次结构中没有目录的引用超过一次。</p>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li>构建有效工作的 fsck 需要复杂的文件系统知识。确保这样的代码在所有情<br>况下都能正常工作可能具有挑战性</li>
+<li>它们太慢了。有效但低效</li>
+</ol>
+<h3 id="解决方案-2：日志（或预写日志）"><a href="#解决方案-2：日志（或预写日志）" class="headerlink" title="解决方案 2：日志（或预写日志）"></a>解决方案 2：日志（或预写日志）</h3><h4 id="数据日志"><a href="#数据日志" class="headerlink" title="数据日志"></a>数据日志</h4><p>基本思路：</p>
+<p>更新磁盘时，在覆写结构之前，首先写下一点小注记（在磁盘上的其他地方，在一个众所周知的位置），描述你将要做的事情。写下这个注记就是“预写”部分，我们把它写入一个结构，并组织成“日志”。因此，就有了<strong>预写日志</strong>。</p>
+<p>日志功能在更新期间通过将注释写入磁盘增加了一工作量，从而大大减少了恢复期间所需的工作量。</p>
+<p><strong>写入日志的文件系统协议</strong></p>
+<p>1．<strong>日志写入</strong>：将事务的内容（包括 TxB、元数据和数据）写入日志，等待这些写入完成。<br>2．<strong>日志提交</strong>：将事务提交块（包括 TxE）写入日志，等待写完成，事务被认为已提交（committed）。<br>3．<strong>加检查点</strong>：将更新内容（元数据和数据）写入其最终的磁盘位置。</p>
+<p><img src="https://s2.loli.net/2022/01/04/3kWiFytMvcbPpzX.png" alt="一个例子"></p>
+<h4 id="恢复"><a href="#恢复" class="headerlink" title="恢复"></a><strong>恢复</strong></h4><p>1、<strong>如果崩溃发生在事务被安全地写入日志之前</strong>：简单地跳过待执行的更新。</p>
+<p>2、<strong>如果在事务已提交到日志之后但在加检查点完成之前</strong>：<br>系统引导时，文件系统恢复过程将扫描日志，并查找已提交到磁盘的事务。然后，这些事务被重放（replayed，按顺序），文件系统再次尝试将事务中的块写入它们最终的磁盘位置。<br>这种形式为<strong>重做日志</strong>（redo logging）</p>
+<h4 id="批处理日志更新"><a href="#批处理日志更新" class="headerlink" title="批处理日志更新"></a><strong>批处理日志更新</strong></h4><p>一些文件系统不会一次一个地向磁盘提交每个更新。与此不同，可以将所有更新缓冲到全局事务中。</p>
+<p>通过缓冲更新，文件系统在许多情况下可以避免对磁盘的过多的写入流量。</p>
+<h4 id="使日志有限"><a href="#使日志有限" class="headerlink" title="使日志有限"></a>使日志有限</h4><p>一旦事务被加检查点，文件系统应释放它在日志中占用的空间，允许重用日志空间。</p>
+<p>1．<strong>日志写入</strong>：将事务的内容（包括 TxB 和更新内容）写入日志，等待这些写入完成。<br>2．<strong>日志提交</strong>：将事务提交块（包括 TxE）写入日志，等待写完成，事务被认为已提交<br>（committed）。<br>3．<strong>加检查点</strong>：将更新内容写入其最终的磁盘位置。<br>4．<strong>释放</strong>：一段时间后，通过更新日志超级块，在日志中标记该事务为空闲。</p>
+<h4 id="元数据日志"><a href="#元数据日志" class="headerlink" title="元数据日志"></a>元数据日志</h4><p><strong>最常用的是有序元数据日志</strong>，它可以减少日志流量，同时仍然保证文件系统元数据和用户数据的合理一致性。</p>
+<p>写入数据块的代价通常很昂贵，如何避免两次 IO 写入？</p>
+<p>1．<strong>数据写入</strong>：将数据写入最终位置，等待完成（等待是可选的，详见下文）。<br>2．<strong>日志元数据写入</strong>：将开始块和元数据写入日志，等待写入完成。<br>3．<strong>日志提交</strong>：将事务提交块（包括 TxE）写入日志，等待写完成，现在认为事务（包<br>括数据）已提交（committed）。<br>4．<strong>加检查点元数据</strong>：将元数据更新的内容写入文件系统中的最终位置。<br>5．<strong>释放</strong>：稍后，在日志超级块中将事务标记为空闲。<br>通过强制先写入数据，文件系统可以保证指针永远不会指向垃圾。</p>
+<h4 id="棘手的情况：块复用"><a href="#棘手的情况：块复用" class="headerlink" title="棘手的情况：块复用"></a>棘手的情况：块复用</h4><p>可以永远不再重复使用块，直到所述块的删除加上检查点，从日志中清除。Linux ext3 的做法是将新类型的记录添加到日志中，称为撤销（revoke）记录。在上面的情况中，删除目录将导致撤销记录被写入日志。在重放日志时，系统首先扫描这样的重新记录。任何此类被撤销的数据都不会被重放，从而避免了上述问题。</p>
+<h4 id="其他方法"><a href="#其他方法" class="headerlink" title="其他方法"></a>其他方法</h4><ol>
+<li><strong>软更新</strong></li>
+<li><strong>写时复制（Copy-On-Write，COW）</strong></li>
+<li><strong>基于反向指针的一致性</strong></li>
+<li><strong>乐观崩溃一致性</strong></li>
+</ol>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/05/15/%E6%8C%81%E4%B9%85%E6%80%A7/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/operating-sysytem/" rel="tag">operating sysytem</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2022/03/15/tacotron2%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            Tacotron2声谱预测网络
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/05/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%AC4%E6%AC%A1%E4%BD%9C%E4%B8%9A/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">3.operating-systems-three-easy-pieces answers</div>
+      </a>
+    
+  </nav>
+
+  
+   
+    
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2019-2022
+        <i class="ri-heart-fill heart_icon"></i> nnilk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>Visitors:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>Views:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="nnilk&#39;s blog"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>

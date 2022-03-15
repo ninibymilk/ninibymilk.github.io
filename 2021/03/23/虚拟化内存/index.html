@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta name="description" content="Welcome to nnilk&#39;s daily learning blog" />
+      
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>内存虚拟化 |  nnilk&#39;s blog</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/images/logo3.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-虚拟化内存"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  内存虚拟化
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/03/23/%E8%99%9A%E6%8B%9F%E5%8C%96%E5%86%85%E5%AD%98/" class="article-date">
+  <time datetime="2021-03-22T16:00:00.000Z" itemprop="datePublished">2021-03-23</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/The-Operating-System-Notes/">The-Operating-System-Notes</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">6.1k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">21 min</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="第-13-章-抽象：地址空间"><a href="#第-13-章-抽象：地址空间" class="headerlink" title="第 13 章 抽象：地址空间"></a>第 13 章 抽象：地址空间</h2><p><strong>多道程序</strong></p>
+<p>其中多个进程在给定时间准备运行，比如当有一个进程在等待 I&#x2F;O 操作的时候，操作系统会切换这些进程，这样增加了 CPU 的有效利用率（utilization）</p>
+<p><strong>时分共享</strong></p>
+<p>一种实现时分共享的方法，是让一个进程单独占用全部内存运行一小段时间，然后停止它，并将它所有的状态信息保存在磁盘上（包含所有的物理内存），加载其他进程的状态信息，再运行一段时间，这就实现了某种比较粗糙的机器共享</p>
+<p>但是效率极低，特别是当内存增长的时候。因此，在进程切换的时候，我们仍然将进程信息放在内存中，这样操作系统可以更有效率地实现时分共享</p>
+<p><strong>地址空间</strong>※</p>
+<p>操作系统给运行中的程序提供的一个易用的物理内存抽象，叫做地址空间</p>
+<p>一个进程的地址空间包含运行的程序的所有<strong>内存状态</strong>，如程序的<strong>代码</strong>，<strong>栈</strong>(利用栈来保存当前函数的调用信息，分配空间给局部变量，传递参数和函数返回值)和<strong>堆</strong>(管理动态的，用户分配的内存)<br><img src="https://s2.loli.net/2022/01/06/S7rHtdVyAD3BmZK.png" alt="image-20220106145020187"></p>
+<p><strong>虚拟化内存的目标</strong></p>
+<ul>
+<li><p>透明：操作系统实现虚拟内存的方式，应该让运行的程序看不到，因此程序感知不到内存被虚拟化的事实，操作系统和硬件完成这些工作，实现了地址空间这个假象</p>
+</li>
+<li><p>效率：操作系统应该使得虚拟化在时间上和空间上尽可能地高效</p>
+</li>
+<li><p>保护：操作系统应该确保进程受到保护，不被其它进程影响，每个进程在自己独立的环境中运行，避免其它出错或恶意进程的干扰</p>
+</li>
+</ul>
+<p>虚拟内存系统负责为程序提供一个巨大的，稀疏的，私有的地址空间的假象，其中保存了程序的所有指令和数据，操作系统在硬件的帮助下，通过每一个虚拟内存的索引，将其转换成物理地址，物理内存根据获得获得的物理地址去获取所需的信息，操作系统会同时对许多进程执行此操作，并且确保程序之间不会受到影响，也不会干扰操作系统</p>
+<h2 id="第-14-章-插叙：内存操作-API"><a href="#第-14-章-插叙：内存操作-API" class="headerlink" title="第 14 章 插叙：内存操作 API"></a><strong>第 14 章 插叙：内存操作 API</strong></h2><h3 id="内存类型"><a href="#内存类型" class="headerlink" title="内存类型"></a><strong>内存类型</strong></h3><p><strong>栈内存</strong></p>
+<p>栈内存的申请和释放操作是编译器来隐式管理的，所以有时也称为自动（automatic）内存。</p>
+<p><strong>堆内存</strong></p>
+<p>所有的申请和释放操作都由程序员显式地完成。满足长期内存的需求</p>
+<h3 id="malloc-调用"><a href="#malloc-调用" class="headerlink" title="malloc()调用"></a>malloc()调用</h3><h3 id="Free-调用"><a href="#Free-调用" class="headerlink" title="Free()调用"></a>Free()调用</h3><h3 id="常见错误"><a href="#常见错误" class="headerlink" title="常见错误"></a>常见错误</h3><p>忘记分配内存</p>
+<p>没有分配足够的内存</p>
+<p>忘记初始化分配的内存</p>
+<p>忘记释放内存</p>
+<p>在用完之前释放内存</p>
+<p>反复释放内存</p>
+<p>错误地调用 free()</p>
+<p><strong>关于内存泄漏</strong></p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111251745711.png" alt="image-20211125174454450"></p>
+<h2 id="第-15-章-机制：地址转换"><a href="#第-15-章-机制：地址转换" class="headerlink" title="第 15 章 机制：地址转换"></a>第 15 章 机制：地址转换</h2><p>在<strong>CPU 虚拟化</strong>时，使用了受限直接访问 LDE，LDE 背后的想法很简单：让程序运行的大部分指令直接访问硬件，在一些关键点(进程发生系统调用和发生时钟中断)由操作系统介入来确保高效和控制</p>
+<p>对<strong>内存虚拟化</strong>时，同样追求高效和控制，高效决定我们要利用硬件的支持，控制意味着操作系统确保每个应用只能访问自己的内存空间，要保护应用程序不会互相影响，更不会影响操作系统，灵活性即希望程序能以任何方式访问它们自己的内存空间，从而让系统更容易编程</p>
+<h3 id="地址转换"><a href="#地址转换" class="headerlink" title="地址转换"></a><strong>地址转换</strong></h3><p>为了完成这些，采用了称为<strong>基于硬件的地址转换，即地址转换</strong>，利用地址转换，硬件对每次内存访问进行处理，将指令中的虚拟地址转换为数据实际存储的物理地址，因此在每次内存引用时，硬件都会进行地址转换，将应用程序的内存引用重定位到内存中实际所在的位置</p>
+<p>仅仅<strong>依靠硬件不足以实现虚拟内存，操作系统必须在关键的位置介入</strong>，设置好硬件，以便完成正确的地址转换，操作系统必须管理内存，记录被占用和空闲的内存位置，保存对内存使用的控制。</p>
+<h3 id="动态-基于硬件-重定位"><a href="#动态-基于硬件-重定位" class="headerlink" title="动态(基于硬件)重定位"></a>动态(基于硬件)重定位</h3><p>每个 CPU 需要两个硬件寄存器：基址（base）寄存器和界限（bound）寄存<br>器，有时称为限制（limit）寄存器。这组基址和界限寄存器，让我们能够将地址空间放在物理内存的任何位置，同时又能确保进程只能访问自己的地址空间。</p>
+<p>$physical address &#x3D; virtual address + base$</p>
+<p>将虚拟地址转换为物理地址，这正是所谓的地址转换（addresstranslation）技术。由于这种重定位是在运行时发生的，而且我们甚至可以在进程开始运行后改变其地址空间，这种技术一般被称为动态重定位</p>
+<p><strong>(1) 基址寄存器</strong><br>采用基址界限机制时，在编写和编译程序时假设地址空间从 0 开始，但是当程序真正开始运行时，操作系统会决定其在物理内存中的实际加载地址，并将起始地址记录在基址寄存器上</p>
+<p>之后该进程的所有内存引用，都会通过如下方式从虚拟地址转换成物理地址：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">物理地址 = 虚拟地址 + 基址地址(进程在物理内存中的起始地址)</span><br></pre></td></tr></table></figure>
+
+<p>进程中使用的内存都是虚拟地址，硬件接下来将虚拟地址加上基址寄存器中的内容，得到物理地址</p>
+<p>对于上述示例的一条指令进行追踪：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">128: movl 0x0(%ebx), %eax</span><br><span class="line">首先程序计数器(PC)被设置为128，当硬件需要执行这条指令时，它先将这个值加上基址寄存器中的32kb，得到实际的物理地址32896，再从32896这个物理地址获取指令并执行</span><br></pre></td></tr></table></figure>
+
+<p>将虚拟地址转换成物理地址，就是地址转换，硬件取得进程认为它要访问的地址，将它转换成数据实际位于的物理地址</p>
+<p><strong>(2) 界限寄存器</strong><br>基址界限机制中另一部分是界限寄存器，界限寄存器提供了访问保护，在示例中，地址空间为 16kb，界限寄存器被设置为 16kb，如果进程想访问超过这个界限或者为负数的虚拟地址，CPU 将触发异常，进程可能被终止</p>
+<p>界限寄存器通常有两种使用方式：<br>1，界限寄存器记录地址空间的大小，硬件在将虚拟地址与基址寄存器内容求和前，先检查这个界限<br>2，界限寄存器存储地址空间结束的物理地址，硬件在转化虚拟地址到物理地址之后再检查这个界限</p>
+<p>这两种方式本质是相同的，默认使用第一种<br><strong>为了完成地址转换，需要一些硬件支持</strong></p>
+<p>1，两种 CPU 模式，特权和用户模式<br>2，基址寄存器和界限寄存器，用户程序运行时，硬件会转换每个地址，硬件也必须检查地址是否可用，通过基址寄存器，界限寄存器和一些电路来完成<br>3，硬件应该提供一些特殊的指令，用于修改基址寄存器和界限寄存器中的值，允许操作系统在切换进程时改变它们，且这些指令必须在 kernel 模式下，如果用户程序可以更改基址寄存器和界限寄存器，那么这个程序就可以访问内存中的任意位置<br>4，用户程序非法访问内存时，CPU 必须能产生异常，CPU 应该阻止该应用程序的运行，并安排操作系统的对应异常处理程序终止该进程</p>
+<p>利用地址转换，<strong>操作系统可以控制进程的所有内存访问，确保访问在地址空间的界限内。</strong>这个技术的关键在于<strong>硬件支持</strong>，硬件快速的将所有内存访问操作中的虚拟地址转换为物理地址，所有这一切对于进程来说都是透明的，进程并不知道自己使用的物理内存已经被重定位</p>
+<p>但使用基址加界限重定位有<strong>效率低下</strong>的问题，由于进程的堆区和栈区可能不是很大<strong>整块内存利用率不高</strong>，导致这块内存区域中大量的空间被浪费，这种浪费称为内部碎片，因此需要更复杂的机制，以便更好利用物理内存，避免内部碎片</p>
+<h2 id="第-16-章——分段"><a href="#第-16-章——分段" class="headerlink" title="第 16 章——分段"></a><strong>第 16 章——分段</strong></h2><p>为了避免内部碎片和提高物理内存的利用率，<strong>分段</strong>应运而生</p>
+<p>分段：</p>
+<p>在内存管理单元(MMU)中引进不止一对基址，界限寄存器，<strong>而是给地址空间内的每个逻辑段一对基址，界限寄存器</strong>，把虚拟地址空间中的虚拟内存组织成一些长度可变的称为段的内存块单元。</p>
+<p>典型的地址空间有 3 个逻辑段，代码段，堆段，栈段</p>
+<p><strong>一个分段例子</strong></p>
+<p><img src="https://s2.loli.net/2022/01/06/ozmRQk9u7OSbpLn.png" alt="image-20220106154129353"></p>
+<p>假设引用虚拟地址 100(在代码段中)，代码段基址为 32kb，虚拟地址 100 在代码段地址空间中的偏移量为 100-0，则物理地址为 32kb+100&#x3D;32868，然后检查该地址是否在界限内(100&lt;2kb)，通过后发起对物理地址 32868 的引用</p>
+<p>假设引用虚拟地址 4200(在堆中)，堆基址为 34kb，虚拟地址 4200 在堆地址空间中的偏移量为 4200-4kb&#x3D;104，则物理地址为 34kb+104&#x3D;34920，然后检查该地址是否在界限内(104&lt;2kb)，通过后发起对物理地址 34920 的引用</p>
+<p>如果试图访问非法的地址，硬件会发现越界，因此 trap 进内核，操作系统终止进程</p>
+<p>分段与分页：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_37924084/article/details/78360003">https://blog.csdn.net/qq_37924084/article/details/78360003</a></p>
+<h2 id="第-17-章-空闲空间管理"><a href="#第-17-章-空闲空间管理" class="headerlink" title="第 17 章 空闲空间管理"></a>第 17 章 空闲空间管理</h2><p>在堆上管理空闲空间的数据结构通常称为空闲列表（free list）</p>
+<h3 id="假设"><a href="#假设" class="headerlink" title="假设"></a><strong>假设</strong></h3><p>1.假定基本的接口就像 malloc()和 free()提供的那样，在只传入一个指针的情况下，库必须能够弄清楚这块内存的大小</p>
+<p>2.我们主要关心的是外部碎片（external fragmentation）</p>
+<p>3.内存一旦被分配给客户，就不可以被重定位到其他位置。</p>
+<p>4.分配程序所管理的是连续的一块字节区域</p>
+<h3 id="底层机制"><a href="#底层机制" class="headerlink" title="底层机制"></a><strong>底层机制</strong></h3><p>分割与合并</p>
+<p>追踪已分配空间的大小</p>
+<p>让堆增长</p>
+<h3 id="基本策略"><a href="#基本策略" class="headerlink" title="基本策略"></a>基本策略</h3><p><strong>最优匹配（best fit）</strong></p>
+<p>首先遍历整个空闲列表，找到和请求大小一样或更大的空闲块，然后返回这组候选者中最小的一块。</p>
+<p>最优匹配背后的想法很简单：选择最接近它用户请求大小的块，从而尽量避免空间浪费。然而，这有代价。简单的实现在遍历查找正确的空闲块时，要付出较高的性能代价。</p>
+<p><strong>最差匹配（worst fit）</strong></p>
+<p>它尝试找最大的空闲块，分割并满足用户需求后，将剩余的块（很大）加入空闲列表</p>
+<p>它的表现非常差，导致过量的碎片，同时还有很高的开销。</p>
+<p><strong>首次匹配（first fit）</strong></p>
+<p>从空闲列表头开始，找到第一个足够大的块，将请求的空间返回给用户。</p>
+<p>首次匹配有速度优势。</p>
+<p>分配程序如何管理空闲列表的顺序就变得很重要。一种方式是基于地址排序（address-based ordering）。通过保持空闲块按内存地址有序，合并操作会很容易，从而减少了内存碎片。</p>
+<p><strong>下次匹配（next fit）</strong></p>
+<p>算法多维护一个指针，指向上一次查找结束的位置。其想法是将对空闲空间的查找操作扩散到整个列表中去，避免对列表开头频繁的分割。</p>
+<p>这种策略的性能与首次匹配很接近，同样避免了遍历查找。</p>
+<p><strong>分离空闲列表</strong></p>
+<p>如果某个应用程序经常申请一种（或几种）大小的内存空间，那就用一个独立的列表，只管理这样大小的对象。其他大小的请求都一给更通用的内存分配程序。<br>好处显而易见。通过拿出一部分内存专门满足某种大小的请求，碎片就不再是问题了（避免碎片）。而且，由于没有复杂的列表查找过程，这种特定大小的内存分配和释放都很快。</p>
+<p><strong>伙伴系统</strong></p>
+<h2 id="第-18-章-分页"><a href="#第-18-章-分页" class="headerlink" title="第 18 章 分页"></a>第 18 章 分页</h2><p><strong>基本思想：</strong></p>
+<p><strong>将内存空间分割成固定大小的单元，每个单元称一页</strong></p>
+<p><strong>相应的把物理内存看成定长槽块的阵列，叫做页帧，每个页帧包含一个虚拟内存页</strong></p>
+<p><strong>分页中的地址转换过程</strong><br>假设一个 64 字节的进程正在访问内存：</p>
+<p>为了转换该过程生成的虚拟地址，首先要将其分成两个组件：<br>虚拟页面号(VPN)和页内的偏移量(offset)，由于虚拟地址空间为 64 字节，所以地址空间需要 6 位表示(2^6&#x3D;64)</p>
+<p>页面大小位 16 字节，位于 64 字节的地址空间，因此需要表示 4 个页，所以用虚拟地址前 2 位表示是哪个页，即虚拟页号，后四位用来表示该地址在该页内的偏移量</p>
+<p>地址转换的过程中，查询页表根据虚拟页号找到对应的物理页帧，偏移量保持不变就能得到真实的物理地址<br><img src="https://s2.loli.net/2022/01/06/HeigOZrwnhlD3VE.png" alt="image-20220106162445765"></p>
+<p><strong>页表中的内容</strong></p>
+<p>每个 PTE 中有许多不同的位：<br>1，有效位：通常用于指示特定地址转换是否有效，如当一个程序开始运行时，它的代码和堆在其地址空间的一端，栈在另一端，中间没被使用的空间被标记位无效，如果进程尝试访问这些内存，就会陷入内核，导致进程终止，有效位对稀疏地址空间至关重要，通过简单地将地址空间中未使用地页面标记为无效，就不需要为这些页面分配物理帧，从而节省大量内存</p>
+<p>2，保护位：表明页是否可以读取，写入或执行，同样地以这些位不允许地方式访问页，会陷入操作系统，终止进程</p>
+<p>3，存在位：表示该页是在物理存储器中还是在磁盘上，交换机制可以让操作系统将很少使用的页移动到磁盘，从而释放物理内存</p>
+<p>4，脏位：表明页面从磁盘被带入内存后是否被修改过</p>
+<p>5，参考位：有时用于追踪页是否被访问，也用于确定哪些页被频繁使用，因此将其保留在内存中</p>
+<p>优点：它不会导致外部碎片，因为分页（按设计）将内存划分为固定大小的单元。其次，它非常灵活，支持稀疏虚拟地址空间。</p>
+<p>缺点：会导致较慢的机器有许多额外的内存访问来访问页表，和内存浪费（内存被页表塞满而不是有用的应用程序数据）</p>
+<h3 id="分段机制和分页机制的区别"><a href="#分段机制和分页机制的区别" class="headerlink" title="分段机制和分页机制的区别"></a>分段机制和分页机制的区别</h3><p>1、分页机制会使用大小固定的内存块，而分段管理则使用了大小可变的块来管理内存。</p>
+<p>2、分页使用固定大小的块更为适合管理物理内存，分段机制使用大小可变的块更适合处理复杂系统的逻辑分区。</p>
+<p>3、段表存储在线性地址空间，而页表则保存在物理地址空间。</p>
+<h2 id="第-19-章-分页：快速地址转换（TLB）"><a href="#第-19-章-分页：快速地址转换（TLB）" class="headerlink" title="第 19 章　分页：快速地址转换（TLB）"></a>第 19 章　分页：快速地址转换（TLB）</h2><h3 id="快速地址转换-TLB※"><a href="#快速地址转换-TLB※" class="headerlink" title="快速地址转换 TLB※"></a>快速地址转换 TLB※</h3><p>为了加速地址转换，使得分页机制更加完备，需要硬件的支持，**地址转换旁路缓冲存储器(TLB)**，也称地址转换缓存，即频繁发生的虚拟地址到物理地址转换的硬件缓存，对每次内存访问，硬件先检查 TLB，看看其中是否有期望的转换映射，如果有，就完成转换，由于是硬件完成的，所以速度很快，不需要再访问页表查找页表项中的物理页帧</p>
+<p>TLB 带来了巨大的性能提升，它使得虚拟内存成为可能</p>
+<h3 id="TLB-的基本算法"><a href="#TLB-的基本算法" class="headerlink" title="TLB 的基本算法"></a>TLB 的基本算法</h3><p>TLB 的基本算法<br>硬件算法的大体流程如下：</p>
+<p>首先从虚拟地址中提取虚拟页号(VPN)，然后检查 TLB 是否有该 VPN 的转换映射，如果有就有了 TLB 命中，即 TLB 有该虚拟页号的转换映射，接下来从 TLB 中取出物理页帧号(PFN)，与虚拟地址中的偏移量结合形成期望的物理地址，并访问内存</p>
+<p>如果 CPU 没有在 TLB 中找到转换映射(TLB 未命中)，硬件访问页表来寻找地址转换，并用该转换更新 TLB，当 TLB 更新后，系统会重新尝试该指令，这时 TLB 中有这个转换映射，内存引用很快得到处理</p>
+<p>TLB 和其它缓存相似，一般情况下，转换映射会在缓存中(TLB 命中)，通过缓存来引用内存，只增加了很少的开销，如果 TLB 未命中，就会带来很大的分页开销，必须先从页表中查找转换映射，如果一段程序中多次 TLB 未命中，程序的运行就会显著变慢，因此尽可能希望避免 TLB 未命中</p>
+<h3 id="TLB未命中处理"><a href="#TLB未命中处理" class="headerlink" title="ＴＬＢ未命中处理"></a>ＴＬＢ未命中处理</h3><p><strong>硬件或软件（操作系统）</strong></p>
+<p>软件管理的方法：更现代的体系结构，都是精简的指令集计算机。发生 TLB 未命中时，硬件系统会抛出一个异常，这会暂停当前的指令流，将特权级提升至内核模式，跳转至陷阱处理程序（trap handler）。这个陷阱处理程序是操作系统的一段代码，用于处理 TLB 未命中。</p>
+<p>主要优势是<strong>灵活性</strong>，操作系统可以用任意数据结构来实现页表，不需要改变硬件。另一个优势是<strong>简单性</strong>。硬件不需要对未命中做太多工作，它抛出异常，操作系统的未命中处理程序会负责剩下的工作。</p>
+<h3 id="TLB的内容"><a href="#TLB的内容" class="headerlink" title="ＴＬＢ的内容"></a>ＴＬＢ的内容</h3><p>注意，VPN 和 PFN 同时存在于 TLB 中，因为一条地址映射可能出现在任意位置（用硬件的术语，TLB 被称为全相联的（fully-associative）缓存）。硬件并行地查找这些项，看看是否有匹配。</p>
+<p><strong>！TLB 的有效位!&#x3D;页表的有效位</strong></p>
+<h3 id="上下文切换时对-TLB-的处理"><a href="#上下文切换时对-TLB-的处理" class="headerlink" title="上下文切换时对 TLB 的处理"></a>上下文切换时对 TLB 的处理</h3><p>TLB 中包含的虚拟到物理的地址映射只对当前进程有效，对其他进程是没有意义的。所以在发生进程切换时，硬件或操作系统（或二者）必须注意确保即将运行的进程不要误读了之前进程的地址映射。</p>
+<p><strong>解决方案</strong></p>
+<p>１.一种方法是在上下文切换时，简单地清空（flush）TLB。但是，有一定开销：每次进程运行，当它访问数据和代码页时，都会触发 TLB 未命中。如果操作系统频繁地切换进程，这种开销会很高。</p>
+<p>２.为了减少这种开销，一些系统增加了硬件支持，实现跨上下文切换的 TLB 共享。比如有的系统在 TLB 中添加了一个地址空间标识符（Address Space Identifier，ASID）。可以把 ASID 看作是进程标识符（Process Identifier，PID），但通常比 PID 位数少（PID 一般 32 位，ASID 一般是 8 位）。</p>
+<p><strong>尽可能利用缓存</strong><br>缓存技术是计算机系统中最基本的性能改进技术之一，一次又一次地用于让“常见地情况更快”，硬件缓存背后的思想是利用指令和数据引用的局部性，通常有两种局部性：</p>
+<p>时间局部性：最近访问过的指令或数据很快会再次访问，如循环中的循环变量或指令</p>
+<p>空间局部性：当程序访问内存地址 x 时，可能很快会访问邻近 x 的内存，如上</p>
+<p><strong>TLB 替换策略</strong><br>TLB 中的内容是有限的，需要替换缓存，即向 TLB 中插入新项时，会替换一个旧项，那应该替换哪一个？</p>
+<p>有两种常用策略：<br>1，替换最近最少使用的项 LRU，LRU 尝试利用内存引用流中的局限性，假定最近没有用过的项，作为被替换的候选项<br>2，随机策略，随机换一个出去，这种策略虽然很简单，但能避免一些极端情况</p>
+<h2 id="第２０章-分页：较小的表"><a href="#第２０章-分页：较小的表" class="headerlink" title="第２０章　分页：较小的表"></a>第２０章　分页：较小的表</h2><p>用来解决分页引入的第二个问题：页表太大，因此消耗的内存太多</p>
+<h3 id="多级页表"><a href="#多级页表" class="headerlink" title="多级页表"></a>多级页表</h3><p><strong>基本思想</strong>：首先，将页表分成页大小的单元。然后，如果整页的页<br>表项（PTE）无效，就完全不分配该页的页表。为了追踪页表的页是否有效（以及如果有效，它在内存中的位置），使用了名为页目录（page directory）的新结构。页目录因此可以告诉你页表的页在哪里，或者页表的整个页不包含有效页。</p>
+<p><strong>优势</strong>：多级页表分配的页表空间，与你正在使用的地址空间内存量成比例。因此它通常很紧凑，并且支持稀疏的地址空间。</p>
+<p>如果仔细构建，页表的每个部分都可以整齐地放入一页中，从而更容易管理内存。</p>
+<p><strong>缺点</strong>：多级页表是有成本的。在 TLB 未命中时，需要从内存加载两次，才能从页表中获取正确的地址转换信息（一次用于页目录，另一次用于 PTE 本身），而用线性页表只需要一次加载。因此，多级表是一个时间—空间折中的小例子</p>
+<p>另一个明显的缺点是复杂性</p>
+<h2 id="第-22-章-物理内存管理策略"><a href="#第-22-章-物理内存管理策略" class="headerlink" title="第 22 章 物理内存管理策略"></a>第 22 章 物理内存管理策略</h2><p><strong>页替换算法</strong></p>
+<p>1.最优替换算法</p>
+<p>最优替换策略：<strong>替换内存中在最远将来才会被访问到的页</strong>，可以达到缓存未命中率最低</p>
+<p>2.FIFO</p>
+<p>3.随机替换算法</p>
+<p>缺点：可能会替换出常用的重要页</p>
+<p>4.LRU（最早未使用）</p>
+<p><strong>最近最久未使用（LRU）算法</strong>根据页面调入内存后的使用情况进行决策，选择最近最久未使用的页面予以淘汰；该算法赋予每个页面一个访问字段，用来记录一个页面自上次被访问一来所经历的时间 T，当需要淘汰一个页面时，选择现有页面中 T 值最大的，即最近最久未使用的页面予以淘汰。</p>
+<p>5.<strong>时钟算法</strong></p>
+<p>系统中的所有页放在一个循环列表中，时钟指针开始指向某个页，当进行页替换时，操作系统检查当前时钟指针指向的页的引用位是 1 还是 0，如果是 1，操作系统将其引用位置 0，时钟指针指向下一个页，直到找到一个引用位为 0 的页，将其换出</p>
+<p>基于局部性</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/03/23/%E8%99%9A%E6%8B%9F%E5%8C%96%E5%86%85%E5%AD%98/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/operating-sysytem/" rel="tag">operating sysytem</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/04/20/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%AC2%E6%AC%A1%E4%BD%9C%E4%B8%9A/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            1.operating-systems-three-easy-pieces answers
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/03/15/%E5%B9%B6%E5%8F%91%E6%80%A7/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">并发性</div>
+      </a>
+    
+  </nav>
+
+  
+   
+    
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2019-2022
+        <i class="ri-heart-fill heart_icon"></i> nnilk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>Visitors:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>Views:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="nnilk&#39;s blog"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>
