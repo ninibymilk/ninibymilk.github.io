@@ -1764,24 +1764,24 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 </ol>
 <h2 id="核心算法原理"><a href="#核心算法原理" class="headerlink" title="核心算法原理"></a>核心算法原理</h2><h3 id="01单颗决策树模型表示"><a href="#01单颗决策树模型表示" class="headerlink" title="01单颗决策树模型表示"></a>01单颗决策树模型表示</h3><p>假设某棵决策树有T TT个叶子节点，则单棵决策树模型可记为：</p>
 <p>f(x)&#x3D;w <del>q(x)</del></p>
-<img src="xgboost模型详解.assets/20191107011602813-16473503048002.png" alt="树与权重向量" style="zoom:50%;" />
+<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232448.png" alt="树与权重向量" style="zoom:50%;" />
 
 <p>例如实例落在了第j个叶子结点 ，则其输出的值为 Wj </p>
 <p>则叶子结点的向量表示为</p>
 <p><em>w</em>&#x3D;(<em>w</em>1,⋯,<em>wj</em>,⋯,<em>wT</em>)</p>
 <h3 id="02-集成学习模型结构"><a href="#02-集成学习模型结构" class="headerlink" title="02 集成学习模型结构"></a>02 集成学习模型结构</h3><p>使用Boosting思想，对于实例x，总模型的预测输出为</p>
-<p>​                                               <img src="xgboost模型详解.assets/image-20220315212039282.png" alt="image-20220315212039282" style="zoom: 80%;" /></p>
+<p>​                                               <img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232449.png" alt="image-20220315212039282" style="zoom: 80%;" /></p>
 <p>其中，$f<del>k</del>(x)$  为实例x在第k个决策树的输出</p>
 <h3 id="03-损失函数"><a href="#03-损失函数" class="headerlink" title="03 损失函数"></a>03 损失函数</h3><p>上面一部分我们知道了集成学习方法的预测模型，因为XGBoost也是集成学习方法的一种。对于XGBoost的预测模型同样可以表示为：</p>
-<p><img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170825235956926.png" alt="img"></p>
-<p>其中<img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170825235957243.png" alt="img">为树的总个数，<img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170825235957575.png" alt="img">表示第<img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170825235957958.png" alt="img">颗树，<img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170825235958373.png" alt="img">表示样本<img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170825235958617.png" alt="img">的预测结果。</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232450.png" alt="img"></p>
+<p>其中<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232451.png" alt="img">为树的总个数，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232452.png" alt="img">表示第<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232453.png" alt="img">颗树，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232454.png" alt="img">表示样本<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232455.png" alt="img">的预测结果。</p>
 <p>其中损失函数也同样表示为：</p>
-<p><img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170825235959092.png" alt="img"></p>
-<p>其中<img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170825235959279.png" alt="img">为样本<img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170825235959670.png" alt="img">的训练误差，<img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170825235959963.png" alt="img">表示第<img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170826000000195-164735089520615.png" alt="img">棵树的正则项。</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232456.png" alt="img"></p>
+<p>其中<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232457.png" alt="img">为样本<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232458.png" alt="img">的训练误差，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232459.png" alt="img">表示第<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232500.png" alt="img">棵树的正则项。</p>
 <p>其中为树的总个数，表示第颗树，表示样本的预测结果。</p>
 <p>其中损失函数也同样表示为：</p>
-<p><img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170825235959092-164735092062717.png" alt="img"></p>
-<p>其中<img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170825235959279.png" alt="img">为样本<img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170825235959670.png" alt="img">的训练误差，<img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170825235959963.png" alt="img">表示第<img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/20170826000000195.png" alt="img">棵树的正则项。</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232501.png" alt="img"></p>
+<p>其中<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232457.png" alt="img">为样本<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232458.png" alt="img">的训练误差，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232459.png" alt="img">表示第<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232502.png" alt="img">棵树的正则项。</p>
 <blockquote>
 <p>损失函数，代价函数，目标函数的区别？<br>首先给出结论：</p>
 <p>损失函数（Loss Function ）是定义在单个样本上的，算的是一个样本的误差。</p>
@@ -1794,7 +1794,7 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 <p>对树中的每个叶子结点尝试进行分裂；</p>
 <p>每次分裂后，原来的一个叶子结点继续分裂为左右两个子叶子结点，原叶子结点中的样本集将根据该结点的判断规则分散到左右两个叶子结点中；</p>
 <p>新分裂一个结点后，我们需要检测这次分裂是否会给损失函数带来增益，增益的定义如下：</p>
-<p><img src="/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3.assets/image-20220315214343506-164735182524022.png" alt="image-20220315214343506"></p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232503.png" alt="image-20220315214343506"></p>
 <p>如果L <del>split</del> &gt; 0，或者大于设定的阈值，即分裂后目标函数值下降了，那么可以考虑此次分裂的结果。</p>
 <h3 id="02-如何寻找最佳分裂点"><a href="#02-如何寻找最佳分裂点" class="headerlink" title="02 如何寻找最佳分裂点"></a>02 如何寻找最佳分裂点</h3><p>一棵决策树有多个候选分割点，寻找最佳分割点的理论最佳步骤如下：</p>
 <ol>
@@ -4373,9 +4373,9 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 <p><strong>大端字节序</strong>是指一个整数的最高位字节（23 ~ 31 bit）存储在内存的低地址处，低位字节（0 ~ 7 bit）存储在内存的高地址处；</p>
 <p><strong>小端字节序</strong>则是指整数的高位字节存储在内存的高地址处，而低位字节则存储在内存的低地址处。</p>
 <h3 id="字节序举例"><a href="#字节序举例" class="headerlink" title="字节序举例"></a>字节序举例</h3><h4 id="小端字节序"><a href="#小端字节序" class="headerlink" title="小端字节序"></a>小端字节序</h4><p>0x 01 02 03 04 - ff &#x3D; 255<br>内存的方向 —–&gt;<br>内存的低位 —–&gt; 内存的高位<br>04 03 02 01<br>0x 11 22 33 44 12 34 56 78</p>
-<p><img src="/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80%E2%80%94%E5%AD%97%E8%8A%82%E5%BA%8F%E8%BD%AC%E6%8D%A2.assets/image-20220315222426814-164735426940523.png" alt="image-20220315222426814"></p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232425.png" alt="image-20220315222426814"></p>
 <h4 id="大端字节序"><a href="#大端字节序" class="headerlink" title="大端字节序"></a>大端字节序</h4><p>0x 01 02 03 04<br>内存的方向 —–&gt;<br>内存的低位 —–&gt; 内存的高位<br>01 02 03 04<br>0x 12 34 56 78 11 22 33 44</p>
-<p><img src="/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80%E2%80%94%E5%AD%97%E8%8A%82%E5%BA%8F%E8%BD%AC%E6%8D%A2.assets/image-20220315222517483-164735431925524.png" alt="image-20220315222517483"></p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232426.png" alt="image-20220315222517483"></p>
 <h2 id="字节序转换函数"><a href="#字节序转换函数" class="headerlink" title="字节序转换函数"></a>字节序转换函数</h2><p>当格式化的数据在两台使用不同字节序的主机之间直接传递时，接收端必然错误的解释之。解决问题的方法是：发送端总是把要发送的数据转换成大端字节序数据后再发送，而接收端知道对方传送过来的数据总是采用大端字节序，所以接收端可以根据自身采用的字节序决定是否对接收到的数据进行转换（小端机转换，大端机不转换）。</p>
 <p>网络字节顺序是 TCP&#x2F;IP 中规定好的一种数据表示格式，它与具体的 CPU 类型、操作系统等无关，从而可以保证数据在不同主机之间传输时能够被正确解释，<strong>网络字节顺序采用大端排序方式</strong>。BSD Socket提供了封装好的转换接口，方便程序员使用。包括从主机字节序到网络字节序的转换函数：htons、htonl；从网络字节序到主机字节序的转换函数：ntohs、ntohl。</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">h - host 主机，主机字节序</span><br><span class="line">to - 转换成什么</span><br><span class="line">n - network 网络字节序</span><br><span class="line">    </span><br><span class="line">s - <span class="type">short</span> <span class="type">unsigned</span> <span class="type">short</span>（端口号占<span class="number">16b</span>its，<span class="number">2</span>字节）</span><br><span class="line">l - <span class="type">long</span> <span class="type">unsigned</span> <span class="type">int</span>（ip地址占<span class="number">32b</span>its，<span class="number">4</span>字节）</span><br><span class="line">    </span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="comment">// 转换端口</span></span><br><span class="line"><span class="type">uint16_t</span> <span class="title function_">htons</span><span class="params">(<span class="type">uint16_t</span> hostshort)</span>; <span class="comment">// 主机字节序 - 网络字节序</span></span><br><span class="line"><span class="type">uint16_t</span> <span class="title function_">ntohs</span><span class="params">(<span class="type">uint16_t</span> netshort)</span>; <span class="comment">// 主机字节序 - 网络字节序</span></span><br><span class="line"><span class="comment">// 转IP</span></span><br><span class="line"><span class="type">uint32_t</span> <span class="title function_">htonl</span><span class="params">(<span class="type">uint32_t</span> hostlong)</span>; <span class="comment">// 主机字节序 - 网络字节序</span></span><br><span class="line"><span class="type">uint32_t</span> <span class="title function_">ntohl</span><span class="params">(<span class="type">uint32_t</span> netlong)</span>; <span class="comment">// 主机字节序 - 网络字节序</span></span><br></pre></td></tr></table></figure>
