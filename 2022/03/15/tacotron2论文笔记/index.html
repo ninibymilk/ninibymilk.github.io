@@ -13,7 +13,7 @@
         name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1"
       />
-      <title> nnilk&#39;s personal blog</title>
+      <title>Tacotron2声谱预测网络 |  nnilk&#39;s personal blog</title>
   <meta name="generator" content="hexo-theme-ayer">
       
       <link rel="shortcut icon" href="/favicon.ico" />
@@ -62,11 +62,25 @@
   data-scroll-reveal
 >
   <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Tacotron2声谱预测网络
+</h1>
+ 
+
+      
+    </header>
      
     <div class="article-meta">
       <a href="/2022/03/15/tacotron2%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" class="article-date">
-  <time datetime="2022-03-15T04:39:59.140Z" itemprop="datePublished">2022-03-15</time>
-</a>   
+  <time datetime="2022-03-14T16:00:00.000Z" itemprop="datePublished">2022-03-15</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/TTS-text-to-speech/">TTS(text to speech)</a>
+  </div>
+  
 <div class="word_count">
     <span class="post-time">
         <span class="post-meta-item-icon">
@@ -96,7 +110,7 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <h1 id="Tacotron2声谱预测网络"><a href="#Tacotron2声谱预测网络" class="headerlink" title="Tacotron2声谱预测网络"></a><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1712.05884">Tacotron2声谱预测网络</a></h1><h2 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h2><p>1.<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1143127">注意力机制</a></p>
+  <h1 id="Tacotron2-声谱预测网络"><a href="#Tacotron2-声谱预测网络" class="headerlink" title="Tacotron2 声谱预测网络"></a><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1712.05884">Tacotron2 声谱预测网络</a></h1><h2 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h2><p>1.<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1143127">注意力机制</a></p>
 <p>2.<a target="_blank" rel="noopener" href="https://blog.csdn.net/v_july_v/category_9261611.html">RNN</a></p>
 <p>3.CNN</p>
 <ol start="4">
@@ -105,38 +119,38 @@
 <p>5.<a target="_blank" rel="noopener" href="https://www.pianshen.com/article/93901929427/">梅尔波形（mel spectrogram）——一种中间声学特征表示</a></p>
 <h2 id="模型概述"><a href="#模型概述" class="headerlink" title="模型概述"></a>模型概述</h2><p>该语音合成系统由两个组件组成，如下图所示</p>
 <ol>
-<li>一个循环seq2seq声谱特征预测网络，它从输入字符序列预测mel谱图帧的序列;</li>
-<li>一个改进的WaveNet，它根据预测的mel谱图帧生成时域波形样本。</li>
+<li>一个循环 seq2seq 声谱特征预测网络，它从输入字符序列预测 mel 谱图帧的序列;</li>
+<li>一个改进的 WaveNet，它根据预测的 mel 谱图帧生成时域波形样本。</li>
 </ol>
 <p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202203031055188.png" alt="image-20220303105518888"></p>
-<p>我们选择了一个低电平的声学表示:梅尔-频谱图，以连接这两个成分。使用一种很容易从时域波形计算出来的表示形式，可以让我们分别训练这两个分量。这种表示也比波形样本更平滑，更容易训练使用平方误差损失，因为它是不变的相位在每一帧。mel谱图与线性谱图有关，即短时傅里叶变换(STFT)幅度。</p>
+<p>我们选择了一个低电平的声学表示:梅尔-频谱图，以连接这两个成分。使用一种很容易从时域波形计算出来的表示形式，可以让我们分别训练这两个分量。这种表示也比波形样本更平滑，更容易训练使用平方误差损失，因为它是不变的相位在每一帧。mel 谱图与线性谱图有关，即短时傅里叶变换(STFT)幅度。</p>
 <p>该方法是根据人类听觉系统的实测响应，对短时傅立叶变换的频率轴进行非线性变换，以较少的维数总结频率内容。</p>
-<p>使用这种听觉频率标度可以强调对语音清晰度至关重要的低频细节，同时减少了对高频细节的强调，高频细节主要由摩擦和其他噪声爆发控制，通常不需要以高保真度建模。由于这些特性，从mel尺度衍生出来的特征已经被用作语音识别的基础表示几十年了</p>
-<h2 id="声谱预测网络"><a href="#声谱预测网络" class="headerlink" title="声谱预测网络"></a>声谱预测网络</h2><h3 id="梅尔谱图生成"><a href="#梅尔谱图生成" class="headerlink" title="梅尔谱图生成"></a>梅尔谱图生成</h3><p>我们使用跨越125 Hz至7.6 kHz的80通道mel滤波器组将STFT幅度转换为梅尔尺度，然后进行对数动态范围压缩。在日志压缩之前，为了限制对数域的动态范围，滤波器组的输出幅度被裁剪到最小值0.01。</p>
-<h3 id="结构概述"><a href="#结构概述" class="headerlink" title="结构概述"></a>结构概述</h3><p>该网络由编码器（Encoder）和解码器（Decoder）组成。编码器将字符序列转换为隐藏的特征表示，解码器使用该特征表示来预测谱图。输入字符使用学习过的512维字符嵌入（a learned 512-dimensional character embedding）表示，该字符嵌入经过3个卷积层的堆栈，每个卷积层包含512个形状为 5 x 1 的滤波器（filter），即每个滤波器跨越5个字符，然后是批量归一化和ReLU激活。</p>
+<p>使用这种听觉频率标度可以强调对语音清晰度至关重要的低频细节，同时减少了对高频细节的强调，高频细节主要由摩擦和其他噪声爆发控制，通常不需要以高保真度建模。由于这些特性，从 mel 尺度衍生出来的特征已经被用作语音识别的基础表示几十年了</p>
+<h2 id="声谱预测网络"><a href="#声谱预测网络" class="headerlink" title="声谱预测网络"></a>声谱预测网络</h2><h3 id="梅尔谱图生成"><a href="#梅尔谱图生成" class="headerlink" title="梅尔谱图生成"></a>梅尔谱图生成</h3><p>我们使用跨越 125 Hz 至 7.6 kHz 的 80 通道 mel 滤波器组将 STFT 幅度转换为梅尔尺度，然后进行对数动态范围压缩。在日志压缩之前，为了限制对数域的动态范围，滤波器组的输出幅度被裁剪到最小值 0.01。</p>
+<h3 id="结构概述"><a href="#结构概述" class="headerlink" title="结构概述"></a>结构概述</h3><p>该网络由编码器（Encoder）和解码器（Decoder）组成。编码器将字符序列转换为隐藏的特征表示，解码器使用该特征表示来预测谱图。输入字符使用学习过的 512 维字符嵌入（a learned 512-dimensional character embedding）表示，该字符嵌入经过 3 个卷积层的堆栈，每个卷积层包含 512 个形状为 5 x 1 的滤波器（filter），即每个滤波器跨越 5 个字符，然后是批量归一化和 ReLU 激活。</p>
 <h3 id="编码器（Encoder）"><a href="#编码器（Encoder）" class="headerlink" title="编码器（Encoder）"></a>编码器（Encoder）</h3><p>编码器输出由注意力网络消耗，该网络将完整编码序列总结为每个解码器输出步骤的固定长度上下文向量。我们使用位置敏感注意（location-sensitive attention），它扩展了可加性注意机制将先前解码器时间步骤中的累积注意权值作为额外的特征。这鼓励模型在输入过程中始终向前移动，减少解码程序重复或忽略某些子序列的潜在失败模式。在投射输入后计算注意力概率</p>
 <blockquote>
-<p>在Tacotron2中，编码器将输入序列 X&#x3D;[x<del>1</del>,x<del>2</del>,…,x<del>Tx</del>] 映射成序列H&#x3D;[h<del>1</del>,h<del>2</del>,…,h<del>Tx</del>]  ，其中序列H被称作“编码器隐状态”(encoder hidden states)。注意：编码器的输入输出序列都拥有相同的长度，h<del>i</del>之于相邻分量h<del>j</del>拥有的信息等价于x<del>i</del>之于x<del>j</del>所拥有的信息。</p>
-<p>在Tacotron2中，每一个输入分量xi就是一个字符。Tacotron2的编码器是一个3层卷积层后跟一个双向LSTM层形成的模块，在Tacotron2中卷积层给予了神经网络类似于N−gramN−gram感知上下文的能力。这里使用卷积层获取上下文主要是由于实践中RNN很难捕获长时依赖，并且卷积层的使用使得模型对不发音字符更为鲁棒(如’know’中的’k’)。</p>
-<p>经词嵌入(word embedding)的字符序列先送入三层卷积层以提取上下文信息，然后送入一个双向的LSTM中生成编码器隐状态，即：</p>
+<p>在 Tacotron2 中，编码器将输入序列 X&#x3D;[x<del>1</del>,x<del>2</del>,…,x<del>Tx</del>] 映射成序列 H&#x3D;[h<del>1</del>,h<del>2</del>,…,h<del>Tx</del>] ，其中序列 H 被称作“编码器隐状态”(encoder hidden states)。注意：编码器的输入输出序列都拥有相同的长度，h<del>i</del>之于相邻分量 h<del>j</del>拥有的信息等价于 x<del>i</del>之于 x<del>j</del>所拥有的信息。</p>
+<p>在 Tacotron2 中，每一个输入分量 xi 就是一个字符。Tacotron2 的编码器是一个 3 层卷积层后跟一个双向 LSTM 层形成的模块，在 Tacotron2 中卷积层给予了神经网络类似于 N−gramN−gram 感知上下文的能力。这里使用卷积层获取上下文主要是由于实践中 RNN 很难捕获长时依赖，并且卷积层的使用使得模型对不发音字符更为鲁棒(如’know’中的’k’)。</p>
+<p>经词嵌入(word embedding)的字符序列先送入三层卷积层以提取上下文信息，然后送入一个双向的 LSTM 中生成编码器隐状态，即：</p>
 <p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202203031438629.png" alt="image-20220225155829121"></p>
-<p>其中，F1、F2、F3F1、F2、F3为3个卷积核，ReLUReLU为每一个卷积层上的非线性激活E¯表示对字符序列X做embedding，EncoderRecurrency表示双向LSTM。</p>
+<p>其中，F1、F2、F3F1、F2、F3 为 3 个卷积核，ReLUReLU 为每一个卷积层上的非线性激活 E¯ 表示对字符序列 X 做 embedding，EncoderRecurrency 表示双向 LSTM。</p>
 </blockquote>
-<h3 id="Tacotron2注意力机制-Location-Sensitive-Attention"><a href="#Tacotron2注意力机制-Location-Sensitive-Attention" class="headerlink" title="Tacotron2注意力机制-Location Sensitive Attention"></a>Tacotron2注意力机制-Location Sensitive Attention</h3><blockquote>
+<h3 id="Tacotron2-注意力机制-Location-Sensitive-Attention"><a href="#Tacotron2-注意力机制-Location-Sensitive-Attention" class="headerlink" title="Tacotron2 注意力机制-Location Sensitive Attention"></a>Tacotron2 注意力机制-Location Sensitive Attention</h3><blockquote>
 <p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202203031438800.png" alt="image-20220225160230769"></p>
-<p>其中，s<del>i</del>为<em>当前</em>解码器隐状态而非上一步解码器隐状态，偏置值b被初始化为0。位置特征fi使用累加注意力权重cα<del>i</del>卷积而来</p>
+<p>其中，s<del>i</del>为<em>当前</em>解码器隐状态而非上一步解码器隐状态，偏置值 b 被初始化为 0。位置特征 fi 使用累加注意力权重 cα<del>i</del>卷积而来</p>
 <p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202203031438516.png" alt="image-20220225160333596"></p>
 </blockquote>
-<h3 id="解码器（Decoder）"><a href="#解码器（Decoder）" class="headerlink" title="解码器（Decoder）"></a>解码器（Decoder）</h3><p>该解码器是一种自回归递归神经网络，它从编码后的输入序列一帧一帧地预测mel谱图。</p>
+<h3 id="解码器（Decoder）"><a href="#解码器（Decoder）" class="headerlink" title="解码器（Decoder）"></a>解码器（Decoder）</h3><p>该解码器是一种自回归递归神经网络，它从编码后的输入序列一帧一帧地预测 mel 谱图。</p>
 <p>其处理步骤如下：</p>
 <ol>
-<li>前一个时间步的预测首先通过一个包含2个完全连接的256个隐藏ReLU单元的pre-net。</li>
-<li>将pre-net输出和注意上下文向量串联起来，并通过一个包含1024个单元的2个单向LSTM层的堆栈。</li>
-<li>将LSTM输出与注意上下文向量串联起来，通过线性变换进行投影，对目标谱图帧进行预测。</li>
-<li>最后，将预测的mel谱图通过5层卷积post-net（5-layer convolutional post-net）进行预测，并将残差添加到预测中以改善预测的梅尔谱图质量。post-net由512个滤波器组成，形状为5 x 1，批量归一化，然后在最后一层上进行tanh激活。</li>
+<li>前一个时间步的预测首先通过一个包含 2 个完全连接的 256 个隐藏 ReLU 单元的 pre-net。</li>
+<li>将 pre-net 输出和注意上下文向量串联起来，并通过一个包含 1024 个单元的 2 个单向 LSTM 层的堆栈。</li>
+<li>将 LSTM 输出与注意上下文向量串联起来，通过线性变换进行投影，对目标谱图帧进行预测。</li>
+<li>最后，将预测的 mel 谱图通过 5 层卷积 post-net（5-layer convolutional post-net）进行预测，并将残差添加到预测中以改善预测的梅尔谱图质量。post-net 由 512 个滤波器组成，形状为 5 x 1，批量归一化，然后在最后一层上进行 tanh 激活。</li>
 </ol>
 <p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202203031055369.png" alt="image-20220303105542062"></p>
-<h2 id="声码器（Vocoder）"><a href="#声码器（Vocoder）" class="headerlink" title="声码器（Vocoder）"></a>声码器（Vocoder）</h2><p>该论文使用的声码器是一个改进的WaveNet，不是本次论文重点提出的模型，也不是我们本次项目使用到的声码器模型。故略。之后再对melgan等声码器进行分析。</p>
+<h2 id="声码器（Vocoder）"><a href="#声码器（Vocoder）" class="headerlink" title="声码器（Vocoder）"></a>声码器（Vocoder）</h2><p>该论文使用的声码器是一个改进的 WaveNet，不是本次论文重点提出的模型，也不是我们本次项目使用到的声码器模型。故略。之后再对 melgan 等声码器进行分析。</p>
  
       <!-- reward -->
       
@@ -212,6 +226,8 @@
 </div>
 
 <div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AI/" rel="tag">AI</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DL/" rel="tag">DL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ML/" rel="tag">ML</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TTS/" rel="tag">TTS</a></li></ul>
+
     </footer>
   </div>
 
