@@ -4426,8 +4426,47 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
       </tags>
   </entry>
   <entry>
+    <title>网络编程基础 2 —socket地址</title>
+    <url>/2022/02/15/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80%E2%80%94socket%E5%9C%B0%E5%9D%80/</url>
+    <content><![CDATA[<h1 id="网络编程基础—socket地址"><a href="#网络编程基础—socket地址" class="headerlink" title="网络编程基础—socket地址"></a>网络编程基础—socket地址</h1><p>socket地址其实是一个结构体，封装端口号和IP等信息。后面的socket相关的api中需要使用到这个socket地址。</p>
+<h2 id="通用-socket-地址"><a href="#通用-socket-地址" class="headerlink" title="通用 socket 地址"></a>通用 socket 地址</h2><p>socket 网络编程接口中表示 socket 地址的是结构体 sockaddr，其定义如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/socket.h&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span> &#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sa_family;</span><br><span class="line"><span class="type">char</span> sa_data[<span class="number">14</span>];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">unsigned</span> <span class="type">short</span> <span class="type">int</span> <span class="type">sa_family_t</span>;</span><br></pre></td></tr></table></figure>
+
+<p>sa_family 成员是地址族类型（sa_family_t）的变量。地址族类型通常与协议族类型对应。常见的协议族（protocol family，也称domain）和对应的地址族入下所示：</p>
+<img src="/.com//image-20220316191720230-16474360642677.png" alt="image-20220316191720230" style="zoom:80%;">
+
+
+
+<p><em>宏 PF_ * 和 AF_ * 都定义在 bits&#x2F;socket.h 头文件中，且后者与前者有完全相同的值，所以二者通常混用。</em></p>
+<p>sa_data 成员用于存放 socket 地址值。但是，不同的协议族的地址值具有不同的含义和长度，如下所示：</p>
+<img src="/.com//image-20220316192107656-16474360610286.png" alt="image-20220316192107656" style="zoom:80%;">
+
+<p>由上表可知，14 字节的 sa_data 根本无法容纳多数协议族的地址值。因此，Linux 定义了下面这个新的通用的 socket 地址结构体，这个结构体不仅提供了足够大的空间用于存放地址值，而且是内存对齐的。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/socket.h&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_storage</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sa_family;</span><br><span class="line"><span class="type">unsigned</span> <span class="type">long</span> <span class="type">int</span> __ss_align;</span><br><span class="line"><span class="type">char</span> __ss_padding[ <span class="number">128</span> - <span class="keyword">sizeof</span>(__ss_align) ];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">unsigned</span> <span class="type">short</span> <span class="type">int</span> <span class="type">sa_family_t</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="专用-socket-地址"><a href="#专用-socket-地址" class="headerlink" title="专用 socket 地址"></a>专用 socket 地址</h2><p>很多网络编程函数诞生早于 IPv4 协议，那时候都使用的是 struct sockaddr 结构体，为了向前兼容，现在sockaddr 退化成了（void *）的作用，传递一个地址给函数，至于这个函数是 sockaddr_in 还是sockaddr_in6，由地址族确定，然后函数内部再强制类型转化为所需的地址类型。</p>
+<img src="/.com//image-20220316193534854-16474360690768.png" alt="image-20220316193534854" style="zoom:80%;">
+
+<p>UNIX 本地域协议族使用如下专用的 socket 地址结构体：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/un.h&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sin_family;</span><br><span class="line"><span class="type">char</span> sun_path[<span class="number">108</span>];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>TCP&#x2F;IP 协议族有 sockaddr_in 和 sockaddr_in6 两个专用的 socket 地址结构体，它们分别用于 IPv4 和IPv6：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;netinet/in.h&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sin_family; <span class="comment">/* __SOCKADDR_COMMON(sin_) */</span></span><br><span class="line"><span class="type">in_port_t</span> sin_port; <span class="comment">/* Port number. */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">in_addr</span> <span class="title">sin_addr</span>;</span> <span class="comment">/* Internet address. */</span></span><br><span class="line"><span class="comment">/* Pad to size of `struct sockaddr&#x27;. */</span></span><br><span class="line"><span class="type">unsigned</span> <span class="type">char</span> sin_zero[<span class="keyword">sizeof</span> (<span class="keyword">struct</span> sockaddr) - __SOCKADDR_COMMON_SIZE -</span><br><span class="line"><span class="keyword">sizeof</span> (<span class="type">in_port_t</span>) - <span class="keyword">sizeof</span> (<span class="keyword">struct</span> in_addr)];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">in_addr</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="type">in_addr_t</span> s_addr;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in6</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sin6_family;</span><br><span class="line"><span class="type">in_port_t</span> sin6_port; <span class="comment">/* Transport layer port # */</span></span><br><span class="line"><span class="type">uint32_t</span> sin6_flowinfo; <span class="comment">/* IPv6 flow information */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">in6_addr</span> <span class="title">sin6_addr</span>;</span> <span class="comment">/* IPv6 address */</span></span><br><span class="line"><span class="type">uint32_t</span> sin6_scope_id; <span class="comment">/* IPv6 scope-id */</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">unsigned</span> <span class="type">short</span> <span class="type">uint16_t</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">unsigned</span> <span class="type">int</span> <span class="type">uint32_t</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">uint16_t</span> <span class="type">in_port_t</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">uint32_t</span> <span class="type">in_addr_t</span>;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> __SOCKADDR_COMMON_SIZE (sizeof (unsigned short int)</span></span><br></pre></td></tr></table></figure>
+
+<p>所有专用 socket 地址（以及 sockaddr_storage）类型的变量在实际使用时都需要转化为通用 socket 地址类型 sockaddr（强制转化即可），因为所有 socket 编程接口使用的地址参数类型都是 sockaddr。</p>
+]]></content>
+      <categories>
+        <category>WebServer</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>computer network</tag>
+        <tag>socket</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>网络编程基础 3 —socket通信函数</title>
-    <url>/2022/02/16/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80-%E2%80%94socket%E5%87%BD%E6%95%B0.md/</url>
+    <url>/2022/02/16/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80-%E2%80%94socket%E5%87%BD%E6%95%B0/</url>
     <content><![CDATA[<h1 id="socket通信函数"><a href="#socket通信函数" class="headerlink" title="socket通信函数"></a>socket通信函数</h1><h2 id="TCP通信流程"><a href="#TCP通信流程" class="headerlink" title="TCP通信流程"></a>TCP通信流程</h2><p>TCP 和 UDP 都是传输层的协议<br>UDP:用户数据报协议，面向无连接，可以单播，多播，广播， 面向数据报，不可靠<br>TCP:传输控制协议，面向连接的，可靠的，基于字节流，仅支持单播传输</p>
 <p>两者主要区别如下：</p>
 <table>
@@ -4470,7 +4509,7 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 </tr>
 </tbody></table>
 <p><strong>通信流程图</strong></p>
-<img src="网络编程基础-—socket函数.md.assets/image-20220316202702180.png" alt="image-20220316202702180" style="zoom:80%;" />
+<img src="/.com//image-20220316202702180-16474360182555.png" alt="image-20220316202702180" style="zoom:80%;">
 
 <h2 id="socket通信函数介绍"><a href="#socket通信函数介绍" class="headerlink" title="socket通信函数介绍"></a>socket通信函数介绍</h2><p>1.头文件</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span> <span class="comment">// 包含了这个头文件，上面两个就可以省略</span></span></span><br></pre></td></tr></table></figure>
@@ -4492,45 +4531,6 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 <p>5.connect()</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">connect</span><span class="params">(<span class="type">int</span> sockfd, <span class="type">const</span> <span class="keyword">struct</span> sockaddr *addr, <span class="type">socklen_t</span> addrlen)</span>;</span><br><span class="line">- 功能： 客户端连接服务器</span><br><span class="line">- 参数：</span><br><span class="line">- sockfd : 用于通信的文件描述符</span><br><span class="line">- addr : 客户端要连接的服务器的地址信息</span><br><span class="line">- addrlen : 第二个参数的内存大小</span><br><span class="line">- 返回值：成功 <span class="number">0</span>， 失败 <span class="number">-1</span></span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">write</span><span class="params">(<span class="type">int</span> fd, <span class="type">const</span> <span class="type">void</span> *buf, <span class="type">size_t</span> count)</span>; <span class="comment">// 写数据</span></span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">read</span><span class="params">(<span class="type">int</span> fd, <span class="type">void</span> *buf, <span class="type">size_t</span> count)</span>; <span class="comment">// 读数据</span></span><br></pre></td></tr></table></figure>
 
-]]></content>
-      <categories>
-        <category>WebServer</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
-        <tag>computer network</tag>
-        <tag>socket</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>网络编程基础 2 —socket地址</title>
-    <url>/2022/02/15/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80%E2%80%94socket%E5%9C%B0%E5%9D%80/</url>
-    <content><![CDATA[<h1 id="网络编程基础—socket地址"><a href="#网络编程基础—socket地址" class="headerlink" title="网络编程基础—socket地址"></a>网络编程基础—socket地址</h1><p>socket地址其实是一个结构体，封装端口号和IP等信息。后面的socket相关的api中需要使用到这个socket地址。</p>
-<h2 id="通用-socket-地址"><a href="#通用-socket-地址" class="headerlink" title="通用 socket 地址"></a>通用 socket 地址</h2><p>socket 网络编程接口中表示 socket 地址的是结构体 sockaddr，其定义如下：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/socket.h&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span> &#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sa_family;</span><br><span class="line"><span class="type">char</span> sa_data[<span class="number">14</span>];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">unsigned</span> <span class="type">short</span> <span class="type">int</span> <span class="type">sa_family_t</span>;</span><br></pre></td></tr></table></figure>
-
-<p>sa_family 成员是地址族类型（sa_family_t）的变量。地址族类型通常与协议族类型对应。常见的协议族（protocol family，也称domain）和对应的地址族入下所示：</p>
-<img src="网络编程基础—socket地址.assets/image-20220316191720230.png" alt="image-20220316191720230" style="zoom:80%;" />
-
-
-
-<p><em>宏 PF_ * 和 AF_ * 都定义在 bits&#x2F;socket.h 头文件中，且后者与前者有完全相同的值，所以二者通常混用。</em></p>
-<p>sa_data 成员用于存放 socket 地址值。但是，不同的协议族的地址值具有不同的含义和长度，如下所示：</p>
-<img src="网络编程基础—socket地址.assets/image-20220316192107656.png" alt="image-20220316192107656" style="zoom:80%;" />
-
-<p>由上表可知，14 字节的 sa_data 根本无法容纳多数协议族的地址值。因此，Linux 定义了下面这个新的通用的 socket 地址结构体，这个结构体不仅提供了足够大的空间用于存放地址值，而且是内存对齐的。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/socket.h&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_storage</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sa_family;</span><br><span class="line"><span class="type">unsigned</span> <span class="type">long</span> <span class="type">int</span> __ss_align;</span><br><span class="line"><span class="type">char</span> __ss_padding[ <span class="number">128</span> - <span class="keyword">sizeof</span>(__ss_align) ];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">unsigned</span> <span class="type">short</span> <span class="type">int</span> <span class="type">sa_family_t</span>;</span><br></pre></td></tr></table></figure>
-
-<h2 id="专用-socket-地址"><a href="#专用-socket-地址" class="headerlink" title="专用 socket 地址"></a>专用 socket 地址</h2><p>很多网络编程函数诞生早于 IPv4 协议，那时候都使用的是 struct sockaddr 结构体，为了向前兼容，现在sockaddr 退化成了（void *）的作用，传递一个地址给函数，至于这个函数是 sockaddr_in 还是sockaddr_in6，由地址族确定，然后函数内部再强制类型转化为所需的地址类型。</p>
-<img src="网络编程基础—socket地址.assets/image-20220316193534854.png" alt="image-20220316193534854" style="zoom:80%;" />
-
-<p>UNIX 本地域协议族使用如下专用的 socket 地址结构体：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/un.h&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sin_family;</span><br><span class="line"><span class="type">char</span> sun_path[<span class="number">108</span>];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>TCP&#x2F;IP 协议族有 sockaddr_in 和 sockaddr_in6 两个专用的 socket 地址结构体，它们分别用于 IPv4 和IPv6：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;netinet/in.h&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sin_family; <span class="comment">/* __SOCKADDR_COMMON(sin_) */</span></span><br><span class="line"><span class="type">in_port_t</span> sin_port; <span class="comment">/* Port number. */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">in_addr</span> <span class="title">sin_addr</span>;</span> <span class="comment">/* Internet address. */</span></span><br><span class="line"><span class="comment">/* Pad to size of `struct sockaddr&#x27;. */</span></span><br><span class="line"><span class="type">unsigned</span> <span class="type">char</span> sin_zero[<span class="keyword">sizeof</span> (<span class="keyword">struct</span> sockaddr) - __SOCKADDR_COMMON_SIZE -</span><br><span class="line"><span class="keyword">sizeof</span> (<span class="type">in_port_t</span>) - <span class="keyword">sizeof</span> (<span class="keyword">struct</span> in_addr)];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">in_addr</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="type">in_addr_t</span> s_addr;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in6</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sin6_family;</span><br><span class="line"><span class="type">in_port_t</span> sin6_port; <span class="comment">/* Transport layer port # */</span></span><br><span class="line"><span class="type">uint32_t</span> sin6_flowinfo; <span class="comment">/* IPv6 flow information */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">in6_addr</span> <span class="title">sin6_addr</span>;</span> <span class="comment">/* IPv6 address */</span></span><br><span class="line"><span class="type">uint32_t</span> sin6_scope_id; <span class="comment">/* IPv6 scope-id */</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">unsigned</span> <span class="type">short</span> <span class="type">uint16_t</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">unsigned</span> <span class="type">int</span> <span class="type">uint32_t</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">uint16_t</span> <span class="type">in_port_t</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">uint32_t</span> <span class="type">in_addr_t</span>;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> __SOCKADDR_COMMON_SIZE (sizeof (unsigned short int)</span></span><br></pre></td></tr></table></figure>
-
-<p>所有专用 socket 地址（以及 sockaddr_storage）类型的变量在实际使用时都需要转化为通用 socket 地址类型 sockaddr（强制转化即可），因为所有 socket 编程接口使用的地址参数类型都是 sockaddr。</p>
 ]]></content>
       <categories>
         <category>WebServer</category>
