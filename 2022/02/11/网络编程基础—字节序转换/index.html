@@ -13,7 +13,7 @@
         name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1"
       />
-      <title>网络编程基础—字节序转换 |  nnilk&#39;s blog</title>
+      <title>网络编程基础 1 —字节序转换/IP地址转换 |  nnilk&#39;s blog</title>
   <meta name="generator" content="hexo-theme-ayer">
       
       <link rel="shortcut icon" href="/images/logo3.ico" />
@@ -66,7 +66,7 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  网络编程基础—字节序转换
+  网络编程基础 1 —字节序转换/IP地址转换
 </h1>
  
 
@@ -86,7 +86,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> Word count:</span>
-            <span class="post-count">977</span>
+            <span class="post-count">1.3k</span>
         </span>
     </span>
 
@@ -95,7 +95,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> Reading time≈</span>
-            <span class="post-count">4 min</span>
+            <span class="post-count">5 min</span>
         </span>
     </span>
 </div>
@@ -110,7 +110,7 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <h1 id="网络编程基础—字节序转换"><a href="#网络编程基础—字节序转换" class="headerlink" title="网络编程基础—字节序转换"></a>网络编程基础—字节序转换</h1><h2 id="字节序"><a href="#字节序" class="headerlink" title="字节序"></a>字节序</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><blockquote>
+  <h1 id="网络编程基础—字节序转换-x2F-IP地址转换"><a href="#网络编程基础—字节序转换-x2F-IP地址转换" class="headerlink" title="网络编程基础—字节序转换&#x2F;IP地址转换"></a>网络编程基础—字节序转换&#x2F;IP地址转换</h1><h2 id="字节序"><a href="#字节序" class="headerlink" title="字节序"></a>字节序</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><blockquote>
 <p>现代 CPU 的累加器一次都能装载（至少）4 字节（这里考虑 32 位机），即一个整数。那么这 4字节在内存中排列的顺序将影响它被累加器装载成的整数的值，这就是字节序问题。在各种计算机体系结构中，对于字节、字等的存储机制有所不同，因而引发了计算机通信领域中一个很重要的问题，即通信双方交流的信息单元（比特、字节、字、双字等等）应该以什么样的顺序进行传送。</p>
 </blockquote>
 <p><strong>字节序，顾名思义字节的顺序，就是大于一个字节类型的数据在内存中的存放顺序(一个字节的数据当然就无需谈顺序的问题了)。字节序分为大端字节序（Big-Endian） 和小端字节序（Little-Endian）。</strong></p>
@@ -143,6 +143,21 @@
 
 <p>4、ntohl</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">// ntohl</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span> buf1[<span class="number">4</span>] = &#123;<span class="number">1</span>, <span class="number">1</span>, <span class="number">168</span>, <span class="number">192</span>&#125;;</span><br><span class="line">    <span class="type">int</span> num1 = *(<span class="type">int</span> *)buf1;</span><br><span class="line">    <span class="type">int</span> sum1 = ntohl(num1);</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span> *p1 = (<span class="type">unsigned</span> <span class="type">char</span> *)&amp;sum1;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d %d %d %d\n&quot;</span>, *p1, *(p1+<span class="number">1</span>), *(p1+<span class="number">2</span>), *(p1+<span class="number">3</span>));</span><br><span class="line"><span class="comment">//输出 192 168 1 1</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="IP地址转换函数"><a href="#IP地址转换函数" class="headerlink" title="IP地址转换函数"></a>IP地址转换函数</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line">  <span class="comment">// p:点分十进制的IP字符串，n:表示network，网络字节序的整数</span></span><br><span class="line">  <span class="type">int</span> <span class="title function_">inet_pton</span><span class="params">(<span class="type">int</span> af, <span class="type">const</span> <span class="type">char</span> *src, <span class="type">void</span> *dst)</span>;</span><br><span class="line">      af:地址族： AF_INET（TCP/IPv4协议族）  AF_INET6（TCP/IPv6议族）</span><br><span class="line">      src:需要转换的点分十进制的IP字符串</span><br><span class="line">      dst:转换后的结果保存在这个里面</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 将网络字节序的整数，转换成点分十进制的IP地址字符串</span></span><br><span class="line">  <span class="type">const</span> <span class="type">char</span> *<span class="title function_">inet_ntop</span><span class="params">(<span class="type">int</span> af, <span class="type">const</span> <span class="type">void</span> *src, <span class="type">char</span> *dst, <span class="type">socklen_t</span> size)</span>;</span><br><span class="line">      af:地址族： AF_INET（TCP/IPv4协议族）  AF_INET6（TCP/IPv6议族）</span><br><span class="line">      src: 要转换的ip的整数的地址</span><br><span class="line">      dst: 转换成IP地址字符串保存的地方</span><br><span class="line">      size：第三个参数的大小（数组的大小）</span><br><span class="line">      返回值：返回转换后的数据的地址（字符串），和 dst 是一样的</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>  1、 创建一个ip字符串,点分十进制的IP地址字符串</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">char *buf = &quot;192.168.1.4&quot;;</span><br><span class="line">unsigned int num = 0;</span><br></pre></td></tr></table></figure>
+
+<p>2、将点分十进制的IP字符串转换成网络字节序的整数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">inet_pton(AF_INET, buf, &amp;num);</span><br><span class="line">unsigned char * p = (unsigned char *)&amp;num;</span><br><span class="line">printf(&quot;%d %d %d %d\n&quot;, *p, *(p+1), *(p+2), *(p+3));</span><br></pre></td></tr></table></figure>
+
+<p>3、将网络字节序的IP整数转换成点分十进制的IP字符串</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">char ip[16] = &quot;&quot;;</span><br><span class="line">const char * str =  inet_ntop(AF_INET, &amp;num, ip, 16);</span><br><span class="line">printf(&quot;str : %s\n&quot;, str);</span><br><span class="line">printf(&quot;ip : %s\n&quot;, str);</span><br><span class="line">printf(&quot;%d\n&quot;, ip == str);</span><br></pre></td></tr></table></figure>
 
  
       <!-- reward -->
@@ -221,11 +236,11 @@
    
   <nav class="article-nav">
     
-      <a href="/2022/03/15/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3/" class="article-nav-link">
+      <a href="/2022/02/15/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80%E2%80%94socket%E5%9C%B0%E5%9D%80/" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            Xgboost模型详解
+            网络编程基础 2 —socket地址
           
         </div>
       </a>
