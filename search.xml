@@ -4433,19 +4433,19 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/socket.h&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span> &#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sa_family;</span><br><span class="line"><span class="type">char</span> sa_data[<span class="number">14</span>];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">unsigned</span> <span class="type">short</span> <span class="type">int</span> <span class="type">sa_family_t</span>;</span><br></pre></td></tr></table></figure>
 
 <p>sa_family 成员是地址族类型（sa_family_t）的变量。地址族类型通常与协议族类型对应。常见的协议族（protocol family，也称domain）和对应的地址族入下所示：</p>
-<img src="/.com//image-20220316191720230-16474360642677.png" alt="image-20220316191720230" style="zoom:80%;">
+<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220316212302.png" alt="image-20220316191720230" style="zoom:80%;">
 
 
 
 <p><em>宏 PF_ * 和 AF_ * 都定义在 bits&#x2F;socket.h 头文件中，且后者与前者有完全相同的值，所以二者通常混用。</em></p>
 <p>sa_data 成员用于存放 socket 地址值。但是，不同的协议族的地址值具有不同的含义和长度，如下所示：</p>
-<img src="/.com//image-20220316192107656-16474360610286.png" alt="image-20220316192107656" style="zoom:80%;">
+<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220316212303.png" alt="image-20220316192107656" style="zoom:80%;">
 
 <p>由上表可知，14 字节的 sa_data 根本无法容纳多数协议族的地址值。因此，Linux 定义了下面这个新的通用的 socket 地址结构体，这个结构体不仅提供了足够大的空间用于存放地址值，而且是内存对齐的。</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/socket.h&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_storage</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sa_family;</span><br><span class="line"><span class="type">unsigned</span> <span class="type">long</span> <span class="type">int</span> __ss_align;</span><br><span class="line"><span class="type">char</span> __ss_padding[ <span class="number">128</span> - <span class="keyword">sizeof</span>(__ss_align) ];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">unsigned</span> <span class="type">short</span> <span class="type">int</span> <span class="type">sa_family_t</span>;</span><br></pre></td></tr></table></figure>
 
 <h2 id="专用-socket-地址"><a href="#专用-socket-地址" class="headerlink" title="专用 socket 地址"></a>专用 socket 地址</h2><p>很多网络编程函数诞生早于 IPv4 协议，那时候都使用的是 struct sockaddr 结构体，为了向前兼容，现在sockaddr 退化成了（void *）的作用，传递一个地址给函数，至于这个函数是 sockaddr_in 还是sockaddr_in6，由地址族确定，然后函数内部再强制类型转化为所需的地址类型。</p>
-<img src="/.com//image-20220316193534854-16474360690768.png" alt="image-20220316193534854" style="zoom:80%;">
+<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220316212304.png" alt="image-20220316193534854" style="zoom:80%;">
 
 <p>UNIX 本地域协议族使用如下专用的 socket 地址结构体：</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/un.h&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sin_family;</span><br><span class="line"><span class="type">char</span> sun_path[<span class="number">108</span>];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
@@ -4509,7 +4509,7 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 </tr>
 </tbody></table>
 <p><strong>通信流程图</strong></p>
-<img src="/.com//image-20220316202702180-16474360182555.png" alt="image-20220316202702180" style="zoom:80%;">
+<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220316212318.png" alt="image-20220316202702180" style="zoom:80%;">
 
 <h2 id="socket通信函数介绍"><a href="#socket通信函数介绍" class="headerlink" title="socket通信函数介绍"></a>socket通信函数介绍</h2><p>1.头文件</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span> <span class="comment">// 包含了这个头文件，上面两个就可以省略</span></span></span><br></pre></td></tr></table></figure>
@@ -4540,10 +4540,5 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
         <tag>computer network</tag>
         <tag>socket</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>test</title>
-    <url>/2022/03/16/test/</url>
-    <content><![CDATA[]]></content>
   </entry>
 </search>
