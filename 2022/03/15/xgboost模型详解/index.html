@@ -78,7 +78,7 @@
   <time datetime="2022-03-14T16:00:00.000Z" itemprop="datePublished">2022-03-15</time>
 </a> 
   <div class="article-category">
-    <a class="article-category-link" href="/categories/MachineLearnin/">MachineLearnin</a>
+    <a class="article-category-link" href="/categories/MachineLearning/">MachineLearning</a>
   </div>
   
 <div class="word_count">
@@ -129,13 +129,13 @@
 </ol>
 <h2 id="核心算法原理"><a href="#核心算法原理" class="headerlink" title="核心算法原理"></a>核心算法原理</h2><h3 id="01单颗决策树模型表示"><a href="#01单颗决策树模型表示" class="headerlink" title="01单颗决策树模型表示"></a>01单颗决策树模型表示</h3><p>假设某棵决策树有T TT个叶子节点，则单棵决策树模型可记为：</p>
 <p>f(x)&#x3D;w <del>q(x)</del></p>
-<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232448.png" alt="树与权重向量" style="zoom:50%;" />
+<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232448.png" alt="树与权重向量" style="zoom:50%;">
 
 <p>例如实例落在了第j个叶子结点 ，则其输出的值为 Wj </p>
 <p>则叶子结点的向量表示为</p>
 <p><em>w</em>&#x3D;(<em>w</em>1,⋯,<em>wj</em>,⋯,<em>wT</em>)</p>
 <h3 id="02-集成学习模型结构"><a href="#02-集成学习模型结构" class="headerlink" title="02 集成学习模型结构"></a>02 集成学习模型结构</h3><p>使用Boosting思想，对于实例x，总模型的预测输出为</p>
-<p>​                                               <img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232449.png" alt="image-20220315212039282" style="zoom: 80%;" /></p>
+<p>​                                               <img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232449.png" alt="image-20220315212039282" style="zoom: 80%;"></p>
 <p>其中，$f<del>k</del>(x)$  为实例x在第k个决策树的输出</p>
 <h3 id="03-损失函数"><a href="#03-损失函数" class="headerlink" title="03 损失函数"></a>03 损失函数</h3><p>上面一部分我们知道了集成学习方法的预测模型，因为XGBoost也是集成学习方法的一种。对于XGBoost的预测模型同样可以表示为：</p>
 <p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232450.png" alt="img"></p>
