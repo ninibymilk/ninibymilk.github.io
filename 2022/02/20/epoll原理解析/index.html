@@ -13,7 +13,7 @@
         name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1"
       />
-      <title>Xgboost模型详解 |  nnilk&#39;s blog</title>
+      <title>epoll原理解析 |  nnilk&#39;s blog</title>
   <meta name="generator" content="hexo-theme-ayer">
       
       <link rel="shortcut icon" href="/images/logo3.ico" />
@@ -55,7 +55,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-xgboost模型详解"
+  id="post-epoll原理解析"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -66,7 +66,7 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  Xgboost模型详解
+  epoll原理解析
 </h1>
  
 
@@ -74,11 +74,11 @@
     </header>
      
     <div class="article-meta">
-      <a href="/2022/03/15/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3/" class="article-date">
-  <time datetime="2022-03-14T16:00:00.000Z" itemprop="datePublished">2022-03-15</time>
+      <a href="/2022/02/20/epoll%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" class="article-date">
+  <time datetime="2022-02-19T16:00:00.000Z" itemprop="datePublished">2022-02-20</time>
 </a> 
   <div class="article-category">
-    <a class="article-category-link" href="/categories/MachineLearning/">MachineLearning</a>
+    <a class="article-category-link" href="/categories/WebServer/">WebServer</a>
   </div>
   
 <div class="word_count">
@@ -86,7 +86,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> Word count:</span>
-            <span class="post-count">2.4k</span>
+            <span class="post-count">2k</span>
         </span>
     </span>
 
@@ -95,7 +95,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> Reading time≈</span>
-            <span class="post-count">8 min</span>
+            <span class="post-count">7 min</span>
         </span>
     </span>
 </div>
@@ -110,103 +110,81 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <h1 id="Xgboost模型详解"><a href="#Xgboost模型详解" class="headerlink" title="Xgboost模型详解"></a>Xgboost模型详解</h1><h2 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h2><ul>
-<li>GBDT算法</li>
-<li>二阶泰勒展开</li>
-</ul>
-<h2 id="什么是Xgboost算法？"><a href="#什么是Xgboost算法？" class="headerlink" title="什么是Xgboost算法？"></a>什么是Xgboost算法？</h2><p>XGBoost全名叫（eXtreme Gradient Boosting）极端梯度提升。</p>
-<p>GBDT它是一种基于boosting增强策略的加法模型，训练的时候采用前向分布算法进行贪婪的学习，每次迭代都学习一棵CART树来拟合之前 t-1 棵树的预测结果与训练样本真实值的残差。</p>
-<p>而Xgboost在核心思想不变的情况下，XGBoost对GBDT进行了一系列优化</p>
-<p>1、损失函数进行了二阶泰勒展开</p>
-<p>2、目标函数加入正则项</p>
-<p>3、支持并行和默认缺失值处理等</p>
-<p>4、在可扩展性和训练速度上有了巨大的提升。</p>
-<p><strong>模型核心思想</strong>是</p>
-<ol>
-<li>Boosting提升方法</li>
-<li>使用二阶泰勒展开来近似拟合残差：相对于GBDT的一阶导数，XGBoost采用二阶泰勒展开，可以更为精准的逼近真实的损失函数</li>
-<li>贪婪方法分裂节点</li>
-</ol>
-<h2 id="核心算法原理"><a href="#核心算法原理" class="headerlink" title="核心算法原理"></a>核心算法原理</h2><h3 id="01单颗决策树模型表示"><a href="#01单颗决策树模型表示" class="headerlink" title="01单颗决策树模型表示"></a>01单颗决策树模型表示</h3><p>假设某棵决策树有T TT个叶子节点，则单棵决策树模型可记为：</p>
-<p>f(x)&#x3D;w <del>q(x)</del></p>
-<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232448.png" alt="树与权重向量" style="zoom:50%;">
-
-<p>例如实例落在了第j个叶子结点 ，则其输出的值为 Wj </p>
-<p>则叶子结点的向量表示为</p>
-<p><em>w</em>&#x3D;(<em>w</em>1,⋯,<em>wj</em>,⋯,<em>wT</em>)</p>
-<h3 id="02-集成学习模型结构"><a href="#02-集成学习模型结构" class="headerlink" title="02 集成学习模型结构"></a>02 集成学习模型结构</h3><p>使用Boosting思想，对于实例x，总模型的预测输出为</p>
-<p>​                                               <img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232449.png" alt="image-20220315212039282" style="zoom: 80%;"></p>
-<p>其中，$f<del>k</del>(x)$  为实例x在第k个决策树的输出</p>
-<h3 id="03-损失函数"><a href="#03-损失函数" class="headerlink" title="03 损失函数"></a>03 损失函数</h3><p>上面一部分我们知道了集成学习方法的预测模型，因为XGBoost也是集成学习方法的一种。对于XGBoost的预测模型同样可以表示为：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232450.png" alt="img"></p>
-<p>其中<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232451.png" alt="img">为树的总个数，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232452.png" alt="img">表示第<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232453.png" alt="img">颗树，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232454.png" alt="img">表示样本<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232455.png" alt="img">的预测结果。</p>
-<p>其中损失函数也同样表示为：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232456.png" alt="img"></p>
-<p>其中<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232457.png" alt="img">为样本<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232458.png" alt="img">的训练误差，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232459.png" alt="img">表示第<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232500.png" alt="img">棵树的正则项。</p>
-<p>其中为树的总个数，表示第颗树，表示样本的预测结果。</p>
-<p>其中损失函数也同样表示为：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232501.png" alt="img"></p>
-<p>其中<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232457.png" alt="img">为样本<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232458.png" alt="img">的训练误差，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232459.png" alt="img">表示第<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232502.png" alt="img">棵树的正则项。</p>
+  <h1 id="epoll原理解析"><a href="#epoll原理解析" class="headerlink" title="epoll原理解析"></a>epoll原理解析</h1><p>epoll是linux下实现 I&#x2F;O 端口复用的一种系统调用，它可以提高程序的并发性。epoll模型常被用来开发高并发网络服务器，而其中原理却较为复杂。学习需要知其然更需知其所以然，故整理了一篇博客，希望能帮助大家理解epoll的工作原理</p>
 <blockquote>
-<p>损失函数，代价函数，目标函数的区别？<br>首先给出结论：</p>
-<p>损失函数（Loss Function ）是定义在单个样本上的，算的是一个样本的误差。</p>
-<p>代价函数（Cost Function ）是定义在整个训练集上的，是所有样本误差的平均，也就是损失函数的平均。</p>
-<p>目标函数（Object Function）定义为：最终需要优化的函数。等于经验风险+结构风险（也就是Cost Function + 正则化项）。</p>
-<p>关于目标函数和代价函数的区别还有一种通俗的区别：</p>
-<p>目标函数是最大化或者最小化，而代价函数是最小化</p>
+<p>注：本博客非原创，整理自 <a target="_blank" rel="noopener" href="https://blog.csdn.net/armlinuxww/article/details/92803381">epoll原理解析</a></p>
 </blockquote>
-<h2 id="决策树生成细节"><a href="#决策树生成细节" class="headerlink" title="决策树生成细节"></a>决策树生成细节</h2><h3 id="01-如何分裂结点"><a href="#01-如何分裂结点" class="headerlink" title="01 如何分裂结点"></a>01 如何分裂结点</h3><p>在实际训练的第 t 轮，模型都使用贪心法进行树节点的分裂：</p>
-<p>对树中的每个叶子结点尝试进行分裂；</p>
-<p>每次分裂后，原来的一个叶子结点继续分裂为左右两个子叶子结点，原叶子结点中的样本集将根据该结点的判断规则分散到左右两个叶子结点中；</p>
-<p>新分裂一个结点后，我们需要检测这次分裂是否会给损失函数带来增益，增益的定义如下：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232503.png" alt="image-20220315214343506"></p>
-<p>如果L <del>split</del> &gt; 0，或者大于设定的阈值，即分裂后目标函数值下降了，那么可以考虑此次分裂的结果。</p>
-<h3 id="02-如何寻找最佳分裂点"><a href="#02-如何寻找最佳分裂点" class="headerlink" title="02 如何寻找最佳分裂点"></a>02 如何寻找最佳分裂点</h3><p>一棵决策树有多个候选分割点，寻找最佳分割点的理论最佳步骤如下：</p>
-<ol>
-<li><p>遍历每个结点的每个特征；</p>
-</li>
-<li><p>对每个特征，按特征值大小将特征值排序；</p>
-</li>
-<li><p>线性扫描，找出每个特征的最佳分裂特征值；</p>
-</li>
-<li><p>在所有特征中找出最好的分裂点，即分裂后增益最大的特征及特征值</p>
-</li>
-</ol>
-<p>以上为全局扫描法，是一种贪心的方法，每次进行分裂尝试都要遍历一遍全部候选分割点，但不适用数据量过大的条件，如内存无法一次载入或者分布式的情况。</p>
-<p>基于此，XGBoost提出了一系列加快寻找最佳分裂点的方案：</p>
-<ol>
-<li>特征预排序+缓存：XGBoost在训练之前，预先对每个特征按照特征值大小进行排序，然后保存为block结构，后面的迭代中会重复地使用这个结构，使计算量大大减小。</li>
-<li>分位点近似法：对每个特征按照特征值排序后，采用类似分位点选取的方式，仅仅选出常数个特征值作为该特征的候选分割点，在寻找该特征的最佳分割点时，从候选分割点中选出最优的一个。</li>
-<li>并行查找：由于各个特性已预先存储为block结构，XGBoost支持利用多个线程并行地计算每个特征的最佳分割点，这不仅大大提升了结点的分裂速度，也极利于大规模训练集的适应性扩展。</li>
-</ol>
-<h3 id="03-如何停止生长"><a href="#03-如何停止生长" class="headerlink" title="03 如何停止生长"></a>03 如何停止生长</h3><p>一棵树不会一直生长下去，除了决策树基础的下面是一些常见的限制条件。</p>
-<ol>
-<li>设定分裂阈值，当新引入的一次分裂所带来的增益 L <del>split</del>小于阈值时，放弃当前的分裂。</li>
-<li>当树达到最大深度时，停止建树，因为树的深度太深容易出现过拟合，这里需要设置一个超参数 max_depth。</li>
-<li>当引入一次分裂后，重新计算新生成的左、右两个叶子结点的样本权重和。如果存在一个叶子结点的样本权重低于某一个阈值，也会放弃此次分裂。这涉及到一个超参数：最小样本权重和，是指如果一个叶子节点包含的样本数量太少也会放弃分裂，防止树分的太细，这也是过拟合的一种措施。</li>
-</ol>
-<h2 id="其他问题"><a href="#其他问题" class="headerlink" title="其他问题"></a>其他问题</h2><h4 id="01-XGBoost为什么可以并行训练"><a href="#01-XGBoost为什么可以并行训练" class="headerlink" title="01 XGBoost为什么可以并行训练"></a>01 XGBoost为什么可以并行训练</h4><p>​    XGBoost的并行，并不是说每棵树可以并行训练，XGB本质上仍然采用boosting思想，每棵树训练前需要等前面的树训练完成才能开始训练。XGBoost的并行，指的是特征维度的并行：在训练之前，每个特征按特征值对样本进行预排序，并存储为Block结构，在后面查找特征分割点时可以重复使用，而且特征已经被存储为一个个block结构，那么在寻找每个特征的最佳分割点时，可以利用多线程对每个block并行计算。</p>
-<h4 id="02-XGBoost为什么快"><a href="#02-XGBoost为什么快" class="headerlink" title="02 XGBoost为什么快"></a>02 XGBoost为什么快</h4><ul>
-<li>分块并行：训练前每个特征按特征值进行排序并存储为Block结构，后面查找特征分割点时重复使用，并且支持并行查找每个特征的分割点</li>
-<li>候选分位点：每个特征采用常数个分位点作为候选分割点</li>
-<li>CPU cache 命中优化： 使用缓存预取的方法，对每个线程分配一个连续的buffer，读取每个block中样本的梯度信息并存入连续的Buffer中。</li>
-<li>Block 处理优化：Block预先放入内存；Block按列进行解压缩；将Block划分到不同硬盘来提高吞吐</li>
+<h2 id="网卡接收数据"><a href="#网卡接收数据" class="headerlink" title="网卡接收数据"></a>网卡接收数据</h2><p>我们先从网卡接受数据的过程讲起</p>
+<p>主机通过网络接受数据的过程如下</p>
+<ul>
+<li>网卡收到网线传来的数据。</li>
+<li>硬件电路的传输。</li>
+<li>最终 将数据写入到内存中的某个地址上。</li>
 </ul>
-<h4 id="03-XGBoost防止过拟合的方法"><a href="#03-XGBoost防止过拟合的方法" class="headerlink" title="03 XGBoost防止过拟合的方法"></a>03 XGBoost防止过拟合的方法</h4><ul>
-<li>目标函数添加正则项：叶子节点个数+叶子节点权重的L2正则化</li>
-<li>列抽样：训练的时候只用一部分特征（不考虑剩余的block块即可）</li>
-<li>子采样：每轮计算可以不使用全部样本，使算法更加保守</li>
-<li>shrinkage: 可以叫学习率或步长，为了给后面的训练留出更多的学习空间</li>
+<p>当网卡把数据写入到内存后，网卡向 CPU 发出一个中断信号，操作系统便能得知有新数据到来，再通过网卡中断程序去处理数据。</p>
+<h2 id="内核接收网络数据全过程"><a href="#内核接收网络数据全过程" class="headerlink" title="内核接收网络数据全过程"></a>内核接收网络数据全过程</h2><p>这一步，贯穿网卡、中断与进程调度的知识，叙述阻塞常规recv函数下，内核接收数据的全过程。</p>
+<p>进程在 Recv 阻塞期间：</p>
+<ul>
+<li>计算机收到了对端传送的数据(步骤 ①)</li>
+<li>数据经由网卡传送到内存(步骤 ②)</li>
+<li>然后网卡通过中断信号通知 CPU 有数据到达，CPU 执行中断程序(步骤 ③)</li>
 </ul>
-<h4 id="04-XGBoost如何处理缺失值"><a href="#04-XGBoost如何处理缺失值" class="headerlink" title="04 XGBoost如何处理缺失值"></a>04 XGBoost如何处理缺失值</h4><ul>
-<li>在特征k上寻找最佳 split point 时，不会对该列特征 missing 的样本进行遍历，而只对该列特征值为 non-missing 的样本上对应的特征值进行遍历，通过这个技巧来减少了为稀疏离散特征寻找 split point 的时间开销。</li>
-<li>在逻辑实现上，为了保证完备性，会将该特征值missing的样本分别分配到左叶子结点和右叶子结点，两种情形都计算一遍后，选择分裂后增益最大的那个方向（左分支或是右分支），作为预测时特征值缺失样本的默认分支方向。</li>
-<li>如果在训练中没有缺失值而在预测中出现缺失，那么会自动将缺失值的划分方向放到右子结点。</li>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319100859.png" alt="img"></p>
+<p>此处的中断程序主要有两项功能，先将网络数据写入到对应 Socket 的接收缓冲区里面(步骤 ④)，再唤醒进程 A(步骤 ⑤)，重新将进程 A 放入工作队列中。</p>
+<p>那么问题来了</p>
+<ul>
+<li>操作系统如何知道网络数据对应于哪个 Socket?</li>
+<li>如何同时监视多个 Socket 的数据?</li>
 </ul>
-<h4 id="05-XGBoost如何处理不平衡数据"><a href="#05-XGBoost如何处理不平衡数据" class="headerlink" title="05 XGBoost如何处理不平衡数据"></a>05 XGBoost如何处理不平衡数据</h4><ul>
-<li>如果在意AUC，采用AUC来评估模型的性能，可以通过设置scale_pos_weight来增大少数样本的权重以平衡正样本和负样本的分布。例如当正负样本比例为1:10时，scale_pos_weight可以取10；</li>
-<li>如果在意概率(预测得分的合理性)，则不能重新平衡数据集，这会破坏数据的真实分布，应该设置max_delta_step为一个有限数字来帮助收敛（在基模型为LR时有效）。</li>
+<p>第一个问题：因为一个 Socket 对应着一个端口号，而网络数据包中包含了 IP 和端口的信息，内核可以通过端口号找到对应的 Socket。当然，为了提高处理速度，操作系统会维护端口号到 Socket 的索引结构，以快速读取。</p>
+<p>第二个问题是多路复用的重中之重，也正是本文后半部分的重点。</p>
+<h2 id="Select监视多个socket方法"><a href="#Select监视多个socket方法" class="headerlink" title="Select监视多个socket方法"></a>Select监视多个socket方法</h2><p>​    在讲epoll之前，我们先来介绍一下select，他也是实现I&#x2F;O多路复用的一种方法，出现在epoll之前，实现也比epoll简单。</p>
+<p>Select 的实现思路很直接，假如程序同时监视如下图的 Sock1、Sock2 和 Sock3 三个 Socket，那么在调用 Select 之后，操作系统把进程 A 分别加入这三个 Socket 的等待队列中。操作系统把进程 A 分别加入这三个 Socket 的等待队列中当任何一个 Socket 收到数据后，中断程序将唤起进程。下图展示了 Sock2 接收到了数据的处理流程：</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319101427.png" alt="img"></p>
+<p>Sock2 接收到了数据，中断程序唤起进程 A</p>
+<p>注：Recv 和 Select 的中断回调可以设置成不同的内容。</p>
+<p>所谓唤起进程，就是将进程从所有的等待队列中移除，加入到工作队列里面，如下图所示：</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319101507.png" alt="img"></p>
+<p>这种简单方式行之有效，在几乎所有操作系统都有对应的实现。但是简单的方法往往有缺点，主要是：</p>
+<ul>
+<li>每次调用 Select 都需要将进程加入到所有监视 Socket 的等待队列，每次唤醒都需要从每个队列中移除。这里涉及了两次遍历，而且每次都要将整个 FDS 列表传递给内核，有一定的开销。</li>
+<li>进程被唤醒后，程序并不知道哪些 Socket 收到数据，还需要遍历一次。</li>
 </ul>
+<h2 id="Epoll设计思路"><a href="#Epoll设计思路" class="headerlink" title="Epoll设计思路"></a>Epoll设计思路</h2><p>Epoll 是在 Select 出现 N 多年后才被发明的，是 Select 和 Poll(Poll 和 Select 基本一样，有少量改进)的增强版本。Epoll 通过以下一些措施来改进效率</p>
+<h3 id="Epoll用法"><a href="#Epoll用法" class="headerlink" title="Epoll用法"></a>Epoll用法</h3><p>为方便理解后续的内容，我们先大概了解一下 Epoll 的用法。如下的代码中，先用 epoll_create 创建一个 Epoll 对象 Epfd，再通过 epoll_ctl 将需要监视的 Socket 添加到 Epfd 中，最后调用epoll_wait 等待数据</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> s = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>);    </span><br><span class="line">bind(s, ...) </span><br><span class="line">listen(s, ...) </span><br><span class="line"> </span><br><span class="line"><span class="type">int</span> epfd = epoll_create(...); </span><br><span class="line">epoll_ctl(epfd, ...); <span class="comment">//将所有需要监听的socket添加到epfd中 </span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">while</span>(<span class="number">1</span>)&#123; </span><br><span class="line">    <span class="type">int</span> n = epoll_wait(...) </span><br><span class="line">    <span class="keyword">for</span>(接收到数据的socket)&#123; </span><br><span class="line">        <span class="comment">//处理 </span></span><br><span class="line">    &#125; </span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+<h3 id="Epoll-的原理与工作流程"><a href="#Epoll-的原理与工作流程" class="headerlink" title="Epoll 的原理与工作流程"></a>Epoll 的原理与工作流程</h3><h4 id="创建-Epoll-对象"><a href="#创建-Epoll-对象" class="headerlink" title="创建 Epoll 对象"></a>创建 Epoll 对象</h4><p>如下图所示，当某个进程调用 epoll_create 方法时，内核会创建一个 eventpoll 对象。</p>
+<p>eventpoll 对象也是文件系统中的一员，和 Socket 一样，它也会有等待队列。</p>
+<p>创建一个代表该 Epoll 的 eventpoll 对象是必须的，因为内核要维护“就绪列表”等数据，“就绪列表”可以作为 eventpoll 的成员。</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102113.png" alt="img"></p>
+<h4 id="维护监视列表"><a href="#维护监视列表" class="headerlink" title="维护监视列表"></a><strong>维护监视列表</strong></h4><p>创建 Epoll 对象后，可以用 epoll_ctl 添加或删除所要监听的 Socket。以添加 Socket 为例。</p>
+<p>如上图，如果通过 epoll_ctl 添加 Sock1、Sock2 和 Sock3 的监视，内核会将 eventpoll 添加到这三个 Socket 的等待队列中。</p>
+<p>当 Socket 收到数据后，中断程序会操作 eventpoll 对象，而不是直接操作进程。</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102248.png" alt="img"></p>
+<h4 id="接收数据"><a href="#接收数据" class="headerlink" title="接收数据"></a><strong>接收数据</strong></h4><p>当 Socket 收到数据后，中断程序会给 eventpoll 的“就绪列表”添加 Socket 引用。</p>
+<p>如下图展示的是 Sock2 和 Sock3 收到数据后，中断程序让 Rdlist 引用这两个 Socket。</p>
+<p>eventpoll 对象相当于 Socket 和进程之间的中介，Socket 的数据接收并不直接影响进程，而是通过改变 eventpoll 的就绪列表来改变进程状态。</p>
+<p>当程序执行到 epoll_wait 时，如果 Rdlist 已经引用了 Socket，那么 epoll_wait 直接返回，如果 Rdlist 为空，阻塞进程。</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102557.png" alt="img"></p>
+<h4 id="阻塞和唤醒进程"><a href="#阻塞和唤醒进程" class="headerlink" title="阻塞和唤醒进程"></a><strong>阻塞和唤醒进程</strong></h4><p>假设计算机中正在运行进程 A 和进程 B，在某时刻进程 A 运行到了 epoll_wait 语句。</p>
+<p>如下图所示，内核会将进程 A 放入 eventpoll 的等待队列中，阻塞进程。</p>
+<p>当 Socket 接收到数据，中断程序一方面修改 Rdlist，另一方面唤醒 eventpoll 等待队列中的进程，进程 A 再次进入运行状态</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102646.png" alt="img"></p>
+<h3 id="epoll实现细节"><a href="#epoll实现细节" class="headerlink" title="epoll实现细节"></a>epoll实现细节</h3><p>至此，相信读者对 Epoll 的本质已经有一定的了解。但我们还需要知道 eventpoll 的数据结构是什么样子?</p>
+<p>此外，就绪队列应该使用什么数据结构? eventpoll 应使用什么数据结构来管理通过 epoll_ctl 添加或删除的 Socket?</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319103002.png" alt="img"></p>
+<p>Epoll 原理示意图，图片来源：《深入理解 <a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=Nginx&spm=1001.2101.3001.7020">Nginx</a>：模块开发与架构解析(第二版)》，陶辉</p>
+<p>如上图所示，eventpoll 包含了 Lock、MTX、WQ(等待队列)与 Rdlist 等成员，其中 Rdlist 和 RBR 是我们所关心的。</p>
+<h4 id="就绪列表的数据结构"><a href="#就绪列表的数据结构" class="headerlink" title="就绪列表的数据结构"></a><strong>就绪列表的数据结构</strong></h4><p>就绪列表引用着就绪的 Socket，所以它应能够快速的插入数据。程序可能随时调用 epoll_ctl 添加监视 Socket，也可能随时删除。</p>
+<p>当删除时，若该 Socket 已经存放在就绪列表中，它也应该被移除。所以就绪列表应是一种能够快速插入和删除的数据结构。</p>
+<p>双向链表就是这样一种数据结构，Epoll 使用双向链表来实现就绪队列(对应上图的 Rdlist)。</p>
+<p><strong>索引结构</strong></p>
+<p>既然 Epoll 将“维护监视队列”和“进程阻塞”分离，也意味着需要有个数据结构来保存监视的 Socket，至少要方便地添加和移除，还要便于搜索，以避免重复添加。</p>
+<p>红黑树是一种自平衡二叉查找树，搜索、插入和删除时间复杂度都是 O(log(N))，效率较好，Epoll 使用了红黑树作为索引结构(对应上图的 RBR)。</p>
+<p>注：因为操作系统要兼顾多种功能，以及有更多需要保存的数据，Rdlist 并非直接引用 Socket，而是通过 Epitem 间接引用，红黑树的节点也是 Epitem 对象。</p>
+<p>同样，文件系统也并非直接引用着 Socket。为方便理解，本文中省略了一些间接结构。</p>
+<h3 id="select和epoll实现方法对比"><a href="#select和epoll实现方法对比" class="headerlink" title="select和epoll实现方法对比"></a>select和epoll实现方法对比</h3><p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102814.png" alt="img"></p>
  
       <!-- reward -->
       
@@ -271,12 +249,12 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2022/03/15/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2022/02/20/epoll%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MachineLearning/" rel="tag">MachineLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/" rel="tag">linux</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/computer-network/" rel="tag">computer network</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/socket/" rel="tag">socket</a></li></ul>
 
     </footer>
   </div>
@@ -284,19 +262,19 @@
    
   <nav class="article-nav">
     
-      <a href="/2022/03/15/tacotron2%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/" class="article-nav-link">
+      <a href="/2022/03/15/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3/" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            Tacotron2声谱预测网络
+            Xgboost模型详解
           
         </div>
       </a>
     
     
-      <a href="/2022/02/20/epoll%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" class="article-nav-link">
+      <a href="/2022/02/16/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80-%E2%80%94socket%E5%87%BD%E6%95%B0/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">epoll原理解析</div>
+        <div class="article-nav-title">网络编程基础 3 —socket通信函数</div>
       </a>
     
   </nav>

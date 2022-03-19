@@ -1847,8 +1847,8 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
         <category>MachineLearning</category>
       </categories>
       <tags>
+        <tag>MachineLearning</tag>
         <tag>linux</tag>
-        <tag>MachineLearnin</tag>
       </tags>
   </entry>
   <entry>
@@ -4531,6 +4531,180 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 <p>5.connect()</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">connect</span><span class="params">(<span class="type">int</span> sockfd, <span class="type">const</span> <span class="keyword">struct</span> sockaddr *addr, <span class="type">socklen_t</span> addrlen)</span>;</span><br><span class="line">- 功能： 客户端连接服务器</span><br><span class="line">- 参数：</span><br><span class="line">- sockfd : 用于通信的文件描述符</span><br><span class="line">- addr : 客户端要连接的服务器的地址信息</span><br><span class="line">- addrlen : 第二个参数的内存大小</span><br><span class="line">- 返回值：成功 <span class="number">0</span>， 失败 <span class="number">-1</span></span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">write</span><span class="params">(<span class="type">int</span> fd, <span class="type">const</span> <span class="type">void</span> *buf, <span class="type">size_t</span> count)</span>; <span class="comment">// 写数据</span></span><br><span class="line"><span class="type">ssize_t</span> <span class="title function_">read</span><span class="params">(<span class="type">int</span> fd, <span class="type">void</span> *buf, <span class="type">size_t</span> count)</span>; <span class="comment">// 读数据</span></span><br></pre></td></tr></table></figure>
 
+]]></content>
+      <categories>
+        <category>WebServer</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>computer network</tag>
+        <tag>socket</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>WEB和HTTP</title>
+    <url>/2021/08/23/http%E5%92%8Cweb/</url>
+    <content><![CDATA[<blockquote>
+<p>该目录下分享我在学习《计算机网络：自顶向下方法》的笔记</p>
+</blockquote>
+<h2 id="WEB和HTTP"><a href="#WEB和HTTP" class="headerlink" title="WEB和HTTP"></a>WEB和HTTP</h2><h3 id="1-HTTP和WEB概述"><a href="#1-HTTP和WEB概述" class="headerlink" title="1.HTTP和WEB概述"></a>1.HTTP和WEB概述</h3><p>HTTP（HyperText Transfer Protocol）是WEB的应用层协议，它是Web的核心；HTTP有两部分实现，一个客户端程序一个服务器程序；HTTP定义了客户和服务器进行报文交换的方法；</p>
+<p>Web页面是由对象组成的，一个对象是一个文件，它们通过一个URL地址进行寻址。客户和服务器交互的核心思想是客户通过HTTP请求对服务器发出对Web页面的请求报文，服务器收到该报文后将返回包含该对象的HTTP响应报文。URL地址由两部分组成：存放对象的服务器主机名和对象的路径名</p>
+<p>HTTP使用<strong>TCP</strong>作为它的传输层协议；HTTP客户首先发起一个与服务器的TCP连接，需要注意的是，服务器根据请求作出响应，但是不存储任何关于该客户的状态信息；也正因为这样，HTTP被称为<strong>无状态协议</strong>。同时，Web使用了客户端-服务器的应用体系结构；其中web服务器总是开着的</p>
+<h3 id="2-持续连接HTTP和非持续连接HTTP"><a href="#2-持续连接HTTP和非持续连接HTTP" class="headerlink" title="2.持续连接HTTP和非持续连接HTTP"></a>2.持续连接HTTP和非持续连接HTTP</h3><p>在因特网应用程序中，客户端和服务器将在很长的时间范围里通信；应用程序将根据自身的特点，选择以规则的间隔周期性性发出请求也可以间断性一个个发出请求。当通信是使用TCP协议时，服务器端需要做出一个决定：这些请求是使用一个TCP连接完成还是通过独立的TCP连接完成。如果采取前一个方法，则称应用程序使用持续连接，如果使用后一种方式，则称为非持续连接。</p>
+<p>HTTP既可使用持续连接也可以使用非持续连接。尽管<strong>HTTP在静默情况下使用持续连接</strong></p>
+<h4 id="非持续连接HTTP"><a href="#非持续连接HTTP" class="headerlink" title="非持续连接HTTP"></a>非持续连接HTTP</h4><p>使用非持续连接时，每个TCP连接在服务器发送一个对象后就会关闭，也就是每个TCP只传送一个请求报文和响应报文；</p>
+<p>为了描述持续连接和非持续连接的特点，我们引入<strong>RTT</strong>(Round-Trip Time)。</p>
+<p>RTT指的是，一个短分组从客户端到服务器，然后再返回客户端所用的时间。</p>
+<p>RTT包括分组的传播时延、排队时延、处理时延（因为是短分组，所以其传输时延可不计）；</p>
+<p>客户端和服务器建立TCP连接的时候，会通过一个三次握手的过程来交换传输控制信息。三次握手的前两次占用了一个RTT，客户结合第三次握手通行会通过该连接发送一个HTTP请求报文，一旦该分组到达服务器，服务器便开始使用TCP传输HTML对象。因此，粗略地说，响应时间是两个RTT加上传输HTML的时间（不是传播）</p>
+<h4 id="持续连接HTTP"><a href="#持续连接HTTP" class="headerlink" title="持续连接HTTP"></a>持续连接HTTP</h4><p>非持续连接必须为每个请求新建一个TCP连接，而每个TCP连接将占用系统资源，包括缓冲区和变量等，这样服务器的负担就很重了。第二，一个对象将通过两个RTT的时延才能交付。</p>
+<p>如果使用持续连接，那么服务器在发送响应报文后将保持该TCP打开，后续客户端可以使用该连接来向服务器发出请求。不但一个完整的页面可以通过同一个连接传送，同一台服务器上的多个页面也可以通过同一个连接发送。这就提高了效率；</p>
+<p>一般来说，如果一条连接在一定的时间间隔后没被使用的话，就会被关闭。HTTP默认使用的是带流水线的持续连接。</p>
+<h3 id="3-HTTP报文格式"><a href="#3-HTTP报文格式" class="headerlink" title="3.HTTP报文格式"></a>3.HTTP报文格式</h3><h4 id="请求报文"><a href="#请求报文" class="headerlink" title="请求报文"></a>请求报文</h4><p>以下是wireshark抓出来的一段HTTP请求报文</p>
+<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="type">GET</span> <span class="operator">/</span>admin_ui<span class="operator">/</span>rdx<span class="operator">/</span>core<span class="operator">/</span>images<span class="operator">/</span>close.png <span class="type">HTTP</span><span class="operator">/</span><span class="number">1.1</span></span><br><span class="line"><span class="type">Accept</span>: <span class="operator">*/*</span></span><br><span class="line"><span class="type">Referer</span>: http:<span class="comment">//xxx.xxx.xxx.xxx/menu/neo</span></span><br><span class="line"><span class="type">Accept</span><span class="operator">-</span><span class="type">Language</span>: en<span class="operator">-</span><span class="type">US</span></span><br><span class="line"><span class="type">User</span><span class="operator">-</span><span class="type">Agent</span>: <span class="type">Mozilla</span><span class="operator">/</span><span class="number">4.0</span> (compatible; <span class="type">MSIE</span> <span class="number">7.0</span>; <span class="type">Windows</span> <span class="type">NT</span> <span class="number">6.1</span>; <span class="type">WOW64</span>; <span class="type">Trident</span><span class="operator">/</span><span class="number">7.0</span>; <span class="type">SLCC2</span>; .<span class="type">NET</span> <span class="type">CLR</span> <span class="number">2.0</span>.<span class="number">50727</span>; .<span class="type">NET</span> <span class="type">CLR</span> <span class="number">3.5</span>.<span class="number">30729</span>; .<span class="type">NET</span> <span class="type">CLR</span> <span class="number">3.0</span>.<span class="number">30729</span>; .<span class="type">NET4</span>.0C; .<span class="type">NET4</span>.0E)</span><br><span class="line"><span class="type">Accept</span><span class="operator">-</span><span class="type">Encoding</span>: gzip, deflate</span><br><span class="line"><span class="type">Host</span>: xxx.xxx.xxx.xxx</span><br><span class="line"><span class="type">Connection</span>: <span class="type">Keep</span><span class="operator">-</span><span class="type">Alive</span></span><br><span class="line"><span class="type">Cookie</span>: startupapp<span class="operator">=</span>neo; is_cisco_platform<span class="operator">=</span><span class="number">0</span>; rdx_pagination_size<span class="operator">=</span><span class="number">250</span><span class="operator">%</span>20Per<span class="operator">%</span>20Page; <span class="type">SESSID</span><span class="operator">=</span>deb31b8eb9ca68a514cf55777744e339</span><br></pre></td></tr></table></figure>
+
+<p>HTTP的请求报文包括：请求行(request line)、请求头部(header)、空行 和 请求数据(request data) 四个部分组成。</p>
+<p><img src="/http%E5%92%8Cweb/20220318111516.png" alt="image-20220318111447560"></p>
+<p><strong>请求行</strong>包括： 请求方法，URL(<strong>包括参数信息</strong>)，协议版本这些信息</p>
+<p>**请求头部(Header)**是一个个的key-value值，比如</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Host: xxx.xxx.xxx.xxx</span><br><span class="line">Connection: Keep-Alive</span><br></pre></td></tr></table></figure>
+
+<p><strong>空行(CR+LF)：请求报文用空行表示header和请求数据的分隔</strong></p>
+<p><strong>请求数据</strong>：GET方法没有携带数据， POST方法会携带一个body</p>
+<h4 id="响应报文"><a href="#响应报文" class="headerlink" title="响应报文"></a>响应报文</h4><p>示例：</p>
+<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="type">HTTP</span><span class="operator">/</span><span class="number">1.1</span> <span class="number">200</span> <span class="type">OK</span></span><br><span class="line"><span class="type">Bdpagetype</span>: <span class="number">1</span></span><br><span class="line"><span class="type">Bdqid</span>: <span class="number">0xacbbb9d800005133</span></span><br><span class="line"><span class="type">Cache</span><span class="operator">-</span><span class="type">Control</span>: <span class="keyword">private</span></span><br><span class="line"><span class="type">Connection</span>: <span class="type">Keep</span><span class="operator">-</span><span class="type">Alive</span></span><br><span class="line"><span class="type">Content</span><span class="operator">-</span><span class="type">Encoding</span>: gzip</span><br><span class="line"><span class="type">Content</span><span class="operator">-</span><span class="type">Type</span>: text<span class="operator">/</span>html</span><br><span class="line"><span class="type">Cxy_all</span>: baidu<span class="operator">+</span>f8b5e5b521b3644ef7f3455ea441c5d0</span><br><span class="line"><span class="type">Date</span>: <span class="type">Fri</span>, <span class="number">12</span> <span class="type">Oct</span> <span class="number">2018</span> <span class="number">06</span>:<span class="number">36</span>:<span class="number">28</span> <span class="type">GMT</span></span><br><span class="line"><span class="type">Expires</span>: <span class="type">Fri</span>, <span class="number">12</span> <span class="type">Oct</span> <span class="number">2018</span> <span class="number">06</span>:<span class="number">36</span>:<span class="number">26</span> <span class="type">GMT</span></span><br><span class="line"><span class="type">Server</span>: <span class="type">BWS</span><span class="operator">/</span><span class="number">1.1</span></span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: delPer<span class="operator">=</span><span class="number">0</span>; path<span class="operator">=/</span>; domain<span class="operator">=</span>.baidu.com</span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: <span class="type">BDSVRTM</span><span class="operator">=</span><span class="number">0</span>; path<span class="operator">=/</span></span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: <span class="type">BD_HOME</span><span class="operator">=</span><span class="number">0</span>; path<span class="operator">=/</span></span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: <span class="type">H_PS_PSSID</span><span class="operator">=</span><span class="number">1433_21112_18560_26350_27245_22158</span>; path<span class="operator">=/</span>; domain<span class="operator">=</span>.baidu.com</span><br><span class="line"><span class="type">Vary</span>: <span class="type">Accept</span><span class="operator">-</span><span class="type">Encoding</span></span><br><span class="line"><span class="type">X</span><span class="operator">-</span><span class="type">Ua</span><span class="operator">-</span><span class="type">Compatible</span>: <span class="type">IE</span><span class="operator">=</span><span class="type">Edge</span>,chrome<span class="operator">=</span><span class="number">1</span></span><br><span class="line"><span class="type">Transfer</span><span class="operator">-</span><span class="type">Encoding</span>: chunked</span><br><span class="line"> </span><br><span class="line"><span class="operator">&lt;!</span><span class="type">DOCTYPE</span> html<span class="operator">&gt;</span></span><br><span class="line"><span class="operator">&lt;!--</span><span class="type">STATUS</span> <span class="type">OK</span><span class="operator">--&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>HTTP的响应报文包括：状态行，响应头，空行，数据(响应体)</p>
+<p><img src="/http%E5%92%8Cweb/image-20220318111831190.png" alt="image-20220318111831190"></p>
+<p><strong>状态行</strong>包括：HTTP版本号，状态码和状态值组成。</p>
+<p><strong>响应头</strong>类似请求头，是一系列key-value值</p>
+<p>Cache-Control: private<br>Content-Encoding: gzip<br>Server: BWS&#x2F;1.1<br>Set-Cookie: delPer&#x3D;0; path&#x3D;&#x2F;; domain&#x3D;.baidu.com<br><strong>空白行</strong>：同上，响应报文也用空白行来分隔header和数据</p>
+<p><strong>响应体</strong>：响应的data，本例中是一段HTML</p>
+<h4 id="HTTP请求方法"><a href="#HTTP请求方法" class="headerlink" title="HTTP请求方法"></a>HTTP请求方法</h4><p>HTTP&#x2F;1.1 协议中共定义了八种方法（也叫“动作”）来以不同方式操作指定的资源：</p>
+<ol>
+<li>GET：向指定的资源发出“显示”请求。使用 GET 方法应该只用在读取数据，而不应当被用于产生“副<br>作用”的操作中，例如在 Web Application 中。其中一个原因是 GET 可能会被网络蜘蛛等随意访<br>问。</li>
+<li>HEAD：与 GET 方法一样，都是向服务器发出指定资源的请求。只不过服务器将不传回资源的本文<br>部分。它的好处在于，使用这个方法可以在不必传输全部内容的情况下，就可以获取其中“关于该<br>资源的信息”（元信息或称元数据）。</li>
+<li>POST：向指定资源提交数据，请求服务器进行处理（例如提交表单或者上传文件）。数据被包含<br>在请求本文中。这个请求可能会创建新的资源或修改现有资源，或二者皆有。</li>
+<li>PUT：向指定资源位置上传其最新内容。</li>
+<li>DELETE：请求服务器删除 Request-URI 所标识的资源。</li>
+<li>TRACE：回显服务器收到的请求，主要用于测试或诊断。</li>
+<li>OPTIONS：这个方法可使服务器传回该资源所支持的所有 HTTP 请求方法。用’*’来代替资源名称，<br>向 Web 服务器发送 OPTIONS 请求，可以测试服务器功能是否正常运作。</li>
+<li>CONNECT：HTTP&#x2F;1.1 协议中预留给能够将连接改为管道方式的代理服务器。通常用于SSL加密服<br>务器的链接（经由非加密的 HTTP 代理服务器）。</li>
+</ol>
+<h4 id="HTTP状态码"><a href="#HTTP状态码" class="headerlink" title="HTTP状态码"></a>HTTP状态码</h4><p>所有HTTP响应的第一行都是状态行，依次是当前HTTP版本号，3位数字组成的状态代码，以及描述状态的短语，彼此由空格分隔。</p>
+<p>状态代码的第一个数字代表当前响应的类型：</p>
+<ul>
+<li>1xx消息——请求已被服务器接收，继续处理</li>
+<li>2xx成功——请求已成功被服务器接收、理解、并接受</li>
+<li>3xx重定向——需要后续操作才能完成这一请求</li>
+<li>4xx请求错误——请求含有词法错误或者无法被执行</li>
+<li>5xx服务器错误——服务器在处理某个正确请求时发生错误</li>
+</ul>
+<h3 id="4-用户与服务器的交互：Cookie"><a href="#4-用户与服务器的交互：Cookie" class="headerlink" title="4.用户与服务器的交互：Cookie"></a>4.用户与服务器的交互：Cookie</h3><p>前面提到，HTTP是无状态协议，但是Web站点为了识别用户身份或者限制用户访问的时间或者将用户访问的内容同用户身份相关联，Web站点可以使用Cookie技术；</p>
+<p>Cookie技术包含4个组件：</p>
+<ul>
+<li>HTTP响应报文里增加一个关于Cookie的首部行；</li>
+<li>HTTP请求报文里增加一个关于Cookie的首部行；</li>
+<li>用户端系统保留一个Cookie文件，由浏览器保存维护；</li>
+<li>Web站点建立Cookie和用户身份的关联；</li>
+</ul>
+<p>虽然，Cookie的使用方便了用户也方便了服务端，但是它的使用存在争议，因为使用Cookie被认为是对用户隐私的一种侵犯，因为Web站点可以通过Cookie得到很多用户的信息，并有可能将这部分信息卖给第三方等</p>
+<h3 id="5-WEB缓存"><a href="#5-WEB缓存" class="headerlink" title="5.WEB缓存"></a>5.WEB缓存</h3><p>Web缓存器也被称为代理服务器，它代表初始web服务器来满足HTTP请求。它有自己的存储空间，并在存储空间里保持有最近请求过的对象的副本；可以通过配置浏览器，将所有指向初始服务器的请求首先指向代理服务器。</p>
+<p>当代理服务器收到一个HTTP请求后，它将检查本地是否缓存过该对象，如果缓存过该对象，将检查是否过期，如果没有过期，则直接将该对象返回给浏览器；如果本地不存在或者存在已过期，则代理服务器将根据请求报文里的Host首部行以及请求行里的URL字段向初始服务器发出请求，然后将响应对象返回给浏览器并缓存在本地。</p>
+<p>通常，代理服务器与客户端的通信速度要快于初始服务器与客户端的连接速度；Web代理服务器可以大起大减少对客户请求的响应时间；而且，缓存器能从整体上大大降低因特网上的web流量，从而有助于提高所有应用程序的性能；</p>
+<p>通过使用内容分发网络（Content Distribution Network），Web缓存器正在因特网中发挥越来越重要的作用</p>
+<p>Web缓存即是客户又是服务器</p>
+<h3 id="6-条件get方法"><a href="#6-条件get方法" class="headerlink" title="6.条件get方法"></a>6.条件get方法</h3><p>高速缓存器的使用，带来很多好处，但是有一个问题就是代理服务器对缓存对象的管理：如何确保所请求的对象是最新的？</p>
+<p>其实HTTP提供了一种机制，允许缓存器证实其使用的对象是最新的，这种机制就是<strong>条件GET方法</strong>。</p>
+<p>使用<strong>条件GET方法</strong>只需在使用GET方法的时候，<strong>增加一个If-Modified-Since首部行</strong>，其对应的内容是一个时间，如果所请求的资源在指定日期后被修改了，那么服务器将返回新的对象，否则服务器将返回一个包含空实体体的报文。这样代理服务器就可以确认缓存是否过期了。</p>
+]]></content>
+      <categories>
+        <category>computer network notes</category>
+      </categories>
+      <tags>
+        <tag>computer network</tag>
+        <tag>http</tag>
+        <tag>web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>epoll原理解析</title>
+    <url>/2022/02/20/epoll%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/</url>
+    <content><![CDATA[<h1 id="epoll原理解析"><a href="#epoll原理解析" class="headerlink" title="epoll原理解析"></a>epoll原理解析</h1><p>epoll是linux下实现 I&#x2F;O 端口复用的一种系统调用，它可以提高程序的并发性。epoll模型常被用来开发高并发网络服务器，而其中原理却较为复杂。学习需要知其然更需知其所以然，故整理了一篇博客，希望能帮助大家理解epoll的工作原理</p>
+<blockquote>
+<p>注：本博客非原创，整理自 <a href="https://blog.csdn.net/armlinuxww/article/details/92803381">epoll原理解析</a></p>
+</blockquote>
+<h2 id="网卡接收数据"><a href="#网卡接收数据" class="headerlink" title="网卡接收数据"></a>网卡接收数据</h2><p>我们先从网卡接受数据的过程讲起</p>
+<p>主机通过网络接受数据的过程如下</p>
+<ul>
+<li>网卡收到网线传来的数据。</li>
+<li>硬件电路的传输。</li>
+<li>最终 将数据写入到内存中的某个地址上。</li>
+</ul>
+<p>当网卡把数据写入到内存后，网卡向 CPU 发出一个中断信号，操作系统便能得知有新数据到来，再通过网卡中断程序去处理数据。</p>
+<h2 id="内核接收网络数据全过程"><a href="#内核接收网络数据全过程" class="headerlink" title="内核接收网络数据全过程"></a>内核接收网络数据全过程</h2><p>这一步，贯穿网卡、中断与进程调度的知识，叙述阻塞常规recv函数下，内核接收数据的全过程。</p>
+<p>进程在 Recv 阻塞期间：</p>
+<ul>
+<li>计算机收到了对端传送的数据(步骤 ①)</li>
+<li>数据经由网卡传送到内存(步骤 ②)</li>
+<li>然后网卡通过中断信号通知 CPU 有数据到达，CPU 执行中断程序(步骤 ③)</li>
+</ul>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319100859.png" alt="img"></p>
+<p>此处的中断程序主要有两项功能，先将网络数据写入到对应 Socket 的接收缓冲区里面(步骤 ④)，再唤醒进程 A(步骤 ⑤)，重新将进程 A 放入工作队列中。</p>
+<p>那么问题来了</p>
+<ul>
+<li>操作系统如何知道网络数据对应于哪个 Socket?</li>
+<li>如何同时监视多个 Socket 的数据?</li>
+</ul>
+<p>第一个问题：因为一个 Socket 对应着一个端口号，而网络数据包中包含了 IP 和端口的信息，内核可以通过端口号找到对应的 Socket。当然，为了提高处理速度，操作系统会维护端口号到 Socket 的索引结构，以快速读取。</p>
+<p>第二个问题是多路复用的重中之重，也正是本文后半部分的重点。</p>
+<h2 id="Select监视多个socket方法"><a href="#Select监视多个socket方法" class="headerlink" title="Select监视多个socket方法"></a>Select监视多个socket方法</h2><p>​    在讲epoll之前，我们先来介绍一下select，他也是实现I&#x2F;O多路复用的一种方法，出现在epoll之前，实现也比epoll简单。</p>
+<p>Select 的实现思路很直接，假如程序同时监视如下图的 Sock1、Sock2 和 Sock3 三个 Socket，那么在调用 Select 之后，操作系统把进程 A 分别加入这三个 Socket 的等待队列中。操作系统把进程 A 分别加入这三个 Socket 的等待队列中当任何一个 Socket 收到数据后，中断程序将唤起进程。下图展示了 Sock2 接收到了数据的处理流程：</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319101427.png" alt="img"></p>
+<p>Sock2 接收到了数据，中断程序唤起进程 A</p>
+<p>注：Recv 和 Select 的中断回调可以设置成不同的内容。</p>
+<p>所谓唤起进程，就是将进程从所有的等待队列中移除，加入到工作队列里面，如下图所示：</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319101507.png" alt="img"></p>
+<p>这种简单方式行之有效，在几乎所有操作系统都有对应的实现。但是简单的方法往往有缺点，主要是：</p>
+<ul>
+<li>每次调用 Select 都需要将进程加入到所有监视 Socket 的等待队列，每次唤醒都需要从每个队列中移除。这里涉及了两次遍历，而且每次都要将整个 FDS 列表传递给内核，有一定的开销。</li>
+<li>进程被唤醒后，程序并不知道哪些 Socket 收到数据，还需要遍历一次。</li>
+</ul>
+<h2 id="Epoll设计思路"><a href="#Epoll设计思路" class="headerlink" title="Epoll设计思路"></a>Epoll设计思路</h2><p>Epoll 是在 Select 出现 N 多年后才被发明的，是 Select 和 Poll(Poll 和 Select 基本一样，有少量改进)的增强版本。Epoll 通过以下一些措施来改进效率</p>
+<h3 id="Epoll用法"><a href="#Epoll用法" class="headerlink" title="Epoll用法"></a>Epoll用法</h3><p>为方便理解后续的内容，我们先大概了解一下 Epoll 的用法。如下的代码中，先用 epoll_create 创建一个 Epoll 对象 Epfd，再通过 epoll_ctl 将需要监视的 Socket 添加到 Epfd 中，最后调用epoll_wait 等待数据</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> s = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>);    </span><br><span class="line">bind(s, ...) </span><br><span class="line">listen(s, ...) </span><br><span class="line"> </span><br><span class="line"><span class="type">int</span> epfd = epoll_create(...); </span><br><span class="line">epoll_ctl(epfd, ...); <span class="comment">//将所有需要监听的socket添加到epfd中 </span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">while</span>(<span class="number">1</span>)&#123; </span><br><span class="line">    <span class="type">int</span> n = epoll_wait(...) </span><br><span class="line">    <span class="keyword">for</span>(接收到数据的socket)&#123; </span><br><span class="line">        <span class="comment">//处理 </span></span><br><span class="line">    &#125; </span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+<h3 id="Epoll-的原理与工作流程"><a href="#Epoll-的原理与工作流程" class="headerlink" title="Epoll 的原理与工作流程"></a>Epoll 的原理与工作流程</h3><h4 id="创建-Epoll-对象"><a href="#创建-Epoll-对象" class="headerlink" title="创建 Epoll 对象"></a>创建 Epoll 对象</h4><p>如下图所示，当某个进程调用 epoll_create 方法时，内核会创建一个 eventpoll 对象。</p>
+<p>eventpoll 对象也是文件系统中的一员，和 Socket 一样，它也会有等待队列。</p>
+<p>创建一个代表该 Epoll 的 eventpoll 对象是必须的，因为内核要维护“就绪列表”等数据，“就绪列表”可以作为 eventpoll 的成员。</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102113.png" alt="img"></p>
+<h4 id="维护监视列表"><a href="#维护监视列表" class="headerlink" title="维护监视列表"></a><strong>维护监视列表</strong></h4><p>创建 Epoll 对象后，可以用 epoll_ctl 添加或删除所要监听的 Socket。以添加 Socket 为例。</p>
+<p>如上图，如果通过 epoll_ctl 添加 Sock1、Sock2 和 Sock3 的监视，内核会将 eventpoll 添加到这三个 Socket 的等待队列中。</p>
+<p>当 Socket 收到数据后，中断程序会操作 eventpoll 对象，而不是直接操作进程。</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102248.png" alt="img"></p>
+<h4 id="接收数据"><a href="#接收数据" class="headerlink" title="接收数据"></a><strong>接收数据</strong></h4><p>当 Socket 收到数据后，中断程序会给 eventpoll 的“就绪列表”添加 Socket 引用。</p>
+<p>如下图展示的是 Sock2 和 Sock3 收到数据后，中断程序让 Rdlist 引用这两个 Socket。</p>
+<p>eventpoll 对象相当于 Socket 和进程之间的中介，Socket 的数据接收并不直接影响进程，而是通过改变 eventpoll 的就绪列表来改变进程状态。</p>
+<p>当程序执行到 epoll_wait 时，如果 Rdlist 已经引用了 Socket，那么 epoll_wait 直接返回，如果 Rdlist 为空，阻塞进程。</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102557.png" alt="img"></p>
+<h4 id="阻塞和唤醒进程"><a href="#阻塞和唤醒进程" class="headerlink" title="阻塞和唤醒进程"></a><strong>阻塞和唤醒进程</strong></h4><p>假设计算机中正在运行进程 A 和进程 B，在某时刻进程 A 运行到了 epoll_wait 语句。</p>
+<p>如下图所示，内核会将进程 A 放入 eventpoll 的等待队列中，阻塞进程。</p>
+<p>当 Socket 接收到数据，中断程序一方面修改 Rdlist，另一方面唤醒 eventpoll 等待队列中的进程，进程 A 再次进入运行状态</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102646.png" alt="img"></p>
+<h3 id="epoll实现细节"><a href="#epoll实现细节" class="headerlink" title="epoll实现细节"></a>epoll实现细节</h3><p>至此，相信读者对 Epoll 的本质已经有一定的了解。但我们还需要知道 eventpoll 的数据结构是什么样子?</p>
+<p>此外，就绪队列应该使用什么数据结构? eventpoll 应使用什么数据结构来管理通过 epoll_ctl 添加或删除的 Socket?</p>
+<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319103002.png" alt="img"></p>
+<p>Epoll 原理示意图，图片来源：《深入理解 <a href="https://so.csdn.net/so/search?q=Nginx&spm=1001.2101.3001.7020">Nginx</a>：模块开发与架构解析(第二版)》，陶辉</p>
+<p>如上图所示，eventpoll 包含了 Lock、MTX、WQ(等待队列)与 Rdlist 等成员，其中 Rdlist 和 RBR 是我们所关心的。</p>
+<h4 id="就绪列表的数据结构"><a href="#就绪列表的数据结构" class="headerlink" title="就绪列表的数据结构"></a><strong>就绪列表的数据结构</strong></h4><p>就绪列表引用着就绪的 Socket，所以它应能够快速的插入数据。程序可能随时调用 epoll_ctl 添加监视 Socket，也可能随时删除。</p>
+<p>当删除时，若该 Socket 已经存放在就绪列表中，它也应该被移除。所以就绪列表应是一种能够快速插入和删除的数据结构。</p>
+<p>双向链表就是这样一种数据结构，Epoll 使用双向链表来实现就绪队列(对应上图的 Rdlist)。</p>
+<p><strong>索引结构</strong></p>
+<p>既然 Epoll 将“维护监视队列”和“进程阻塞”分离，也意味着需要有个数据结构来保存监视的 Socket，至少要方便地添加和移除，还要便于搜索，以避免重复添加。</p>
+<p>红黑树是一种自平衡二叉查找树，搜索、插入和删除时间复杂度都是 O(log(N))，效率较好，Epoll 使用了红黑树作为索引结构(对应上图的 RBR)。</p>
+<p>注：因为操作系统要兼顾多种功能，以及有更多需要保存的数据，Rdlist 并非直接引用 Socket，而是通过 Epitem 间接引用，红黑树的节点也是 Epitem 对象。</p>
+<p>同样，文件系统也并非直接引用着 Socket。为方便理解，本文中省略了一些间接结构。</p>
+<h3 id="select和epoll实现方法对比"><a href="#select和epoll实现方法对比" class="headerlink" title="select和epoll实现方法对比"></a>select和epoll实现方法对比</h3><p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102814.png" alt="img"></p>
 ]]></content>
       <categories>
         <category>WebServer</category>

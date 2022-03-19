@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta name="description" content="Welcome to nnilk&#39;s daily learning blog" />
+      
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>WEB和HTTP |  nnilk&#39;s blog</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/images/logo3.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-http和web"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  WEB和HTTP
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/08/23/http%E5%92%8Cweb/" class="article-date">
+  <time datetime="2021-08-22T16:00:00.000Z" itemprop="datePublished">2021-08-23</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/computer-network-notes/">computer network notes</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">2.8k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">10 min</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <blockquote>
+<p>该目录下分享我在学习《计算机网络：自顶向下方法》的笔记</p>
+</blockquote>
+<h2 id="WEB和HTTP"><a href="#WEB和HTTP" class="headerlink" title="WEB和HTTP"></a>WEB和HTTP</h2><h3 id="1-HTTP和WEB概述"><a href="#1-HTTP和WEB概述" class="headerlink" title="1.HTTP和WEB概述"></a>1.HTTP和WEB概述</h3><p>HTTP（HyperText Transfer Protocol）是WEB的应用层协议，它是Web的核心；HTTP有两部分实现，一个客户端程序一个服务器程序；HTTP定义了客户和服务器进行报文交换的方法；</p>
+<p>Web页面是由对象组成的，一个对象是一个文件，它们通过一个URL地址进行寻址。客户和服务器交互的核心思想是客户通过HTTP请求对服务器发出对Web页面的请求报文，服务器收到该报文后将返回包含该对象的HTTP响应报文。URL地址由两部分组成：存放对象的服务器主机名和对象的路径名</p>
+<p>HTTP使用<strong>TCP</strong>作为它的传输层协议；HTTP客户首先发起一个与服务器的TCP连接，需要注意的是，服务器根据请求作出响应，但是不存储任何关于该客户的状态信息；也正因为这样，HTTP被称为<strong>无状态协议</strong>。同时，Web使用了客户端-服务器的应用体系结构；其中web服务器总是开着的</p>
+<h3 id="2-持续连接HTTP和非持续连接HTTP"><a href="#2-持续连接HTTP和非持续连接HTTP" class="headerlink" title="2.持续连接HTTP和非持续连接HTTP"></a>2.持续连接HTTP和非持续连接HTTP</h3><p>在因特网应用程序中，客户端和服务器将在很长的时间范围里通信；应用程序将根据自身的特点，选择以规则的间隔周期性性发出请求也可以间断性一个个发出请求。当通信是使用TCP协议时，服务器端需要做出一个决定：这些请求是使用一个TCP连接完成还是通过独立的TCP连接完成。如果采取前一个方法，则称应用程序使用持续连接，如果使用后一种方式，则称为非持续连接。</p>
+<p>HTTP既可使用持续连接也可以使用非持续连接。尽管<strong>HTTP在静默情况下使用持续连接</strong></p>
+<h4 id="非持续连接HTTP"><a href="#非持续连接HTTP" class="headerlink" title="非持续连接HTTP"></a>非持续连接HTTP</h4><p>使用非持续连接时，每个TCP连接在服务器发送一个对象后就会关闭，也就是每个TCP只传送一个请求报文和响应报文；</p>
+<p>为了描述持续连接和非持续连接的特点，我们引入<strong>RTT</strong>(Round-Trip Time)。</p>
+<p>RTT指的是，一个短分组从客户端到服务器，然后再返回客户端所用的时间。</p>
+<p>RTT包括分组的传播时延、排队时延、处理时延（因为是短分组，所以其传输时延可不计）；</p>
+<p>客户端和服务器建立TCP连接的时候，会通过一个三次握手的过程来交换传输控制信息。三次握手的前两次占用了一个RTT，客户结合第三次握手通行会通过该连接发送一个HTTP请求报文，一旦该分组到达服务器，服务器便开始使用TCP传输HTML对象。因此，粗略地说，响应时间是两个RTT加上传输HTML的时间（不是传播）</p>
+<h4 id="持续连接HTTP"><a href="#持续连接HTTP" class="headerlink" title="持续连接HTTP"></a>持续连接HTTP</h4><p>非持续连接必须为每个请求新建一个TCP连接，而每个TCP连接将占用系统资源，包括缓冲区和变量等，这样服务器的负担就很重了。第二，一个对象将通过两个RTT的时延才能交付。</p>
+<p>如果使用持续连接，那么服务器在发送响应报文后将保持该TCP打开，后续客户端可以使用该连接来向服务器发出请求。不但一个完整的页面可以通过同一个连接传送，同一台服务器上的多个页面也可以通过同一个连接发送。这就提高了效率；</p>
+<p>一般来说，如果一条连接在一定的时间间隔后没被使用的话，就会被关闭。HTTP默认使用的是带流水线的持续连接。</p>
+<h3 id="3-HTTP报文格式"><a href="#3-HTTP报文格式" class="headerlink" title="3.HTTP报文格式"></a>3.HTTP报文格式</h3><h4 id="请求报文"><a href="#请求报文" class="headerlink" title="请求报文"></a>请求报文</h4><p>以下是wireshark抓出来的一段HTTP请求报文</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">GET</span> <span class="operator">/</span>admin_ui<span class="operator">/</span>rdx<span class="operator">/</span>core<span class="operator">/</span>images<span class="operator">/</span>close.png <span class="type">HTTP</span><span class="operator">/</span><span class="number">1.1</span></span><br><span class="line"><span class="type">Accept</span>: <span class="operator">*/*</span></span><br><span class="line"><span class="type">Referer</span>: http:<span class="comment">//xxx.xxx.xxx.xxx/menu/neo</span></span><br><span class="line"><span class="type">Accept</span><span class="operator">-</span><span class="type">Language</span>: en<span class="operator">-</span><span class="type">US</span></span><br><span class="line"><span class="type">User</span><span class="operator">-</span><span class="type">Agent</span>: <span class="type">Mozilla</span><span class="operator">/</span><span class="number">4.0</span> (compatible; <span class="type">MSIE</span> <span class="number">7.0</span>; <span class="type">Windows</span> <span class="type">NT</span> <span class="number">6.1</span>; <span class="type">WOW64</span>; <span class="type">Trident</span><span class="operator">/</span><span class="number">7.0</span>; <span class="type">SLCC2</span>; .<span class="type">NET</span> <span class="type">CLR</span> <span class="number">2.0</span>.<span class="number">50727</span>; .<span class="type">NET</span> <span class="type">CLR</span> <span class="number">3.5</span>.<span class="number">30729</span>; .<span class="type">NET</span> <span class="type">CLR</span> <span class="number">3.0</span>.<span class="number">30729</span>; .<span class="type">NET4</span>.0C; .<span class="type">NET4</span>.0E)</span><br><span class="line"><span class="type">Accept</span><span class="operator">-</span><span class="type">Encoding</span>: gzip, deflate</span><br><span class="line"><span class="type">Host</span>: xxx.xxx.xxx.xxx</span><br><span class="line"><span class="type">Connection</span>: <span class="type">Keep</span><span class="operator">-</span><span class="type">Alive</span></span><br><span class="line"><span class="type">Cookie</span>: startupapp<span class="operator">=</span>neo; is_cisco_platform<span class="operator">=</span><span class="number">0</span>; rdx_pagination_size<span class="operator">=</span><span class="number">250</span><span class="operator">%</span>20Per<span class="operator">%</span>20Page; <span class="type">SESSID</span><span class="operator">=</span>deb31b8eb9ca68a514cf55777744e339</span><br></pre></td></tr></table></figure>
+
+<p>HTTP的请求报文包括：请求行(request line)、请求头部(header)、空行 和 请求数据(request data) 四个部分组成。</p>
+<p><img src="/http%E5%92%8Cweb/20220318111516.png" alt="image-20220318111447560"></p>
+<p><strong>请求行</strong>包括： 请求方法，URL(<strong>包括参数信息</strong>)，协议版本这些信息</p>
+<p>**请求头部(Header)**是一个个的key-value值，比如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Host: xxx.xxx.xxx.xxx</span><br><span class="line">Connection: Keep-Alive</span><br></pre></td></tr></table></figure>
+
+<p><strong>空行(CR+LF)：请求报文用空行表示header和请求数据的分隔</strong></p>
+<p><strong>请求数据</strong>：GET方法没有携带数据， POST方法会携带一个body</p>
+<h4 id="响应报文"><a href="#响应报文" class="headerlink" title="响应报文"></a>响应报文</h4><p>示例：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">HTTP</span><span class="operator">/</span><span class="number">1.1</span> <span class="number">200</span> <span class="type">OK</span></span><br><span class="line"><span class="type">Bdpagetype</span>: <span class="number">1</span></span><br><span class="line"><span class="type">Bdqid</span>: <span class="number">0xacbbb9d800005133</span></span><br><span class="line"><span class="type">Cache</span><span class="operator">-</span><span class="type">Control</span>: <span class="keyword">private</span></span><br><span class="line"><span class="type">Connection</span>: <span class="type">Keep</span><span class="operator">-</span><span class="type">Alive</span></span><br><span class="line"><span class="type">Content</span><span class="operator">-</span><span class="type">Encoding</span>: gzip</span><br><span class="line"><span class="type">Content</span><span class="operator">-</span><span class="type">Type</span>: text<span class="operator">/</span>html</span><br><span class="line"><span class="type">Cxy_all</span>: baidu<span class="operator">+</span>f8b5e5b521b3644ef7f3455ea441c5d0</span><br><span class="line"><span class="type">Date</span>: <span class="type">Fri</span>, <span class="number">12</span> <span class="type">Oct</span> <span class="number">2018</span> <span class="number">06</span>:<span class="number">36</span>:<span class="number">28</span> <span class="type">GMT</span></span><br><span class="line"><span class="type">Expires</span>: <span class="type">Fri</span>, <span class="number">12</span> <span class="type">Oct</span> <span class="number">2018</span> <span class="number">06</span>:<span class="number">36</span>:<span class="number">26</span> <span class="type">GMT</span></span><br><span class="line"><span class="type">Server</span>: <span class="type">BWS</span><span class="operator">/</span><span class="number">1.1</span></span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: delPer<span class="operator">=</span><span class="number">0</span>; path<span class="operator">=/</span>; domain<span class="operator">=</span>.baidu.com</span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: <span class="type">BDSVRTM</span><span class="operator">=</span><span class="number">0</span>; path<span class="operator">=/</span></span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: <span class="type">BD_HOME</span><span class="operator">=</span><span class="number">0</span>; path<span class="operator">=/</span></span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: <span class="type">H_PS_PSSID</span><span class="operator">=</span><span class="number">1433_21112_18560_26350_27245_22158</span>; path<span class="operator">=/</span>; domain<span class="operator">=</span>.baidu.com</span><br><span class="line"><span class="type">Vary</span>: <span class="type">Accept</span><span class="operator">-</span><span class="type">Encoding</span></span><br><span class="line"><span class="type">X</span><span class="operator">-</span><span class="type">Ua</span><span class="operator">-</span><span class="type">Compatible</span>: <span class="type">IE</span><span class="operator">=</span><span class="type">Edge</span>,chrome<span class="operator">=</span><span class="number">1</span></span><br><span class="line"><span class="type">Transfer</span><span class="operator">-</span><span class="type">Encoding</span>: chunked</span><br><span class="line"> </span><br><span class="line"><span class="operator">&lt;!</span><span class="type">DOCTYPE</span> html<span class="operator">&gt;</span></span><br><span class="line"><span class="operator">&lt;!--</span><span class="type">STATUS</span> <span class="type">OK</span><span class="operator">--&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>HTTP的响应报文包括：状态行，响应头，空行，数据(响应体)</p>
+<p><img src="/http%E5%92%8Cweb/image-20220318111831190.png" alt="image-20220318111831190"></p>
+<p><strong>状态行</strong>包括：HTTP版本号，状态码和状态值组成。</p>
+<p><strong>响应头</strong>类似请求头，是一系列key-value值</p>
+<p>Cache-Control: private<br>Content-Encoding: gzip<br>Server: BWS&#x2F;1.1<br>Set-Cookie: delPer&#x3D;0; path&#x3D;&#x2F;; domain&#x3D;.baidu.com<br><strong>空白行</strong>：同上，响应报文也用空白行来分隔header和数据</p>
+<p><strong>响应体</strong>：响应的data，本例中是一段HTML</p>
+<h4 id="HTTP请求方法"><a href="#HTTP请求方法" class="headerlink" title="HTTP请求方法"></a>HTTP请求方法</h4><p>HTTP&#x2F;1.1 协议中共定义了八种方法（也叫“动作”）来以不同方式操作指定的资源：</p>
+<ol>
+<li>GET：向指定的资源发出“显示”请求。使用 GET 方法应该只用在读取数据，而不应当被用于产生“副<br>作用”的操作中，例如在 Web Application 中。其中一个原因是 GET 可能会被网络蜘蛛等随意访<br>问。</li>
+<li>HEAD：与 GET 方法一样，都是向服务器发出指定资源的请求。只不过服务器将不传回资源的本文<br>部分。它的好处在于，使用这个方法可以在不必传输全部内容的情况下，就可以获取其中“关于该<br>资源的信息”（元信息或称元数据）。</li>
+<li>POST：向指定资源提交数据，请求服务器进行处理（例如提交表单或者上传文件）。数据被包含<br>在请求本文中。这个请求可能会创建新的资源或修改现有资源，或二者皆有。</li>
+<li>PUT：向指定资源位置上传其最新内容。</li>
+<li>DELETE：请求服务器删除 Request-URI 所标识的资源。</li>
+<li>TRACE：回显服务器收到的请求，主要用于测试或诊断。</li>
+<li>OPTIONS：这个方法可使服务器传回该资源所支持的所有 HTTP 请求方法。用’*’来代替资源名称，<br>向 Web 服务器发送 OPTIONS 请求，可以测试服务器功能是否正常运作。</li>
+<li>CONNECT：HTTP&#x2F;1.1 协议中预留给能够将连接改为管道方式的代理服务器。通常用于SSL加密服<br>务器的链接（经由非加密的 HTTP 代理服务器）。</li>
+</ol>
+<h4 id="HTTP状态码"><a href="#HTTP状态码" class="headerlink" title="HTTP状态码"></a>HTTP状态码</h4><p>所有HTTP响应的第一行都是状态行，依次是当前HTTP版本号，3位数字组成的状态代码，以及描述状态的短语，彼此由空格分隔。</p>
+<p>状态代码的第一个数字代表当前响应的类型：</p>
+<ul>
+<li>1xx消息——请求已被服务器接收，继续处理</li>
+<li>2xx成功——请求已成功被服务器接收、理解、并接受</li>
+<li>3xx重定向——需要后续操作才能完成这一请求</li>
+<li>4xx请求错误——请求含有词法错误或者无法被执行</li>
+<li>5xx服务器错误——服务器在处理某个正确请求时发生错误</li>
+</ul>
+<h3 id="4-用户与服务器的交互：Cookie"><a href="#4-用户与服务器的交互：Cookie" class="headerlink" title="4.用户与服务器的交互：Cookie"></a>4.用户与服务器的交互：Cookie</h3><p>前面提到，HTTP是无状态协议，但是Web站点为了识别用户身份或者限制用户访问的时间或者将用户访问的内容同用户身份相关联，Web站点可以使用Cookie技术；</p>
+<p>Cookie技术包含4个组件：</p>
+<ul>
+<li>HTTP响应报文里增加一个关于Cookie的首部行；</li>
+<li>HTTP请求报文里增加一个关于Cookie的首部行；</li>
+<li>用户端系统保留一个Cookie文件，由浏览器保存维护；</li>
+<li>Web站点建立Cookie和用户身份的关联；</li>
+</ul>
+<p>虽然，Cookie的使用方便了用户也方便了服务端，但是它的使用存在争议，因为使用Cookie被认为是对用户隐私的一种侵犯，因为Web站点可以通过Cookie得到很多用户的信息，并有可能将这部分信息卖给第三方等</p>
+<h3 id="5-WEB缓存"><a href="#5-WEB缓存" class="headerlink" title="5.WEB缓存"></a>5.WEB缓存</h3><p>Web缓存器也被称为代理服务器，它代表初始web服务器来满足HTTP请求。它有自己的存储空间，并在存储空间里保持有最近请求过的对象的副本；可以通过配置浏览器，将所有指向初始服务器的请求首先指向代理服务器。</p>
+<p>当代理服务器收到一个HTTP请求后，它将检查本地是否缓存过该对象，如果缓存过该对象，将检查是否过期，如果没有过期，则直接将该对象返回给浏览器；如果本地不存在或者存在已过期，则代理服务器将根据请求报文里的Host首部行以及请求行里的URL字段向初始服务器发出请求，然后将响应对象返回给浏览器并缓存在本地。</p>
+<p>通常，代理服务器与客户端的通信速度要快于初始服务器与客户端的连接速度；Web代理服务器可以大起大减少对客户请求的响应时间；而且，缓存器能从整体上大大降低因特网上的web流量，从而有助于提高所有应用程序的性能；</p>
+<p>通过使用内容分发网络（Content Distribution Network），Web缓存器正在因特网中发挥越来越重要的作用</p>
+<p>Web缓存即是客户又是服务器</p>
+<h3 id="6-条件get方法"><a href="#6-条件get方法" class="headerlink" title="6.条件get方法"></a>6.条件get方法</h3><p>高速缓存器的使用，带来很多好处，但是有一个问题就是代理服务器对缓存对象的管理：如何确保所请求的对象是最新的？</p>
+<p>其实HTTP提供了一种机制，允许缓存器证实其使用的对象是最新的，这种机制就是<strong>条件GET方法</strong>。</p>
+<p>使用<strong>条件GET方法</strong>只需在使用GET方法的时候，<strong>增加一个If-Modified-Since首部行</strong>，其对应的内容是一个时间，如果所请求的资源在指定日期后被修改了，那么服务器将返回新的对象，否则服务器将返回一个包含空实体体的报文。这样代理服务器就可以确认缓存是否过期了。</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/08/23/http%E5%92%8Cweb/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/computer-network/" rel="tag">computer network</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/http/" rel="tag">http</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/" rel="tag">web</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2022/02/11/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80%E2%80%94%E5%AD%97%E8%8A%82%E5%BA%8F%E8%BD%AC%E6%8D%A2/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            网络编程基础 1 —字节序转换/IP地址转换
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/05/15/%E6%8C%81%E4%B9%85%E6%80%A7/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">并发性</div>
+      </a>
+    
+  </nav>
+
+  
+   
+<div class="gitalk" id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.css">
+
+
+<script src="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.js"></script>
+
+
+<script src="https://cdn.staticfile.org/blueimp-md5/2.19.0/js/md5.min.js"></script>
+
+<script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '3aa4f744e9b5db355ee9',
+    clientSecret: '7a275b033ddbdc5dd88517bca28175b3ceb4c04b',
+    repo: 'ninibymilk.github.io',
+    owner: 'ninibymilk',
+    admin: ['ninibymilk'],
+    // id: location.pathname,      // Ensure uniqueness and length less than 50
+    id: md5(location.pathname),
+    distractionFreeMode: false,  // Facebook-like distraction free mode
+    pagerDirection: 'last'
+  })
+
+  gitalk.render('gitalk-container')
+</script>
+
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2019-2022
+        <i class="ri-heart-fill heart_icon"></i> nnilk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>Visitors:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>Views:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="nnilk&#39;s blog"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>
