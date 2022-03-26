@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta name="description" content="Welcome to nnilk&#39;s daily learning blog" />
+      
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>因特网中的电子邮件 |  nnilk&#39;s blog</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/images/logo3.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-电子邮件"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  因特网中的电子邮件
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/09/04/%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6/" class="article-date">
+  <time datetime="2021-09-03T16:00:00.000Z" itemprop="datePublished">2021-09-04</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/computer-network-notes/">computer network notes</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">1.8k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">6 min</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="2-3因特网中的电子邮件"><a href="#2-3因特网中的电子邮件" class="headerlink" title="2.3因特网中的电子邮件"></a>2.3因特网中的电子邮件</h2><p>电子邮件是一种异步通信媒介，不必与他人的计划进行协调。现代电子邮件报文常常包含附件、超链接、HTML格式文本和图片。</p>
+<p>internet电子邮件系统通常包括：用户代理、邮件服务器、简单邮件传输协议SMTP。</p>
+<p>邮件服务器构成了电子邮件系统的核心。每个收发方在邮件服务器上拥有一个邮箱；一个典型的电子邮件发送过成为：发送方通过用户代理将邮件传送到发送方的邮件服务器，然后再传输到接收方的邮件服务器，然后邮件被分发到接收方的邮箱里；接收方从邮件服务器里获取自己的邮件时需要通过邮件服务器的验证</p>
+<p><strong>SMTP是因特网中电子邮件的主要应用层协议</strong>，它使用TCP可靠数据传输从发送方的邮件服务器向接收方的邮件服务器发送邮件；在每台邮件服务器上同时运行SMTP服务器和SMTP客户端。当邮件服务器接收其他邮件服务器的邮件时，它表现为SMTP服务器，当邮件服务器向其他邮件服务器发送邮件时，表现为SMTP客户端。</p>
+<p>如果发送端不能将邮件发送个接受端的服务器，发送端的邮件服务器会在一个报文队列中保持该报文并在以后尝试再次发送。</p>
+<h3 id="2-3-1SMTP"><a href="#2-3-1SMTP" class="headerlink" title="2.3.1SMTP"></a>2.3.1SMTP</h3><p><strong>传输的三个阶段</strong>：握手、传输、关闭连接。</p>
+<p>SMTP25号端口。SMTP是持续连接的。对每一报文，客户使用一个新的MAIL FROM：crepes.fr开始。当所有报文发送完后才发送QUIT，断开连接。SMTP出现在因特网之前，尽管它有着很不错的特性，但是它具有的某种陈旧的特征表明它仍然是一种继承的技术，比如，它限制邮件报文的所有部分只能使用7比特的ASCII表示，这就导致二进制多媒体文件需要编码为ASCII，而且在发送方需要编码，接收方则需要解码。</p>
+<p>值得注意的是，SMTP报文一般不使用中间邮件服务器发送报文，也就是邮件不会在中间某个邮件服务器保留；在SMTP握手阶段，SMTP客户端将介绍发送方和接收方的邮箱地址；一旦介绍完毕后，SMTP客户端将开始发送报文</p>
+<p><img src="/%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6/20220325154620.png" alt="image-20220323090828915"></p>
+<h3 id="2-3-2-与HTTP对比"><a href="#2-3-2-与HTTP对比" class="headerlink" title="2.3.2 与HTTP对比"></a>2.3.2 与HTTP对比</h3><p>HTTP和SMTP都是用TCP协议；持续的HTTP和SMTP都是用持续连接；但是两者也有区别。</p>
+<ul>
+<li>首先HTTP被设计为一个Pull协议而SMTP被设计为一个Push协议。即用户通过HTTP主动向服务器请求内容，而SMTP则是客户将内容推向服务器端；</li>
+<li>第二个区别就是HTTP传输的数据不一定是用ASCII字符，但是SMTP则只能使用ASCII字符；</li>
+<li>第三个重要区别就是，HTTP将每个对象封装在自己的响应报文里，而SMTP则将所有的报文对象放到一个报文之中；</li>
+</ul>
+<h3 id="2-3-3-邮件报文格式"><a href="#2-3-3-邮件报文格式" class="headerlink" title="2.3.3 邮件报文格式"></a>2.3.3 邮件报文格式</h3><p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220325154621.png" alt="image-20220323095531056"></p>
+<p>报文由两部分组成：一个包含环境信息的首部和一个包含邮件内容的报文体；首部和报文体之间使用空行分开；首部行的格式为关键字：及其值；每个首部必须包含一个From和To首部行。首部也可以包含其它信息，比如Subject等。这与2.4.1中接触的SMTP命令不同，那节中的命令是握手协议的一部分；本节中研究的内容是邮件报文自身的一部分</p>
+<h3 id="2-3-4-邮件访问协议"><a href="#2-3-4-邮件访问协议" class="headerlink" title="2.3.4 邮件访问协议"></a>2.3.4 邮件访问协议</h3><p>需要注意的是，SMTP是邮件服务器之间发送邮件报文的协议，并不是用户通过代理和邮件服务器之间通信的协议；用户代理使用邮件访问协议来从邮件服务器上获取邮件信息；目前常用的邮件访问协议有POP3（Post Office Protocol-Version 3）、因特网邮件访问协议（IMAP，Internet Mail Access protocol）和HTTP</p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220325154622.png" alt="image-20220323095931773"></p>
+<ul>
+<li><strong>POP3</strong></li>
+</ul>
+<p>POP3是一个非常简单的协议，因为简单，所以功能有限；</p>
+<p>POP3使用端口110来建立TCP连接（SMTP使用端口25）；</p>
+<p>POP3按照三个阶段进行工作：特许、事务处理和更新；</p>
+<ul>
+<li>在特许阶段，用户代理发送密码和用户名，进行身份鉴别；</li>
+<li>第二阶段，用户代理取回报文，同时还可以做删除、取消删除等标记或者统计邮件信息；</li>
+<li>第三个阶段是在用户退出后，POP3结束会话，删除被标记的邮件；</li>
+</ul>
+<p>一个需要注意的是，POP3用户代理可以使用两种事务处理模式：一种是下载并删除，另一种是下载保留；POP3代理发出的命令和其工作模式相关；</p>
+<p>下载并删除的方法存在的问题是，如果用户在一台设备上查看了邮件（下载了邮件）后，邮件将被删除，那么在其他设备上将无法查看邮件；这给用户带来一定的不便。使用下载保存方式，则用户下载邮件后，邮件还在服务器上。</p>
+<p>在用户代理与邮箱服务器之间的POP3会话期间，该POP3服务器保留了一些状态信息，特别是标记了哪些用户报文被标记为删除了。但是POP3服务器并不在POP3绘画过程中携带状态信息，大大简化了POP3的服务。</p>
+<ul>
+<li><strong>IMAP</strong></li>
+</ul>
+<p>POP3协议无法为用户提供邮件分类管理的功能，虽然用户可以通过将邮件下载到本地，然后由用户代理程序做分类管理，但是处理的结果是无法同步到其他查看设备上的。为了解决这一问题，IMAP诞生了。IMAP是一个邮件访问协议，比POP3要复杂的多，当然也就有更多的特色了。</p>
+<p>（远程）IMAP将每一份邮件和一个一个文件夹联系起来，当报文第一次到达服务器时，它与收件人的INBOX相关联。收件人可以将邮件移到新创建的文件夹，阅读邮件，删除邮件等。</p>
+<p>IMAP允许用户在不同文件夹里移动邮件并且查询邮件。值得注意的是，IMAP服务器维护了IMAP会话的用户状态信息，但是POP3并不；IMAP协议还允许用户代理获取报文组件而不是报文整体。</p>
+<ul>
+<li><strong>基于Web的电子邮件</strong></li>
+</ul>
+<p>这种方式主要是指，用户使用HTTP协议和邮件服务器通信。用户代理就是普通的浏览器，但是，邮件服务器之间还是使用SMTP协议的</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://ninibymilk.github.io/2021/09/04/%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SMTP/" rel="tag">SMTP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/computer-network/" rel="tag">computer network</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2022/02/11/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80%E2%80%94%E5%AD%97%E8%8A%82%E5%BA%8F%E8%BD%AC%E6%8D%A2/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            网络编程基础 1 —字节序转换/IP地址转换
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/08/30/DNS/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">DNS:因特网的目录服务</div>
+      </a>
+    
+  </nav>
+
+  
+   
+<div class="gitalk" id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.css">
+
+
+<script src="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.js"></script>
+
+
+<script src="https://cdn.staticfile.org/blueimp-md5/2.19.0/js/md5.min.js"></script>
+
+<script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '3aa4f744e9b5db355ee9',
+    clientSecret: '7a275b033ddbdc5dd88517bca28175b3ceb4c04b',
+    repo: 'ninibymilk.github.io',
+    owner: 'ninibymilk',
+    admin: ['ninibymilk'],
+    // id: location.pathname,      // Ensure uniqueness and length less than 50
+    id: md5(location.pathname),
+    distractionFreeMode: false,  // Facebook-like distraction free mode
+    pagerDirection: 'last'
+  })
+
+  gitalk.render('gitalk-container')
+</script>
+
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2019-2022
+        <i class="ri-heart-fill heart_icon"></i> nnilk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>Visitors:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>Views:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="nnilk&#39;s blog"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+ <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/MathJax.js"></script>
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/config/TeX-AMS-MML_HTMLorMML-full.js"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true,
+  };
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>

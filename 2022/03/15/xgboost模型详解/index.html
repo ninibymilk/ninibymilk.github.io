@@ -129,24 +129,24 @@
 </ol>
 <h2 id="核心算法原理"><a href="#核心算法原理" class="headerlink" title="核心算法原理"></a>核心算法原理</h2><h3 id="01单颗决策树模型表示"><a href="#01单颗决策树模型表示" class="headerlink" title="01单颗决策树模型表示"></a>01单颗决策树模型表示</h3><p>假设某棵决策树有T TT个叶子节点，则单棵决策树模型可记为：</p>
 <p>f(x)&#x3D;w <del>q(x)</del></p>
-<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232448.png" alt="树与权重向量" style="zoom:50%;">
+<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232448.png" alt="树与权重向量" style="zoom:50%;">
 
 <p>例如实例落在了第j个叶子结点 ，则其输出的值为 Wj </p>
 <p>则叶子结点的向量表示为</p>
 <p><em>w</em>&#x3D;(<em>w</em>1,⋯,<em>wj</em>,⋯,<em>wT</em>)</p>
 <h3 id="02-集成学习模型结构"><a href="#02-集成学习模型结构" class="headerlink" title="02 集成学习模型结构"></a>02 集成学习模型结构</h3><p>使用Boosting思想，对于实例x，总模型的预测输出为</p>
-<p>​                                               <img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232449.png" alt="image-20220315212039282" style="zoom: 80%;"></p>
+<p>​                                               <img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232449.png" alt="image-20220315212039282" style="zoom: 80%;"></p>
 <p>其中，$f<del>k</del>(x)$  为实例x在第k个决策树的输出</p>
 <h3 id="03-损失函数"><a href="#03-损失函数" class="headerlink" title="03 损失函数"></a>03 损失函数</h3><p>上面一部分我们知道了集成学习方法的预测模型，因为XGBoost也是集成学习方法的一种。对于XGBoost的预测模型同样可以表示为：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232450.png" alt="img"></p>
-<p>其中<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232451.png" alt="img">为树的总个数，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232452.png" alt="img">表示第<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232453.png" alt="img">颗树，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232454.png" alt="img">表示样本<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232455.png" alt="img">的预测结果。</p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232450.png" alt="img"></p>
+<p>其中<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232451.png" alt="img">为树的总个数，<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232452.png" alt="img">表示第<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232453.png" alt="img">颗树，<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232454.png" alt="img">表示样本<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232455.png" alt="img">的预测结果。</p>
 <p>其中损失函数也同样表示为：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232456.png" alt="img"></p>
-<p>其中<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232457.png" alt="img">为样本<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232458.png" alt="img">的训练误差，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232459.png" alt="img">表示第<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232500.png" alt="img">棵树的正则项。</p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232456.png" alt="img"></p>
+<p>其中<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232457.png" alt="img">为样本<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232458.png" alt="img">的训练误差，<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232459.png" alt="img">表示第<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232500.png" alt="img">棵树的正则项。</p>
 <p>其中为树的总个数，表示第颗树，表示样本的预测结果。</p>
 <p>其中损失函数也同样表示为：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232501.png" alt="img"></p>
-<p>其中<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232457.png" alt="img">为样本<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232458.png" alt="img">的训练误差，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232459.png" alt="img">表示第<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232502.png" alt="img">棵树的正则项。</p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232501.png" alt="img"></p>
+<p>其中<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232457.png" alt="img">为样本<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232458.png" alt="img">的训练误差，<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232459.png" alt="img">表示第<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232502.png" alt="img">棵树的正则项。</p>
 <blockquote>
 <p>损失函数，代价函数，目标函数的区别？<br>首先给出结论：</p>
 <p>损失函数（Loss Function ）是定义在单个样本上的，算的是一个样本的误差。</p>
@@ -159,7 +159,7 @@
 <p>对树中的每个叶子结点尝试进行分裂；</p>
 <p>每次分裂后，原来的一个叶子结点继续分裂为左右两个子叶子结点，原叶子结点中的样本集将根据该结点的判断规则分散到左右两个叶子结点中；</p>
 <p>新分裂一个结点后，我们需要检测这次分裂是否会给损失函数带来增益，增益的定义如下：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232503.png" alt="image-20220315214343506"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232503.png" alt="image-20220315214343506"></p>
 <p>如果L <del>split</del> &gt; 0，或者大于设定的阈值，即分裂后目标函数值下降了，那么可以考虑此次分裂的结果。</p>
 <h3 id="02-如何寻找最佳分裂点"><a href="#02-如何寻找最佳分裂点" class="headerlink" title="02 如何寻找最佳分裂点"></a>02 如何寻找最佳分裂点</h3><p>一棵决策树有多个候选分割点，寻找最佳分割点的理论最佳步骤如下：</p>
 <ol>
@@ -271,7 +271,7 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2022/03/15/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://ninibymilk.github.io/2022/03/15/xgboost%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -598,6 +598,30 @@
     viewer_init()
 </script> 
 <!-- MathJax -->
+ <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/MathJax.js"></script>
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/config/TeX-AMS-MML_HTMLorMML-full.js"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true,
+  };
+</script>
 
 <!-- Katex -->
 

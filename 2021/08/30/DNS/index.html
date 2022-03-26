@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta name="description" content="Welcome to nnilk&#39;s daily learning blog" />
+      
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>DNS:因特网的目录服务 |  nnilk&#39;s blog</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/images/logo3.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-DNS"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  DNS:因特网的目录服务
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/08/30/DNS/" class="article-date">
+  <time datetime="2021-08-29T16:00:00.000Z" itemprop="datePublished">2021-08-30</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/computer-network-notes/">computer network notes</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">2k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">6 min</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="2-4-DNS-因特网的目录服务"><a href="#2-4-DNS-因特网的目录服务" class="headerlink" title="2.4 DNS: 因特网的目录服务"></a>2.4 DNS: 因特网的目录服务</h2><h3 id="2-4-1-DNS提供的服务"><a href="#2-4-1-DNS提供的服务" class="headerlink" title="2.4.1 DNS提供的服务"></a>2.4.1 DNS提供的服务</h3><p>解决主机名和IP地址的转化问题。因为在信息的发送者一端，通常使用主机名来标识主机，但是在计算机网络里是使用IP地址来标主机。</p>
+<p><strong>DNS（Domain Name System）域名系统</strong>。</p>
+<p>DNS是一个由分层的DNS服务器组成的分布式数据库和一个使得主机可以查询分布式数据库的应用层协议组成；</p>
+<p>除了提供<strong>主机名到IP地址的转换</strong>外，DNS还提供以下重要服务</p>
+<p><strong>主机别名</strong>：DNS不但提供主机名到IP地址的转换服务，还提供主机名与主机别名的转换；此时主机名被称为规范主机名；</p>
+<p><strong>邮件服务器别名</strong>：DNS同样也提供邮件服务器主机名和别名的转换服务，实际上，公司的邮件服务器和Web服务器可以使用相同的主机别名；MX记录允许一个公司的邮件服务器和Web服务器使用相同的主机名。</p>
+<p><strong>负载分配</strong>：DNS也被用在冗余的服务器之间分配负载。一个IP集合往往对应一个规范主机名（没太理解？？？）</p>
+<h3 id="2-4-2-DNS工作机理概述"><a href="#2-4-2-DNS工作机理概述" class="headerlink" title="2.4.2 DNS工作机理概述"></a>2.4.2 DNS工作机理概述</h3><p>DNS使用<strong>UDP</strong>作为其传输层协议；DNS服务使用<strong>53</strong>端口；</p>
+<p>当主机上的DNS客户端收到一个转换请求时，客户端将向网络发送一个DNS查询报文，然后客户端将收到一个包含相关信息的DNS回答报文，这个报文里有客户端想要的内容，之后DNS客户端将IP地址返回给请求的提出者即可。</p>
+<p>从使用DNS服务的请求者来看，DNS就像一个简单的提供直接转换服务的黑盒子，实际上这个黑盒子非常复杂，由分布在全球的大量DNS服务器以及定义DNS服务器和查询主机之间如何通信的应用层协议组成；</p>
+<p><strong>DNS采用分布式的设计方案</strong>，实际上，DNS是一个在因特网实现分布式数据库的精彩范例！而之所以这样做，是因为，<strong>单一的DNS服务器无法解决单点故障、无法保证通信容量以及无法临近所有的查询主机和维护困难</strong>等问题</p>
+<p><strong>DNS采用分布式的设计方案</strong></p>
+<p>为了处理扩展性问题，DNS服务器采用层次式组织，并且分布在全世界范围内；大致来说，存在三种DNS服务器：<strong>根</strong>DNS服务器、<strong>顶级域</strong>DNS服务器和<strong>权威</strong>DNS服务器；</p>
+<p>其工作的普遍流程：一个DNS客户端，希望获得<a target="_blank" rel="noopener" href="http://www.baidu.com的ip地址,粗略的说,dns客户端首先和根dns服务器取得联系,它将返回负责解析顶级域名com的服务器的ip地址(或者其集合),客户将同这些服务器之一取得联系,然后顶级域dns服务器建返回baidu.com的权威服务器的ip集合,客户端通过与这些服务器之一取得联系,获得www.baidu.com的ip地址./">www.baidu.com的IP地址，粗略的说，DNS客户端首先和根DNS服务器取得联系，它将返回负责解析顶级域名com的服务器的IP地址（或者其集合），客户将同这些服务器之一取得联系，然后顶级域DNS服务器建返回baidu.com的权威服务器的IP集合，客户端通过与这些服务器之一取得联系，获得www.baidu.com的IP地址。</a></p>
+<h4 id="DNS服务器"><a href="#DNS服务器" class="headerlink" title="DNS服务器"></a>DNS服务器</h4><ul>
+<li>根DNS服务器：因特网上有13个根DNS服务器，大部分分布在北美洲，尽管我们可以将这13个根DNS服务器视为单个的服务器，但是每台服务器实际上是一个冗余的计算机网络以提供安全性和可靠性；</li>
+<li>顶级域DNS服务器：负责顶级域名，如com，org，net，edu，gov以及各个国家的顶级域名的转换。</li>
+<li>权威DNS服务器：因特网上，具有公共可访问主机的每个组织机构必须公共可访问的DNS记录，这些记录将主机名映射为IP地址。一个组织的权威DNS服务器收藏了这些DNS记录，多数大学和大公司实现和维护它们自己的基本和辅助（备份）权威DNS服务器；当然，也可以通过付费的方式，将相关的信息插入到其它权威服务器中；</li>
+<li><strong>本地DNS服务器</strong>。本地DNS服务器不在DNS层次结构之中,通常邻近其所在网络的其他主机。当主机发出DNS请求时，该请求被发往本地DNS服务器，它起着代理的作用，并将请求转发到DNS服务器层次结构中。</li>
+</ul>
+<h4 id="DNS查询方式"><a href="#DNS查询方式" class="headerlink" title="DNS查询方式"></a>DNS查询方式</h4><p>DNS查询有两种，一种是递归查询一种是迭代查询；</p>
+<p>实践中，查询通常满足这样的模式：从请求主机到本地DNS服务器的查询是递归的，其余查询是迭代的。</p>
+<p>所谓<strong>迭代</strong>就是，如果请求的接收者不知道所请求的内容，那么接收者将扮演请求者，发出有关请求，直到获得所需要的内容，然后将内容返回给最初的请求者。也就是说，在<strong>递归查询</strong>中，一定要给请求者想要的答案；<strong>迭代查询</strong>则是指，如果接收者没有请求者所需要的准确内容，接收者将告诉请求者，如何去获得，但是自己并不去发出请求。</p>
+<p>图2・18所示的例子利用了递归查询(recursive query)和迭代查询(iterative query)。从cse. nyu. edu到dns. nyu. edu发出的查询是递归查询，因为该查询以自己的名义请求dns. nyu. edu来获得该映射。而后继的3个查询是迭代查询，因为所有的回答都是直接返<br>回给dns. nyu. eduo</p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220325154736.png" alt="image-20220325113254234"></p>
+<p>图2・19显示了一条DNS查询链，其中的所有查询都是递归的。实践中，查询通常遵循图2・18中的模式：从请求主机到本地DNS服务器的查询是递归的，其余的查询是迭代的。</p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220325154746.png" alt="image-20220325113425441"></p>
+<h4 id="DNS缓存"><a href="#DNS缓存" class="headerlink" title="DNS缓存"></a>DNS缓存</h4><p>DNS缓存实际上是为了盖上时延性能并且减少在因特网上传输的DNS报文数量而引入的。DNS缓存原理十分简单，每当DNS服务器发出请求后收到回答时，就将回答的内容缓存在它自己的主机空间上。这样，如果有相同的请求到达时，就不需要再去发出请求，直接使用缓存即可；因为有了缓存，本地DNS就可以直接提供一些经常被访问的主机名所对应的IP地址，而不需要询问根DNS服务器了。需要注意的是，缓存不可避免的一个问题：有效时间。如果缓存过时而未得到更新，那么就会导致一些请求失败。</p>
+<p>个人认为，缓存技术就是一种典型的使用<strong>空间换时间</strong>的策略</p>
+<h3 id="2-4-3-DNS记录和报文"><a href="#2-4-3-DNS记录和报文" class="headerlink" title="2.4.3 DNS记录和报文"></a>2.4.3 DNS记录和报文</h3><h4 id="DNS记录"><a href="#DNS记录" class="headerlink" title="DNS记录"></a>DNS记录</h4><p>共同实现分布式数据库的所有DNS服务器存储了资源记录(Resource Record)。而RR提供了主机名到IP地址的映射信息；一条RR是具有一下字段的4元组：（name, value, type, TTL）;其中TTL是指该记录的生存时间，它决定了该条记录何时被删除。</p>
+<p>首先看看type，type有4种取值，包括：A、NS、CNAME、MX等：</p>
+<pre><code>type=A：则name为主机名，value为对应的IP地址；
+type=NS：则name为域，value为如何获得该域下主机IP地址的权威DNS服务器的主机名；
+type=CNAME：则value为name（本身为主机别名）所对应的主机的规范主机名；
+type=MX：则value为那么所对应的邮件服务器的规范主机名；
+</code></pre>
+<h4 id="DNS报文"><a href="#DNS报文" class="headerlink" title="DNS报文"></a>DNS报文</h4><p>DNS报文有两种，即<strong>查询报文</strong>和<strong>回答报文</strong>，并且两种报文有着相同的结构</p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220304140851.png" alt="image-20220304140851297"></p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://ninibymilk.github.io/2021/08/30/DNS/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DNS/" rel="tag">DNS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/computer-network/" rel="tag">computer network</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/" rel="tag">web</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/09/04/%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            因特网中的电子邮件
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/08/23/http%E5%92%8Cweb/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">WEB和HTTP</div>
+      </a>
+    
+  </nav>
+
+  
+   
+<div class="gitalk" id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.css">
+
+
+<script src="https://cdn.staticfile.org/gitalk/1.7.2/gitalk.min.js"></script>
+
+
+<script src="https://cdn.staticfile.org/blueimp-md5/2.19.0/js/md5.min.js"></script>
+
+<script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '3aa4f744e9b5db355ee9',
+    clientSecret: '7a275b033ddbdc5dd88517bca28175b3ceb4c04b',
+    repo: 'ninibymilk.github.io',
+    owner: 'ninibymilk',
+    admin: ['ninibymilk'],
+    // id: location.pathname,      // Ensure uniqueness and length less than 50
+    id: md5(location.pathname),
+    distractionFreeMode: false,  // Facebook-like distraction free mode
+    pagerDirection: 'last'
+  })
+
+  gitalk.render('gitalk-container')
+</script>
+
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2019-2022
+        <i class="ri-heart-fill heart_icon"></i> nnilk
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>Visitors:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>Views:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="nnilk&#39;s blog"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+ <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/MathJax.js"></script>
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/config/TeX-AMS-MML_HTMLorMML-full.js"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true,
+  };
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>

@@ -15,7 +15,7 @@
 <li>一个循环 seq2seq 声谱特征预测网络，它从输入字符序列预测 mel 谱图帧的序列;</li>
 <li>一个改进的 WaveNet，它根据预测的 mel 谱图帧生成时域波形样本。<span id="more"></span></li>
 </ol>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202203031055188.png" alt="image-20220303105518888"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202203031055188.png" alt="image-20220303105518888"></p>
 <p>我们选择了一个低电平的声学表示:梅尔-频谱图，以连接这两个成分。使用一种很容易从时域波形计算出来的表示形式，可以让我们分别训练这两个分量。这种表示也比波形样本更平滑，更容易训练使用平方误差损失，因为它是不变的相位在每一帧。mel 谱图与线性谱图有关，即短时傅里叶变换(STFT)幅度。</p>
 <p>该方法是根据人类听觉系统的实测响应，对短时傅立叶变换的频率轴进行非线性变换，以较少的维数总结频率内容。</p>
 <p>使用这种听觉频率标度可以强调对语音清晰度至关重要的低频细节，同时减少了对高频细节的强调，高频细节主要由摩擦和其他噪声爆发控制，通常不需要以高保真度建模。由于这些特性，从 mel 尺度衍生出来的特征已经被用作语音识别的基础表示几十年了</p>
@@ -26,13 +26,13 @@
 <p>在 Tacotron2 中，编码器将输入序列 X&#x3D;[x<del>1</del>,x<del>2</del>,…,x<del>Tx</del>] 映射成序列 H&#x3D;[h<del>1</del>,h<del>2</del>,…,h<del>Tx</del>] ，其中序列 H 被称作“编码器隐状态”(encoder hidden states)。注意：编码器的输入输出序列都拥有相同的长度，h<del>i</del>之于相邻分量 h<del>j</del>拥有的信息等价于 x<del>i</del>之于 x<del>j</del>所拥有的信息。</p>
 <p>在 Tacotron2 中，每一个输入分量 xi 就是一个字符。Tacotron2 的编码器是一个 3 层卷积层后跟一个双向 LSTM 层形成的模块，在 Tacotron2 中卷积层给予了神经网络类似于 N−gramN−gram 感知上下文的能力。这里使用卷积层获取上下文主要是由于实践中 RNN 很难捕获长时依赖，并且卷积层的使用使得模型对不发音字符更为鲁棒(如’know’中的’k’)。</p>
 <p>经词嵌入(word embedding)的字符序列先送入三层卷积层以提取上下文信息，然后送入一个双向的 LSTM 中生成编码器隐状态，即：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202203031438629.png" alt="image-20220225155829121"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202203031438629.png" alt="image-20220225155829121"></p>
 <p>其中，F1、F2、F3F1、F2、F3 为 3 个卷积核，ReLUReLU 为每一个卷积层上的非线性激活 E¯ 表示对字符序列 X 做 embedding，EncoderRecurrency 表示双向 LSTM。</p>
 </blockquote>
 <h3 id="Tacotron2-注意力机制-Location-Sensitive-Attention"><a href="#Tacotron2-注意力机制-Location-Sensitive-Attention" class="headerlink" title="Tacotron2 注意力机制-Location Sensitive Attention"></a>Tacotron2 注意力机制-Location Sensitive Attention</h3><blockquote>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202203031438800.png" alt="image-20220225160230769"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202203031438800.png" alt="image-20220225160230769"></p>
 <p>其中，s<del>i</del>为<em>当前</em>解码器隐状态而非上一步解码器隐状态，偏置值 b 被初始化为 0。位置特征 fi 使用累加注意力权重 cα<del>i</del>卷积而来</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202203031438516.png" alt="image-20220225160333596"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202203031438516.png" alt="image-20220225160333596"></p>
 </blockquote>
 <h3 id="解码器（Decoder）"><a href="#解码器（Decoder）" class="headerlink" title="解码器（Decoder）"></a>解码器（Decoder）</h3><p>该解码器是一种自回归递归神经网络，它从编码后的输入序列一帧一帧地预测 mel 谱图。</p>
 <p>其处理步骤如下：</p>
@@ -42,7 +42,7 @@
 <li>将 LSTM 输出与注意上下文向量串联起来，通过线性变换进行投影，对目标谱图帧进行预测。</li>
 <li>最后，将预测的 mel 谱图通过 5 层卷积 post-net（5-layer convolutional post-net）进行预测，并将残差添加到预测中以改善预测的梅尔谱图质量。post-net 由 512 个滤波器组成，形状为 5 x 1，批量归一化，然后在最后一层上进行 tanh 激活。</li>
 </ol>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202203031055369.png" alt="image-20220303105542062"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202203031055369.png" alt="image-20220303105542062"></p>
 <h2 id="声码器（Vocoder）"><a href="#声码器（Vocoder）" class="headerlink" title="声码器（Vocoder）"></a>声码器（Vocoder）</h2><p>该论文使用的声码器是一个改进的 WaveNet，不是本次论文重点提出的模型，也不是我们本次项目使用到的声码器模型。故略。之后再对 melgan 等声码器进行分析。</p>
 ]]></content>
       <categories>
@@ -109,7 +109,7 @@
 <p><strong>进程的状态</strong></p>
 <p>三种基本状态：</p>
 <p>1、运行（running）：在运行状态下，进程正在处理器上运行。这意味着它正在执行指令。<br>2、就绪（ready）：在就绪状态下，进程已准备好运行，但由于某种原因，操作系统选择不在此时运行。<br>3、阻塞（blocked）：在阻塞状态下，一个进程执行了某种操作，直到发生其他事件时才会准备运行。一个常见的例子是，当进程向磁盘发起 I&#x2F;O 请求时，它会被阻塞，因此其他进程可以使用处理器。</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111111301668.png" alt="image-20211111130118589"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111111301668.png" alt="image-20211111130118589"></p>
 <p>其他可能存在的状态：</p>
 <p><strong>挂起状态</strong>（是该进程暂时不接受调度）。</p>
 <p><strong>创建状态</strong>：此时，进程已经拥有了字节的 PCB，但该进程所必需的资源或其它信息（如主存资源）尚未分配，进程自身还未进入主存，即创建工作尚未完成，进程还不能够被调度运行。</p>
@@ -122,29 +122,29 @@
 <p><strong>用以下标志运行程序：.&#x2F;process-run.py -l 5:100,5:100。CPU 利用率（CPU 使用时间的百分比）应该是多少？为什么你知道这一点？利用 -c 标记查看你的答案是否正确。</strong></p>
 <p>运行结果如下</p>
 <p>**cpu 利用率为 100%**，可以看到进程 0 和进程 1 交替执行，且没有调用 IO 命令。</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943336.png" alt="image-20211107224505762"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943336.png" alt="image-20211107224505762"></p>
 <p>加上-c 标记后运行结果。CPU 一直处于占用状态，验证正确</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943337.png" alt="image-20211107224328317"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943337.png" alt="image-20211107224328317"></p>
 <p><strong>4.2</strong></p>
 <p><strong>现在用这些标志运行：.&#x2F;process-run.py -l 4:100,1:0。这些标志指定了一个包含 4 条指令的进程（都要使用 CPU），并且只是简单地发出 I&#x2F;O 并等待它完成。完成这两个进程需要多长时间？利用-c 检查你的答案是否正确。</strong></p>
 <p>从运行结果来看，进程 0 的 4 条指令需要占用 4 个 cpu 时间，发起 io 和 io 结束需要 2 个时装周期 ，io 占用时间还无法得知。total&#x3D;4+2+n</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943338.png"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943338.png"></p>
 <p>加上-c 标记后运行结果，可以看到程序一共占用了 11 个时钟周期，io 占用了 5 时钟周期</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111120937254.png"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111120937254.png"></p>
 <p><strong>4.3</strong></p>
 <p><strong>现在交换进程的顺序：.&#x2F;process-run.py -l 1:0,4:100。现在发生了什么？交换顺序是否重要？为什么？同样，用-c 看看你的答案是否正确。</strong></p>
 <p>交换运行顺序后，首先运行进程 0，进程 0 发起 IO，系统进行上下文切换，进程 1 占用 cpu 执行程序。</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943340.png" alt="image-20211109170627689"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943340.png" alt="image-20211109170627689"></p>
 <p>加上-c，可以看到，让进程 0 先执行 IO 的话，进程 1 在进程 0 调用 IO 的同时可占用 CPU。只需 6 个时钟周期即可执行完程序</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943341.png" alt="image-20211109171420829"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943341.png" alt="image-20211109171420829"></p>
 <p><strong>4.4</strong></p>
 <p><strong>现在交换进程的顺序：.&#x2F;process-run.py -l 1:0,4:100。现在发生了什么？交换顺序是否重要？为什么？同样，用-c 看看你的答案是否正确。</strong></p>
 <p>可以看到，因为进程在进行 I&#x2F;O 操作时，系统不会进行上下文切换，所以进程 1 只能等待进程 0 调用 IO 结束再占用 CPU，最终要消耗 9 个时钟周期</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943342.png" alt="image-20211109172648650"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943342.png" alt="image-20211109172648650"></p>
 <p><strong>4.5</strong></p>
 <p><strong>现在，运行相同的进程，但切换行为设置，在等待 I&#x2F;O 时切换到另一个进程（-l 1:0,4:100-c -S SWITCH_ON_IO）。现在会发生什么？利用-c 来确认你的答案是否正确。</strong></p>
 <p>可以看到，让进程 0 先执行 IO，然后系统进行上下文切换，进程 1 可占用 CPU。只需 6 个时钟周期即可执行完程序</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943343.png" alt="image-20211109172752093"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943343.png" alt="image-20211109172752093"></p>
 <h2 id="第五章-进程-API"><a href="#第五章-进程-API" class="headerlink" title="第五章-进程 API"></a>第五章-进程 API</h2><h3 id="知识点-1"><a href="#知识点-1" class="headerlink" title="知识点"></a>知识点</h3><h4 id="fork-系统调用"><a href="#fork-系统调用" class="headerlink" title="fork 系统调用"></a><strong>fork 系统调用</strong></h4><p>1、子进程不会从 main()函数开始执行，而是直接从 fork()系统调用返回。</p>
 <p>2、子进程拥有自己的地址空间（即拥有自己的私有内存）、寄存器、程序计数器等</p>
 <p>3、父进程获得的返回值是新创建子进程的 PID，而子进程获得的返回值是 0</p>
@@ -174,9 +174,9 @@
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">test1</span><span class="params">()</span> &#123;<span class="comment">//在调用之前,让主进程访问一个变量(例如 x)并将其值设               //置为100</span></span><br><span class="line">    <span class="type">int</span> pid = fork();</span><br><span class="line">    <span class="type">int</span> x = <span class="number">100</span>;</span><br><span class="line">    <span class="keyword">if</span> (pid &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;fork error\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;child, x %d\n&quot;</span>, x);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;parent, x %d\n&quot;</span>, x);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">test2</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> pid = fork();</span><br><span class="line">    <span class="type">int</span> x = <span class="number">100</span>;</span><br><span class="line">    <span class="keyword">if</span> (pid &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;fork error\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;  <span class="comment">//当子进程和父进程都改变 x 的值时</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;child,x %d\n&quot;</span>, x);</span><br><span class="line">        x = <span class="number">0</span>;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;child,x %d\n&quot;</span>, x);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;parent,x %d\n&quot;</span>, x);</span><br><span class="line">        x = <span class="number">1</span>;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;parent,x %d\n&quot;</span>, x);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (argc == <span class="number">1</span>) &#123;</span><br><span class="line">        test1();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        test2();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <p>可以看到，在调用之前,让主进程访问一个变量(例如 x)并将其值设为 100，父进程和子进程的 x 值都为 100</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943344.png" alt="image-20211109174929408"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943344.png" alt="image-20211109174929408"></p>
 <p>当子进程和父进程在各自进程修改 x 值时，父子进程的值各自不受影响</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943345.png" alt="image-20211109173934825"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943345.png" alt="image-20211109173934825"></p>
 <p><strong>5.2</strong></p>
 <p><strong>编写一个打开文件的程序（使用 open()系统调用），然后调用 fork()创建一个新进程。子进程和父进程都可以访问 open()返回的文件描述符吗？当它在并发（即同时）写入文件时，会发生什么？</strong></p>
 <p>测试代码：</p>
@@ -184,8 +184,8 @@
 
 <p>运行结果如下，可以看到</p>
 <p>父进程，子进程都能访问 open 返回的 fd 文件符。当他们同时写入文件时，存在竞争条件，但因为操作系统会进行调度，所以最终两个进程都能写入成功</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943346.png" alt="image-20211109180303635"></p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943347.png" alt="image-20211109180212533"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943346.png" alt="image-20211109180303635"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943347.png" alt="image-20211109180212533"></p>
 <p><strong>5.4</strong></p>
 <p><strong>编写一个调用 fork()的程序,然后调用某种形式的 exec()来运行序”&#x2F;bin&#x2F;ls”看看是否可以尝试 exec 的所有变体,包括 execl()、 execle()、 execlp()、 execv()、 execvp()和 execve(),为什么同样的基本调用会有这么多变种？</strong></p>
 <p>测试代码</p>
@@ -201,19 +201,19 @@
 <li>c 语言没有默认参数语法,只能实现多个变体</li>
 </ol>
 <p>execl:</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943348.png" alt="image-20211109195822756"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943348.png" alt="image-20211109195822756"></p>
 <p>execlp:</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943349.png" alt="image-20211109195938552"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943349.png" alt="image-20211109195938552"></p>
 <p>execve：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943350.png" alt="image-20211109200052709"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943350.png" alt="image-20211109200052709"></p>
 <p>execv：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943351.png" alt="image-20211109200128674"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943351.png" alt="image-20211109200128674"></p>
 <p>execvp：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943352.png" alt="image-20211109200209564"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943352.png" alt="image-20211109200209564"></p>
 <p>execle：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943353.png" alt="image-20211109200430882"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943353.png" alt="image-20211109200430882"></p>
 <p>execlP：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943354.png" alt="image-20211109200543452"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943354.png" alt="image-20211109200543452"></p>
 <h2 id="第六章——受限直接执行"><a href="#第六章——受限直接执行" class="headerlink" title="第六章——受限直接执行"></a>第六章——受限直接执行</h2><h3 id="受限运行协议"><a href="#受限运行协议" class="headerlink" title="受限运行协议"></a>受限运行协议</h3><p><strong>用户模式</strong> user mode：在用户模式下运行的代码会受到限制，如用户模式下，进程不能发出 I&#x2F;O，这样会引发异常，可能导致操作系统终止该进程</p>
 <p><strong>内核模式</strong> kernel mode：操作系统就在内核模式下运行，在此模式下，运行的代码可以做它想做的所有事，包括特权操作，发出 I&#x2F;O 和执行所有类型的受限制操作</p>
 <p>受限直接运行<strong>有两个阶段</strong>：<br>1，系统引导时：内核初始化陷阱表，CPU 记住陷阱表的位置以供使用<br>2，运行进程时：在执行进程前，操作系统为进程初始化了一些内容，接着转入用户模式运行程序。当进程发起系统调用时，会重新陷入操作系统，然后通过陷阱返回，并将控制权重新交给进程</p>
@@ -233,14 +233,14 @@
 <h4 id="最短完成时间优先（STCF）"><a href="#最短完成时间优先（STCF）" class="headerlink" title="最短完成时间优先（STCF）"></a>最短完成时间优先（STCF）</h4><p>每当新工作进入系统时，它就会确定剩余工作和新工作中，谁的剩余时间最少，然后调度该工作。</p>
 <p>允许抢占，放宽假设，所有任务不是同时到达的</p>
 <p>优点：结果是平均周转时间大大提高，虑到我们的新假设，STCF 可证明是最优的。考虑到如果所有工作同时到达，SJF 是最优的</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111112050629.png" alt="image-20211111205039567"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111112050629.png" alt="image-20211111205039567"></p>
 <h4 id="轮转（RR）"><a href="#轮转（RR）" class="headerlink" title="轮转（RR）"></a>轮转（RR）</h4><p>基本思想：RR 在一个时间片（time slice，有时称为调度 scheduling quantum）内运行一个工作，然后切换到运行队列中的下一个任务，而不是运行一个任务直到结束。它反复执行，直到所有任务完成。</p>
 <p>【请注意，时间片长度必须是时钟中断周期的倍数。】</p>
 <p>时间片长度对于 RR 是至关重要的。<br>时间片太短是有问题的：突然上下文切换的成本将影响整体性能。因此，系统设计者需要权衡时间片的长度，使其足够长，以便摊销（amortize）上下文切换成本，而又不会使系统不及时响应。</p>
 <p>优势：有非常好的平均响应时间，通过设置合适的时间片，能获得不错的性能</p>
 <p>缺点：较差的平均周转时间</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111230810271.png" alt="image-20211123081045212"></p>
-<h4 id="结合-IO"><a href="#结合-IO" class="headerlink" title="结合 IO"></a><strong>结合 IO</strong></h4><p>当一个交互性进程发出 IO 让出 CPU 后，调度程序调度其他程序，从而更好地利用 CPU<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111112104131.png" alt="image-20211111210429081"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111230810271.png" alt="image-20211123081045212"></p>
+<h4 id="结合-IO"><a href="#结合-IO" class="headerlink" title="结合 IO"></a><strong>结合 IO</strong></h4><p>当一个交互性进程发出 IO 让出 CPU 后，调度程序调度其他程序，从而更好地利用 CPU<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111112104131.png" alt="image-20211111210429081"></p>
 <h3 id="课后习题-2"><a href="#课后习题-2" class="headerlink" title="课后习题"></a>课后习题</h3><p><strong>7.1</strong></p>
 <p><strong>使用 SJF 和 FIFO 调度程序运行长度为 200 的 3 个作业时,计算响应时间和周转时间。</strong></p>
 <table>
@@ -476,7 +476,7 @@
 <td>否</td>
 </tr>
 </tbody></table>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943355.png" alt="image-20211109210002760"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943355.png" alt="image-20211109210002760"></p>
 <p><strong>8.3</strong></p>
 <p><strong>将如何配置调度程序参数，像轮转调度程序那样工作？</strong></p>
 <p>因为对于同一个队列中的工作，采取轮转的方式调度。所以将队列数设为 1 即可</p>
@@ -485,7 +485,7 @@
 <p>保证参数 B 小于等于 190，这样至少每隔 200ms 这个长时间运行工作就能被执行 10ms（5%）</p>
 <h2 id="第九章"><a href="#第九章" class="headerlink" title="第九章"></a>第九章</h2><h3 id="知识点-4"><a href="#知识点-4" class="headerlink" title="知识点"></a>知识点</h3><h4 id="彩票调度"><a href="#彩票调度" class="headerlink" title="彩票调度"></a><strong>彩票调度</strong></h4><p>彩票数（ticket）代表了进程（或用户或其他）占有某个资源的份额。一个进程拥有的彩票数占总彩票数的百分比，就是它占有资源的份额。</p>
 <p><strong>一个简单的例子</strong></p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111111054744.png" alt="image-20211111105425418"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111111054744.png" alt="image-20211111105425418"></p>
 <p><strong>优势</strong></p>
 <p>彩票调度最精彩的地方在于利用了随机性<br>随机方法相对于传统的决策方式，至少有 3 点优势。</p>
 <p>第一，随机方法常常可以避免奇怪的边角情况<br>第二，随机方法很轻量，几乎不需要记录任何状态。<br>第三，随机方法很快。只要能很快地产生随机数，做出决策就很快</p>
@@ -503,7 +503,7 @@
 <p><strong>一个例子</strong></p>
 <p>A、B、C 这 3 个工作的票数分别是 100、50 和 250，我们通过用一个大数分别除以他们的票数来获得每个进程的步长。比如用 10000 除以这些票数值，得到了 3 个进程的步长分别为 100、200 和 40。我们称这个值为每个进程的步长（stride）。每次进程运<br>行后，我们会让它的计数器 [称为行程（pass）值] 增加它的步长，记录它的总体进展。</p>
 <p>可以看出，C 运行了 5 次、A 运行了 2 次，B 一次，正好是票数的比例——200、100 和 50。彩票调度算法只能一段时间后，在概率上实现比例，而步长调度算法可以在每个调度周期后做到完全正确。</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111111105771.png" alt="image-20211111110512549"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111111105771.png" alt="image-20211111110512549"></p>
 <p><strong>优势</strong></p>
 <p>步长调度能实现一个确定性的公平分配算法。</p>
 <p>随机方式可以使得调度程序的实现简单（且大致正确），但偶尔并不能产生正确的比例，尤其在工作运行时间很短的情况下。</p>
@@ -525,15 +525,15 @@
 <p>job2 ，总占用时间：2，彩票数：109-152</p>
 <p>产生的随机数依次取模得到执行作业的顺序为：</p>
 <p>2 0 1 2 2 2 1 1 1 1 1 1</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111111128405.png" alt="image-20211111112849348"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111111128405.png" alt="image-20211111112849348"></p>
 <p>运行命令行 python2 lottery.py -j 3 -s 2，随机种子为 2</p>
 <p>同理可得到执行作业的顺序：</p>
 <p>2 0 0 2 0 1 0 2 0 0 0 1 0 0 1 2 1 1 1 2 1 1 2</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111111133096.png" alt="image-20211111113351023"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111111133096.png" alt="image-20211111113351023"></p>
 <p>运行命令行 python2 lottery.py -j 3 -s 3，随机种子为 3</p>
 <p>同理可得到执行作业的顺序：</p>
 <p>1 1 0 1 0 2 2 2 2 2 2</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111111134211.png" alt="image-20211111113449142"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111111134211.png" alt="image-20211111113449142"></p>
 <p><strong>9.2</strong></p>
 <p><strong>现在运行两个具体的工作：每个长度为 10,但是一个（工作 0)只有一张彩票，另一个（工作 1)有 100 张（-l 10:1,10:100).彩票数量如此不平衡时会发生什么？在工作 1 完成之前，工作 0 是否会运行？多久？一般来说，这种彩票不平衡对彩票调度的行为有什么影响？</strong></p>
 <p>只有一张彩票被调度的可能性非常小，可能会饿死。</p>
@@ -555,7 +555,7 @@
 <p>当时间片调整为 30 后，job1 在 150 时完成，job0 在 240 的时候完成</p>
 <p>公平性较差</p>
 <p>一般来说，时间片越小，两个工作完成的时间越接近，公平性越高</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111111143789.png" alt="image-20211111114313728"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111111143789.png" alt="image-20211111114313728"></p>
 <h2 id="第十章——多处理器调度"><a href="#第十章——多处理器调度" class="headerlink" title="第十章——多处理器调度"></a>第十章——多处理器调度</h2><p><strong>多处理器架构</strong></p>
 <p><strong>缓存一致性（cache coherence）问题</strong></p>
 <p>与单处理器的核心区别在于对硬件缓存（cache）的使用，事实证明，多 CPU 的情况下缓存要复杂得多。例如，假设一个运行在 CPU 1 上的程序从内存地址 A 读取数据。由于不在 CPU 1 的缓存中，所以系统直接访问内存，得到值 D。程序然后修改了地址 A 处的值，只是将它的缓存更新为新值 D’。将数据写回内存比较慢，因此系统（通常）会稍后再做。假设这时操作系统中断了该程序的运行，并将其交给 CPU 2，重新读取地址 A 的数据，由于 CPU 2 的缓存中并没有该数据，所以会直接从内存中读取，得到了旧值 D，而不是正确的值 D’。</p>
@@ -1462,7 +1462,7 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 <p>反复释放内存</p>
 <p>错误地调用 free()</p>
 <p><strong>关于内存泄漏</strong></p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111251745711.png" alt="image-20211125174454450"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111251745711.png" alt="image-20211125174454450"></p>
 <h2 id="第-15-章-机制：地址转换"><a href="#第-15-章-机制：地址转换" class="headerlink" title="第 15 章 机制：地址转换"></a>第 15 章 机制：地址转换</h2><p>在<strong>CPU 虚拟化</strong>时，使用了受限直接访问 LDE，LDE 背后的想法很简单：让程序运行的大部分指令直接访问硬件，在一些关键点(进程发生系统调用和发生时钟中断)由操作系统介入来确保高效和控制</p>
 <p>对<strong>内存虚拟化</strong>时，同样追求高效和控制，高效决定我们要利用硬件的支持，控制意味着操作系统确保每个应用只能访问自己的内存空间，要保护应用程序不会互相影响，更不会影响操作系统，灵活性即希望程序能以任何方式访问它们自己的内存空间，从而让系统更容易编程</p>
 <h3 id="地址转换"><a href="#地址转换" class="headerlink" title="地址转换"></a><strong>地址转换</strong></h3><p>为了完成这些，采用了称为<strong>基于硬件的地址转换，即地址转换</strong>，利用地址转换，硬件对每次内存访问进行处理，将指令中的虚拟地址转换为数据实际存储的物理地址，因此在每次内存引用时，硬件都会进行地址转换，将应用程序的内存引用重定位到内存中实际所在的位置</p>
@@ -1764,24 +1764,24 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 </ol>
 <h2 id="核心算法原理"><a href="#核心算法原理" class="headerlink" title="核心算法原理"></a>核心算法原理</h2><h3 id="01单颗决策树模型表示"><a href="#01单颗决策树模型表示" class="headerlink" title="01单颗决策树模型表示"></a>01单颗决策树模型表示</h3><p>假设某棵决策树有T TT个叶子节点，则单棵决策树模型可记为：</p>
 <p>f(x)&#x3D;w <del>q(x)</del></p>
-<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232448.png" alt="树与权重向量" style="zoom:50%;">
+<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232448.png" alt="树与权重向量" style="zoom:50%;">
 
 <p>例如实例落在了第j个叶子结点 ，则其输出的值为 Wj </p>
 <p>则叶子结点的向量表示为</p>
 <p><em>w</em>&#x3D;(<em>w</em>1,⋯,<em>wj</em>,⋯,<em>wT</em>)</p>
 <h3 id="02-集成学习模型结构"><a href="#02-集成学习模型结构" class="headerlink" title="02 集成学习模型结构"></a>02 集成学习模型结构</h3><p>使用Boosting思想，对于实例x，总模型的预测输出为</p>
-<p>​                                               <img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232449.png" alt="image-20220315212039282" style="zoom: 80%;"></p>
+<p>​                                               <img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232449.png" alt="image-20220315212039282" style="zoom: 80%;"></p>
 <p>其中，$f<del>k</del>(x)$  为实例x在第k个决策树的输出</p>
 <h3 id="03-损失函数"><a href="#03-损失函数" class="headerlink" title="03 损失函数"></a>03 损失函数</h3><p>上面一部分我们知道了集成学习方法的预测模型，因为XGBoost也是集成学习方法的一种。对于XGBoost的预测模型同样可以表示为：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232450.png" alt="img"></p>
-<p>其中<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232451.png" alt="img">为树的总个数，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232452.png" alt="img">表示第<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232453.png" alt="img">颗树，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232454.png" alt="img">表示样本<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232455.png" alt="img">的预测结果。</p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232450.png" alt="img"></p>
+<p>其中<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232451.png" alt="img">为树的总个数，<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232452.png" alt="img">表示第<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232453.png" alt="img">颗树，<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232454.png" alt="img">表示样本<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232455.png" alt="img">的预测结果。</p>
 <p>其中损失函数也同样表示为：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232456.png" alt="img"></p>
-<p>其中<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232457.png" alt="img">为样本<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232458.png" alt="img">的训练误差，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232459.png" alt="img">表示第<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232500.png" alt="img">棵树的正则项。</p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232456.png" alt="img"></p>
+<p>其中<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232457.png" alt="img">为样本<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232458.png" alt="img">的训练误差，<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232459.png" alt="img">表示第<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232500.png" alt="img">棵树的正则项。</p>
 <p>其中为树的总个数，表示第颗树，表示样本的预测结果。</p>
 <p>其中损失函数也同样表示为：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232501.png" alt="img"></p>
-<p>其中<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232457.png" alt="img">为样本<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232458.png" alt="img">的训练误差，<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232459.png" alt="img">表示第<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232502.png" alt="img">棵树的正则项。</p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232501.png" alt="img"></p>
+<p>其中<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232457.png" alt="img">为样本<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232458.png" alt="img">的训练误差，<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232459.png" alt="img">表示第<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232502.png" alt="img">棵树的正则项。</p>
 <blockquote>
 <p>损失函数，代价函数，目标函数的区别？<br>首先给出结论：</p>
 <p>损失函数（Loss Function ）是定义在单个样本上的，算的是一个样本的误差。</p>
@@ -1794,7 +1794,7 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 <p>对树中的每个叶子结点尝试进行分裂；</p>
 <p>每次分裂后，原来的一个叶子结点继续分裂为左右两个子叶子结点，原叶子结点中的样本集将根据该结点的判断规则分散到左右两个叶子结点中；</p>
 <p>新分裂一个结点后，我们需要检测这次分裂是否会给损失函数带来增益，增益的定义如下：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232503.png" alt="image-20220315214343506"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232503.png" alt="image-20220315214343506"></p>
 <p>如果L <del>split</del> &gt; 0，或者大于设定的阈值，即分裂后目标函数值下降了，那么可以考虑此次分裂的结果。</p>
 <h3 id="02-如何寻找最佳分裂点"><a href="#02-如何寻找最佳分裂点" class="headerlink" title="02 如何寻找最佳分裂点"></a>02 如何寻找最佳分裂点</h3><p>一棵决策树有多个候选分割点，寻找最佳分割点的理论最佳步骤如下：</p>
 <ol>
@@ -4373,9 +4373,9 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 <p><strong>大端字节序</strong>是指一个整数的最高位字节（23 ~ 31 bit）存储在内存的低地址处，低位字节（0 ~ 7 bit）存储在内存的高地址处；</p>
 <p><strong>小端字节序</strong>则是指整数的高位字节存储在内存的高地址处，而低位字节则存储在内存的低地址处。</p>
 <h3 id="字节序举例"><a href="#字节序举例" class="headerlink" title="字节序举例"></a>字节序举例</h3><h4 id="小端字节序"><a href="#小端字节序" class="headerlink" title="小端字节序"></a>小端字节序</h4><p>0x 01 02 03 04 - ff &#x3D; 255<br>内存的方向 —–&gt;<br>内存的低位 —–&gt; 内存的高位<br>04 03 02 01<br>0x 11 22 33 44 12 34 56 78</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232425.png" alt="image-20220315222426814"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232425.png" alt="image-20220315222426814"></p>
 <h4 id="大端字节序"><a href="#大端字节序" class="headerlink" title="大端字节序"></a>大端字节序</h4><p>0x 01 02 03 04<br>内存的方向 —–&gt;<br>内存的低位 —–&gt; 内存的高位<br>01 02 03 04<br>0x 12 34 56 78 11 22 33 44</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220315232426.png" alt="image-20220315222517483"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220315232426.png" alt="image-20220315222517483"></p>
 <h2 id="字节序转换函数"><a href="#字节序转换函数" class="headerlink" title="字节序转换函数"></a>字节序转换函数</h2><p>当格式化的数据在两台使用不同字节序的主机之间直接传递时，接收端必然错误的解释之。解决问题的方法是：发送端总是把要发送的数据转换成大端字节序数据后再发送，而接收端知道对方传送过来的数据总是采用大端字节序，所以接收端可以根据自身采用的字节序决定是否对接收到的数据进行转换（小端机转换，大端机不转换）。</p>
 <p>网络字节顺序是 TCP&#x2F;IP 中规定好的一种数据表示格式，它与具体的 CPU 类型、操作系统等无关，从而可以保证数据在不同主机之间传输时能够被正确解释，<strong>网络字节顺序采用大端排序方式</strong>。BSD Socket提供了封装好的转换接口，方便程序员使用。包括从主机字节序到网络字节序的转换函数：htons、htonl；从网络字节序到主机字节序的转换函数：ntohs、ntohl。</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">h - host 主机，主机字节序</span><br><span class="line">to - 转换成什么</span><br><span class="line">n - network 网络字节序</span><br><span class="line">    </span><br><span class="line">s - <span class="type">short</span> <span class="type">unsigned</span> <span class="type">short</span>（端口号占<span class="number">16b</span>its，<span class="number">2</span>字节）</span><br><span class="line">l - <span class="type">long</span> <span class="type">unsigned</span> <span class="type">int</span>（ip地址占<span class="number">32b</span>its，<span class="number">4</span>字节）</span><br><span class="line">    </span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="comment">// 转换端口</span></span><br><span class="line"><span class="type">uint16_t</span> <span class="title function_">htons</span><span class="params">(<span class="type">uint16_t</span> hostshort)</span>; <span class="comment">// 主机字节序 - 网络字节序</span></span><br><span class="line"><span class="type">uint16_t</span> <span class="title function_">ntohs</span><span class="params">(<span class="type">uint16_t</span> netshort)</span>; <span class="comment">// 主机字节序 - 网络字节序</span></span><br><span class="line"><span class="comment">// 转IP</span></span><br><span class="line"><span class="type">uint32_t</span> <span class="title function_">htonl</span><span class="params">(<span class="type">uint32_t</span> hostlong)</span>; <span class="comment">// 主机字节序 - 网络字节序</span></span><br><span class="line"><span class="type">uint32_t</span> <span class="title function_">ntohl</span><span class="params">(<span class="type">uint32_t</span> netlong)</span>; <span class="comment">// 主机字节序 - 网络字节序</span></span><br></pre></td></tr></table></figure>
@@ -4433,19 +4433,19 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/socket.h&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span> &#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sa_family;</span><br><span class="line"><span class="type">char</span> sa_data[<span class="number">14</span>];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">unsigned</span> <span class="type">short</span> <span class="type">int</span> <span class="type">sa_family_t</span>;</span><br></pre></td></tr></table></figure>
 
 <p>sa_family 成员是地址族类型（sa_family_t）的变量。地址族类型通常与协议族类型对应。常见的协议族（protocol family，也称domain）和对应的地址族入下所示：</p>
-<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220316212302.png" alt="image-20220316191720230" style="zoom:80%;">
+<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220316212302.png" alt="image-20220316191720230" style="zoom:80%;">
 
 
 
 <p><em>宏 PF_ * 和 AF_ * 都定义在 bits&#x2F;socket.h 头文件中，且后者与前者有完全相同的值，所以二者通常混用。</em></p>
 <p>sa_data 成员用于存放 socket 地址值。但是，不同的协议族的地址值具有不同的含义和长度，如下所示：</p>
-<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220316212303.png" alt="image-20220316192107656" style="zoom:80%;">
+<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220316212303.png" alt="image-20220316192107656" style="zoom:80%;">
 
 <p>由上表可知，14 字节的 sa_data 根本无法容纳多数协议族的地址值。因此，Linux 定义了下面这个新的通用的 socket 地址结构体，这个结构体不仅提供了足够大的空间用于存放地址值，而且是内存对齐的。</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/socket.h&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_storage</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sa_family;</span><br><span class="line"><span class="type">unsigned</span> <span class="type">long</span> <span class="type">int</span> __ss_align;</span><br><span class="line"><span class="type">char</span> __ss_padding[ <span class="number">128</span> - <span class="keyword">sizeof</span>(__ss_align) ];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">unsigned</span> <span class="type">short</span> <span class="type">int</span> <span class="type">sa_family_t</span>;</span><br></pre></td></tr></table></figure>
 
 <h2 id="专用-socket-地址"><a href="#专用-socket-地址" class="headerlink" title="专用 socket 地址"></a>专用 socket 地址</h2><p>很多网络编程函数诞生早于 IPv4 协议，那时候都使用的是 struct sockaddr 结构体，为了向前兼容，现在sockaddr 退化成了（void *）的作用，传递一个地址给函数，至于这个函数是 sockaddr_in 还是sockaddr_in6，由地址族确定，然后函数内部再强制类型转化为所需的地址类型。</p>
-<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220316212304.png" alt="image-20220316193534854" style="zoom:80%;">
+<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220316212304.png" alt="image-20220316193534854" style="zoom:80%;">
 
 <p>UNIX 本地域协议族使用如下专用的 socket 地址结构体：</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/un.h&gt;</span></span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_un</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="type">sa_family_t</span> sin_family;</span><br><span class="line"><span class="type">char</span> sun_path[<span class="number">108</span>];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
@@ -4509,7 +4509,7 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 </tr>
 </tbody></table>
 <p><strong>通信流程图</strong></p>
-<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220316212318.png" alt="image-20220316202702180" style="zoom:80%;">
+<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220316212318.png" alt="image-20220316202702180" style="zoom:80%;">
 
 <h2 id="socket通信函数介绍"><a href="#socket通信函数介绍" class="headerlink" title="socket通信函数介绍"></a>socket通信函数介绍</h2><p>1.头文件</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;arpa/inet.h&gt;</span> <span class="comment">// 包含了这个头文件，上面两个就可以省略</span></span></span><br></pre></td></tr></table></figure>
@@ -4561,10 +4561,10 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 <p>如果使用持续连接，那么服务器在发送响应报文后将保持该TCP打开，后续客户端可以使用该连接来向服务器发出请求。不但一个完整的页面可以通过同一个连接传送，同一台服务器上的多个页面也可以通过同一个连接发送。这就提高了效率；</p>
 <p>一般来说，如果一条连接在一定的时间间隔后没被使用的话，就会被关闭。HTTP默认使用的是带流水线的持续连接。</p>
 <h3 id="3-HTTP报文格式"><a href="#3-HTTP报文格式" class="headerlink" title="3.HTTP报文格式"></a>3.HTTP报文格式</h3><h4 id="请求报文"><a href="#请求报文" class="headerlink" title="请求报文"></a>请求报文</h4><p>以下是wireshark抓出来的一段HTTP请求报文</p>
-<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="type">GET</span> <span class="operator">/</span>admin_ui<span class="operator">/</span>rdx<span class="operator">/</span>core<span class="operator">/</span>images<span class="operator">/</span>close.png <span class="type">HTTP</span><span class="operator">/</span><span class="number">1.1</span></span><br><span class="line"><span class="type">Accept</span>: <span class="operator">*/*</span></span><br><span class="line"><span class="type">Referer</span>: http:<span class="comment">//xxx.xxx.xxx.xxx/menu/neo</span></span><br><span class="line"><span class="type">Accept</span><span class="operator">-</span><span class="type">Language</span>: en<span class="operator">-</span><span class="type">US</span></span><br><span class="line"><span class="type">User</span><span class="operator">-</span><span class="type">Agent</span>: <span class="type">Mozilla</span><span class="operator">/</span><span class="number">4.0</span> (compatible; <span class="type">MSIE</span> <span class="number">7.0</span>; <span class="type">Windows</span> <span class="type">NT</span> <span class="number">6.1</span>; <span class="type">WOW64</span>; <span class="type">Trident</span><span class="operator">/</span><span class="number">7.0</span>; <span class="type">SLCC2</span>; .<span class="type">NET</span> <span class="type">CLR</span> <span class="number">2.0</span>.<span class="number">50727</span>; .<span class="type">NET</span> <span class="type">CLR</span> <span class="number">3.5</span>.<span class="number">30729</span>; .<span class="type">NET</span> <span class="type">CLR</span> <span class="number">3.0</span>.<span class="number">30729</span>; .<span class="type">NET4</span>.0C; .<span class="type">NET4</span>.0E)</span><br><span class="line"><span class="type">Accept</span><span class="operator">-</span><span class="type">Encoding</span>: gzip, deflate</span><br><span class="line"><span class="type">Host</span>: xxx.xxx.xxx.xxx</span><br><span class="line"><span class="type">Connection</span>: <span class="type">Keep</span><span class="operator">-</span><span class="type">Alive</span></span><br><span class="line"><span class="type">Cookie</span>: startupapp<span class="operator">=</span>neo; is_cisco_platform<span class="operator">=</span><span class="number">0</span>; rdx_pagination_size<span class="operator">=</span><span class="number">250</span><span class="operator">%</span>20Per<span class="operator">%</span>20Page; <span class="type">SESSID</span><span class="operator">=</span>deb31b8eb9ca68a514cf55777744e339</span><br></pre></td></tr></table></figure>
+<figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="type">GET</span> <span class="type">URl</span> <span class="type">HTTP</span><span class="operator">/</span><span class="number">1.1</span></span><br><span class="line"><span class="type">Host</span>: <span class="number">172.24</span>.<span class="number">116.154</span>:<span class="number">10000</span></span><br><span class="line"><span class="type">Connection</span>: keep<span class="operator">-</span>alive</span><br><span class="line"><span class="type">Upgrade</span><span class="operator">-</span><span class="type">Insecure</span><span class="operator">-</span><span class="type">Requests</span>: <span class="number">1</span></span><br><span class="line"><span class="type">User</span><span class="operator">-</span><span class="type">Agent</span>: <span class="type">Mozilla</span><span class="operator">/</span><span class="number">5.0</span> (<span class="type">Windows</span> <span class="type">NT</span> <span class="number">10.0</span>; <span class="type">Win64</span>; x64) <span class="type">AppleWebKit</span><span class="operator">/</span><span class="number">537.36</span> (<span class="type">KHTML</span>, like <span class="type">Gecko</span>) <span class="type">Chrome</span><span class="operator">/</span><span class="number">99.0</span>.<span class="number">4844.74</span> <span class="type">Safari</span><span class="operator">/</span><span class="number">537.36</span></span><br><span class="line"><span class="type">Accept</span>: text<span class="operator">/</span>html,application<span class="operator">/</span>xhtml<span class="operator">+</span>xml,application<span class="operator">/</span>xml;q<span class="operator">=</span><span class="number">0.9</span>,image<span class="operator">/</span>avif,image<span class="operator">/</span>webp,image<span class="operator">/</span>apng,<span class="operator">*/*</span>;q<span class="operator">=</span><span class="number">0.8</span>,application<span class="operator">/</span>signed<span class="operator">-</span>exchange;v<span class="operator">=</span>b3;q<span class="operator">=</span><span class="number">0.9</span></span><br><span class="line"><span class="type">Accept</span><span class="operator">-</span><span class="type">Encoding</span>: gzip, deflate</span><br><span class="line"><span class="type">Accept</span><span class="operator">-</span><span class="type">Language</span>: zh<span class="operator">-</span><span class="type">CN</span>,zh;q<span class="operator">=</span><span class="number">0</span>.9SESSID<span class="operator">=</span>deb31b8eb9ca68a514cf55777744e339</span><br></pre></td></tr></table></figure>
 
 <p>HTTP的请求报文包括：请求行(request line)、请求头部(header)、空行 和 请求数据(request data) 四个部分组成。</p>
-<p><img src="/http%E5%92%8Cweb/20220318111516.png" alt="image-20220318111447560"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220326194015.png" alt="image-20220318111447560"></p>
 <p><strong>请求行</strong>包括： 请求方法，URL(<strong>包括参数信息</strong>)，协议版本这些信息</p>
 <p>**请求头部(Header)**是一个个的key-value值，比如</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Host: xxx.xxx.xxx.xxx</span><br><span class="line">Connection: Keep-Alive</span><br></pre></td></tr></table></figure>
@@ -4575,7 +4575,7 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 <figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="type">HTTP</span><span class="operator">/</span><span class="number">1.1</span> <span class="number">200</span> <span class="type">OK</span></span><br><span class="line"><span class="type">Bdpagetype</span>: <span class="number">1</span></span><br><span class="line"><span class="type">Bdqid</span>: <span class="number">0xacbbb9d800005133</span></span><br><span class="line"><span class="type">Cache</span><span class="operator">-</span><span class="type">Control</span>: <span class="keyword">private</span></span><br><span class="line"><span class="type">Connection</span>: <span class="type">Keep</span><span class="operator">-</span><span class="type">Alive</span></span><br><span class="line"><span class="type">Content</span><span class="operator">-</span><span class="type">Encoding</span>: gzip</span><br><span class="line"><span class="type">Content</span><span class="operator">-</span><span class="type">Type</span>: text<span class="operator">/</span>html</span><br><span class="line"><span class="type">Cxy_all</span>: baidu<span class="operator">+</span>f8b5e5b521b3644ef7f3455ea441c5d0</span><br><span class="line"><span class="type">Date</span>: <span class="type">Fri</span>, <span class="number">12</span> <span class="type">Oct</span> <span class="number">2018</span> <span class="number">06</span>:<span class="number">36</span>:<span class="number">28</span> <span class="type">GMT</span></span><br><span class="line"><span class="type">Expires</span>: <span class="type">Fri</span>, <span class="number">12</span> <span class="type">Oct</span> <span class="number">2018</span> <span class="number">06</span>:<span class="number">36</span>:<span class="number">26</span> <span class="type">GMT</span></span><br><span class="line"><span class="type">Server</span>: <span class="type">BWS</span><span class="operator">/</span><span class="number">1.1</span></span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: delPer<span class="operator">=</span><span class="number">0</span>; path<span class="operator">=/</span>; domain<span class="operator">=</span>.baidu.com</span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: <span class="type">BDSVRTM</span><span class="operator">=</span><span class="number">0</span>; path<span class="operator">=/</span></span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: <span class="type">BD_HOME</span><span class="operator">=</span><span class="number">0</span>; path<span class="operator">=/</span></span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: <span class="type">H_PS_PSSID</span><span class="operator">=</span><span class="number">1433_21112_18560_26350_27245_22158</span>; path<span class="operator">=/</span>; domain<span class="operator">=</span>.baidu.com</span><br><span class="line"><span class="type">Vary</span>: <span class="type">Accept</span><span class="operator">-</span><span class="type">Encoding</span></span><br><span class="line"><span class="type">X</span><span class="operator">-</span><span class="type">Ua</span><span class="operator">-</span><span class="type">Compatible</span>: <span class="type">IE</span><span class="operator">=</span><span class="type">Edge</span>,chrome<span class="operator">=</span><span class="number">1</span></span><br><span class="line"><span class="type">Transfer</span><span class="operator">-</span><span class="type">Encoding</span>: chunked</span><br><span class="line"> </span><br><span class="line"><span class="operator">&lt;!</span><span class="type">DOCTYPE</span> html<span class="operator">&gt;</span></span><br><span class="line"><span class="operator">&lt;!--</span><span class="type">STATUS</span> <span class="type">OK</span><span class="operator">--&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>HTTP的响应报文包括：状态行，响应头，空行，数据(响应体)</p>
-<p><img src="/http%E5%92%8Cweb/image-20220318111831190.png" alt="image-20220318111831190"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220326194005.png" alt="image-20220318111831190"></p>
 <p><strong>状态行</strong>包括：HTTP版本号，状态码和状态值组成。</p>
 <p><strong>响应头</strong>类似请求头，是一系列key-value值</p>
 <p>Cache-Control: private<br>Content-Encoding: gzip<br>Server: BWS&#x2F;1.1<br>Set-Cookie: delPer&#x3D;0; path&#x3D;&#x2F;; domain&#x3D;.baidu.com<br><strong>空白行</strong>：同上，响应报文也用空白行来分隔header和数据</p>
@@ -4649,7 +4649,7 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 <li>数据经由网卡传送到内存(步骤 ②)</li>
 <li>然后网卡通过中断信号通知 CPU 有数据到达，CPU 执行中断程序(步骤 ③)</li>
 </ul>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319100859.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319100859.png" alt="img"></p>
 <p>此处的中断程序主要有两项功能，先将网络数据写入到对应 Socket 的接收缓冲区里面(步骤 ④)，再唤醒进程 A(步骤 ⑤)，重新将进程 A 放入工作队列中。</p>
 <p>那么问题来了</p>
 <ul>
@@ -4660,11 +4660,11 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 <p>第二个问题是多路复用的重中之重，也正是本文后半部分的重点。</p>
 <h2 id="Select监视多个socket方法"><a href="#Select监视多个socket方法" class="headerlink" title="Select监视多个socket方法"></a>Select监视多个socket方法</h2><p>​    在讲epoll之前，我们先来介绍一下select，他也是实现I&#x2F;O多路复用的一种方法，出现在epoll之前，实现也比epoll简单。</p>
 <p>Select 的实现思路很直接，假如程序同时监视如下图的 Sock1、Sock2 和 Sock3 三个 Socket，那么在调用 Select 之后，操作系统把进程 A 分别加入这三个 Socket 的等待队列中。操作系统把进程 A 分别加入这三个 Socket 的等待队列中当任何一个 Socket 收到数据后，中断程序将唤起进程。下图展示了 Sock2 接收到了数据的处理流程：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319101427.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319101427.png" alt="img"></p>
 <p>Sock2 接收到了数据，中断程序唤起进程 A</p>
 <p>注：Recv 和 Select 的中断回调可以设置成不同的内容。</p>
 <p>所谓唤起进程，就是将进程从所有的等待队列中移除，加入到工作队列里面，如下图所示：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319101507.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319101507.png" alt="img"></p>
 <p>这种简单方式行之有效，在几乎所有操作系统都有对应的实现。但是简单的方法往往有缺点，主要是：</p>
 <ul>
 <li>每次调用 Select 都需要将进程加入到所有监视 Socket 的等待队列，每次唤醒都需要从每个队列中移除。这里涉及了两次遍历，而且每次都要将整个 FDS 列表传递给内核，有一定的开销。</li>
@@ -4677,23 +4677,23 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 <h3 id="Epoll-的原理与工作流程"><a href="#Epoll-的原理与工作流程" class="headerlink" title="Epoll 的原理与工作流程"></a>Epoll 的原理与工作流程</h3><h4 id="创建-Epoll-对象"><a href="#创建-Epoll-对象" class="headerlink" title="创建 Epoll 对象"></a>创建 Epoll 对象</h4><p>如下图所示，当某个进程调用 epoll_create 方法时，内核会创建一个 eventpoll 对象。</p>
 <p>eventpoll 对象也是文件系统中的一员，和 Socket 一样，它也会有等待队列。</p>
 <p>创建一个代表该 Epoll 的 eventpoll 对象是必须的，因为内核要维护“就绪列表”等数据，“就绪列表”可以作为 eventpoll 的成员。</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102113.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319102113.png" alt="img"></p>
 <h4 id="维护监视列表"><a href="#维护监视列表" class="headerlink" title="维护监视列表"></a><strong>维护监视列表</strong></h4><p>创建 Epoll 对象后，可以用 epoll_ctl 添加或删除所要监听的 Socket。以添加 Socket 为例。</p>
 <p>如上图，如果通过 epoll_ctl 添加 Sock1、Sock2 和 Sock3 的监视，内核会将 eventpoll 添加到这三个 Socket 的等待队列中。</p>
 <p>当 Socket 收到数据后，中断程序会操作 eventpoll 对象，而不是直接操作进程。</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102248.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319102248.png" alt="img"></p>
 <h4 id="接收数据"><a href="#接收数据" class="headerlink" title="接收数据"></a><strong>接收数据</strong></h4><p>当 Socket 收到数据后，中断程序会给 eventpoll 的“就绪列表”添加 Socket 引用。</p>
 <p>如下图展示的是 Sock2 和 Sock3 收到数据后，中断程序让 Rdlist 引用这两个 Socket。</p>
 <p>eventpoll 对象相当于 Socket 和进程之间的中介，Socket 的数据接收并不直接影响进程，而是通过改变 eventpoll 的就绪列表来改变进程状态。</p>
 <p>当程序执行到 epoll_wait 时，如果 Rdlist 已经引用了 Socket，那么 epoll_wait 直接返回，如果 Rdlist 为空，阻塞进程。</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102557.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319102557.png" alt="img"></p>
 <h4 id="阻塞和唤醒进程"><a href="#阻塞和唤醒进程" class="headerlink" title="阻塞和唤醒进程"></a><strong>阻塞和唤醒进程</strong></h4><p>假设计算机中正在运行进程 A 和进程 B，在某时刻进程 A 运行到了 epoll_wait 语句。</p>
 <p>如下图所示，内核会将进程 A 放入 eventpoll 的等待队列中，阻塞进程。</p>
 <p>当 Socket 接收到数据，中断程序一方面修改 Rdlist，另一方面唤醒 eventpoll 等待队列中的进程，进程 A 再次进入运行状态</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102646.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319102646.png" alt="img"></p>
 <h3 id="epoll实现细节"><a href="#epoll实现细节" class="headerlink" title="epoll实现细节"></a>epoll实现细节</h3><p>至此，相信读者对 Epoll 的本质已经有一定的了解。但我们还需要知道 eventpoll 的数据结构是什么样子?</p>
 <p>此外，就绪队列应该使用什么数据结构? eventpoll 应使用什么数据结构来管理通过 epoll_ctl 添加或删除的 Socket?</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319103002.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319103002.png" alt="img"></p>
 <p>Epoll 原理示意图，图片来源：《深入理解 <a href="https://so.csdn.net/so/search?q=Nginx&spm=1001.2101.3001.7020">Nginx</a>：模块开发与架构解析(第二版)》，陶辉</p>
 <p>如上图所示，eventpoll 包含了 Lock、MTX、WQ(等待队列)与 Rdlist 等成员，其中 Rdlist 和 RBR 是我们所关心的。</p>
 <h4 id="就绪列表的数据结构"><a href="#就绪列表的数据结构" class="headerlink" title="就绪列表的数据结构"></a><strong>就绪列表的数据结构</strong></h4><p>就绪列表引用着就绪的 Socket，所以它应能够快速的插入数据。程序可能随时调用 epoll_ctl 添加监视 Socket，也可能随时删除。</p>
@@ -4704,7 +4704,7 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
 <p>红黑树是一种自平衡二叉查找树，搜索、插入和删除时间复杂度都是 O(log(N))，效率较好，Epoll 使用了红黑树作为索引结构(对应上图的 RBR)。</p>
 <p>注：因为操作系统要兼顾多种功能，以及有更多需要保存的数据，Rdlist 并非直接引用 Socket，而是通过 Epitem 间接引用，红黑树的节点也是 Epitem 对象。</p>
 <p>同样，文件系统也并非直接引用着 Socket。为方便理解，本文中省略了一些间接结构。</p>
-<h3 id="select和epoll实现方法对比"><a href="#select和epoll实现方法对比" class="headerlink" title="select和epoll实现方法对比"></a>select和epoll实现方法对比</h3><p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102814.png" alt="img"></p>
+<h3 id="select和epoll实现方法对比"><a href="#select和epoll实现方法对比" class="headerlink" title="select和epoll实现方法对比"></a>select和epoll实现方法对比</h3><p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319102814.png" alt="img"></p>
 ]]></content>
       <categories>
         <category>WebServer</category>
@@ -4713,6 +4713,112 @@ FINALSTATS hits 1   misses 9   hitrate 10.00
         <tag>linux</tag>
         <tag>computer network</tag>
         <tag>socket</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>DNS:因特网的目录服务</title>
+    <url>/2021/08/30/DNS/</url>
+    <content><![CDATA[<h2 id="2-4-DNS-因特网的目录服务"><a href="#2-4-DNS-因特网的目录服务" class="headerlink" title="2.4 DNS: 因特网的目录服务"></a>2.4 DNS: 因特网的目录服务</h2><h3 id="2-4-1-DNS提供的服务"><a href="#2-4-1-DNS提供的服务" class="headerlink" title="2.4.1 DNS提供的服务"></a>2.4.1 DNS提供的服务</h3><p>解决主机名和IP地址的转化问题。因为在信息的发送者一端，通常使用主机名来标识主机，但是在计算机网络里是使用IP地址来标主机。</p>
+<p><strong>DNS（Domain Name System）域名系统</strong>。</p>
+<p>DNS是一个由分层的DNS服务器组成的分布式数据库和一个使得主机可以查询分布式数据库的应用层协议组成；</p>
+<p>除了提供<strong>主机名到IP地址的转换</strong>外，DNS还提供以下重要服务</p>
+<p><strong>主机别名</strong>：DNS不但提供主机名到IP地址的转换服务，还提供主机名与主机别名的转换；此时主机名被称为规范主机名；</p>
+<p><strong>邮件服务器别名</strong>：DNS同样也提供邮件服务器主机名和别名的转换服务，实际上，公司的邮件服务器和Web服务器可以使用相同的主机别名；MX记录允许一个公司的邮件服务器和Web服务器使用相同的主机名。</p>
+<p><strong>负载分配</strong>：DNS也被用在冗余的服务器之间分配负载。一个IP集合往往对应一个规范主机名（没太理解？？？）</p>
+<h3 id="2-4-2-DNS工作机理概述"><a href="#2-4-2-DNS工作机理概述" class="headerlink" title="2.4.2 DNS工作机理概述"></a>2.4.2 DNS工作机理概述</h3><p>DNS使用<strong>UDP</strong>作为其传输层协议；DNS服务使用<strong>53</strong>端口；</p>
+<p>当主机上的DNS客户端收到一个转换请求时，客户端将向网络发送一个DNS查询报文，然后客户端将收到一个包含相关信息的DNS回答报文，这个报文里有客户端想要的内容，之后DNS客户端将IP地址返回给请求的提出者即可。</p>
+<p>从使用DNS服务的请求者来看，DNS就像一个简单的提供直接转换服务的黑盒子，实际上这个黑盒子非常复杂，由分布在全球的大量DNS服务器以及定义DNS服务器和查询主机之间如何通信的应用层协议组成；</p>
+<p><strong>DNS采用分布式的设计方案</strong>，实际上，DNS是一个在因特网实现分布式数据库的精彩范例！而之所以这样做，是因为，<strong>单一的DNS服务器无法解决单点故障、无法保证通信容量以及无法临近所有的查询主机和维护困难</strong>等问题</p>
+<p><strong>DNS采用分布式的设计方案</strong></p>
+<p>为了处理扩展性问题，DNS服务器采用层次式组织，并且分布在全世界范围内；大致来说，存在三种DNS服务器：<strong>根</strong>DNS服务器、<strong>顶级域</strong>DNS服务器和<strong>权威</strong>DNS服务器；</p>
+<p>其工作的普遍流程：一个DNS客户端，希望获得<a href="http://www.baidu.com的ip地址,粗略的说,dns客户端首先和根dns服务器取得联系,它将返回负责解析顶级域名com的服务器的ip地址(或者其集合),客户将同这些服务器之一取得联系,然后顶级域dns服务器建返回baidu.com的权威服务器的ip集合,客户端通过与这些服务器之一取得联系,获得www.baidu.com的ip地址./">www.baidu.com的IP地址，粗略的说，DNS客户端首先和根DNS服务器取得联系，它将返回负责解析顶级域名com的服务器的IP地址（或者其集合），客户将同这些服务器之一取得联系，然后顶级域DNS服务器建返回baidu.com的权威服务器的IP集合，客户端通过与这些服务器之一取得联系，获得www.baidu.com的IP地址。</a></p>
+<h4 id="DNS服务器"><a href="#DNS服务器" class="headerlink" title="DNS服务器"></a>DNS服务器</h4><ul>
+<li>根DNS服务器：因特网上有13个根DNS服务器，大部分分布在北美洲，尽管我们可以将这13个根DNS服务器视为单个的服务器，但是每台服务器实际上是一个冗余的计算机网络以提供安全性和可靠性；</li>
+<li>顶级域DNS服务器：负责顶级域名，如com，org，net，edu，gov以及各个国家的顶级域名的转换。</li>
+<li>权威DNS服务器：因特网上，具有公共可访问主机的每个组织机构必须公共可访问的DNS记录，这些记录将主机名映射为IP地址。一个组织的权威DNS服务器收藏了这些DNS记录，多数大学和大公司实现和维护它们自己的基本和辅助（备份）权威DNS服务器；当然，也可以通过付费的方式，将相关的信息插入到其它权威服务器中；</li>
+<li><strong>本地DNS服务器</strong>。本地DNS服务器不在DNS层次结构之中,通常邻近其所在网络的其他主机。当主机发出DNS请求时，该请求被发往本地DNS服务器，它起着代理的作用，并将请求转发到DNS服务器层次结构中。</li>
+</ul>
+<h4 id="DNS查询方式"><a href="#DNS查询方式" class="headerlink" title="DNS查询方式"></a>DNS查询方式</h4><p>DNS查询有两种，一种是递归查询一种是迭代查询；</p>
+<p>实践中，查询通常满足这样的模式：从请求主机到本地DNS服务器的查询是递归的，其余查询是迭代的。</p>
+<p>所谓<strong>迭代</strong>就是，如果请求的接收者不知道所请求的内容，那么接收者将扮演请求者，发出有关请求，直到获得所需要的内容，然后将内容返回给最初的请求者。也就是说，在<strong>递归查询</strong>中，一定要给请求者想要的答案；<strong>迭代查询</strong>则是指，如果接收者没有请求者所需要的准确内容，接收者将告诉请求者，如何去获得，但是自己并不去发出请求。</p>
+<p>图2・18所示的例子利用了递归查询(recursive query)和迭代查询(iterative query)。从cse. nyu. edu到dns. nyu. edu发出的查询是递归查询，因为该查询以自己的名义请求dns. nyu. edu来获得该映射。而后继的3个查询是迭代查询，因为所有的回答都是直接返<br>回给dns. nyu. eduo</p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220325154736.png" alt="image-20220325113254234"></p>
+<p>图2・19显示了一条DNS查询链，其中的所有查询都是递归的。实践中，查询通常遵循图2・18中的模式：从请求主机到本地DNS服务器的查询是递归的，其余的查询是迭代的。</p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220325154746.png" alt="image-20220325113425441"></p>
+<h4 id="DNS缓存"><a href="#DNS缓存" class="headerlink" title="DNS缓存"></a>DNS缓存</h4><p>DNS缓存实际上是为了盖上时延性能并且减少在因特网上传输的DNS报文数量而引入的。DNS缓存原理十分简单，每当DNS服务器发出请求后收到回答时，就将回答的内容缓存在它自己的主机空间上。这样，如果有相同的请求到达时，就不需要再去发出请求，直接使用缓存即可；因为有了缓存，本地DNS就可以直接提供一些经常被访问的主机名所对应的IP地址，而不需要询问根DNS服务器了。需要注意的是，缓存不可避免的一个问题：有效时间。如果缓存过时而未得到更新，那么就会导致一些请求失败。</p>
+<p>个人认为，缓存技术就是一种典型的使用<strong>空间换时间</strong>的策略</p>
+<h3 id="2-4-3-DNS记录和报文"><a href="#2-4-3-DNS记录和报文" class="headerlink" title="2.4.3 DNS记录和报文"></a>2.4.3 DNS记录和报文</h3><h4 id="DNS记录"><a href="#DNS记录" class="headerlink" title="DNS记录"></a>DNS记录</h4><p>共同实现分布式数据库的所有DNS服务器存储了资源记录(Resource Record)。而RR提供了主机名到IP地址的映射信息；一条RR是具有一下字段的4元组：（name, value, type, TTL）;其中TTL是指该记录的生存时间，它决定了该条记录何时被删除。</p>
+<p>首先看看type，type有4种取值，包括：A、NS、CNAME、MX等：</p>
+<pre><code>type=A：则name为主机名，value为对应的IP地址；
+type=NS：则name为域，value为如何获得该域下主机IP地址的权威DNS服务器的主机名；
+type=CNAME：则value为name（本身为主机别名）所对应的主机的规范主机名；
+type=MX：则value为那么所对应的邮件服务器的规范主机名；
+</code></pre>
+<h4 id="DNS报文"><a href="#DNS报文" class="headerlink" title="DNS报文"></a>DNS报文</h4><p>DNS报文有两种，即<strong>查询报文</strong>和<strong>回答报文</strong>，并且两种报文有着相同的结构</p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220304140851.png" alt="image-20220304140851297"></p>
+]]></content>
+      <categories>
+        <category>computer network notes</category>
+      </categories>
+      <tags>
+        <tag>computer network</tag>
+        <tag>web</tag>
+        <tag>DNS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>因特网中的电子邮件</title>
+    <url>/2021/09/04/%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6/</url>
+    <content><![CDATA[<h2 id="2-3因特网中的电子邮件"><a href="#2-3因特网中的电子邮件" class="headerlink" title="2.3因特网中的电子邮件"></a>2.3因特网中的电子邮件</h2><p>电子邮件是一种异步通信媒介，不必与他人的计划进行协调。现代电子邮件报文常常包含附件、超链接、HTML格式文本和图片。</p>
+<p>internet电子邮件系统通常包括：用户代理、邮件服务器、简单邮件传输协议SMTP。</p>
+<p>邮件服务器构成了电子邮件系统的核心。每个收发方在邮件服务器上拥有一个邮箱；一个典型的电子邮件发送过成为：发送方通过用户代理将邮件传送到发送方的邮件服务器，然后再传输到接收方的邮件服务器，然后邮件被分发到接收方的邮箱里；接收方从邮件服务器里获取自己的邮件时需要通过邮件服务器的验证</p>
+<p><strong>SMTP是因特网中电子邮件的主要应用层协议</strong>，它使用TCP可靠数据传输从发送方的邮件服务器向接收方的邮件服务器发送邮件；在每台邮件服务器上同时运行SMTP服务器和SMTP客户端。当邮件服务器接收其他邮件服务器的邮件时，它表现为SMTP服务器，当邮件服务器向其他邮件服务器发送邮件时，表现为SMTP客户端。</p>
+<p>如果发送端不能将邮件发送个接受端的服务器，发送端的邮件服务器会在一个报文队列中保持该报文并在以后尝试再次发送。</p>
+<h3 id="2-3-1SMTP"><a href="#2-3-1SMTP" class="headerlink" title="2.3.1SMTP"></a>2.3.1SMTP</h3><p><strong>传输的三个阶段</strong>：握手、传输、关闭连接。</p>
+<p>SMTP25号端口。SMTP是持续连接的。对每一报文，客户使用一个新的MAIL FROM：crepes.fr开始。当所有报文发送完后才发送QUIT，断开连接。SMTP出现在因特网之前，尽管它有着很不错的特性，但是它具有的某种陈旧的特征表明它仍然是一种继承的技术，比如，它限制邮件报文的所有部分只能使用7比特的ASCII表示，这就导致二进制多媒体文件需要编码为ASCII，而且在发送方需要编码，接收方则需要解码。</p>
+<p>值得注意的是，SMTP报文一般不使用中间邮件服务器发送报文，也就是邮件不会在中间某个邮件服务器保留；在SMTP握手阶段，SMTP客户端将介绍发送方和接收方的邮箱地址；一旦介绍完毕后，SMTP客户端将开始发送报文</p>
+<p><img src="/%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6/20220325154620.png" alt="image-20220323090828915"></p>
+<h3 id="2-3-2-与HTTP对比"><a href="#2-3-2-与HTTP对比" class="headerlink" title="2.3.2 与HTTP对比"></a>2.3.2 与HTTP对比</h3><p>HTTP和SMTP都是用TCP协议；持续的HTTP和SMTP都是用持续连接；但是两者也有区别。</p>
+<ul>
+<li>首先HTTP被设计为一个Pull协议而SMTP被设计为一个Push协议。即用户通过HTTP主动向服务器请求内容，而SMTP则是客户将内容推向服务器端；</li>
+<li>第二个区别就是HTTP传输的数据不一定是用ASCII字符，但是SMTP则只能使用ASCII字符；</li>
+<li>第三个重要区别就是，HTTP将每个对象封装在自己的响应报文里，而SMTP则将所有的报文对象放到一个报文之中；</li>
+</ul>
+<h3 id="2-3-3-邮件报文格式"><a href="#2-3-3-邮件报文格式" class="headerlink" title="2.3.3 邮件报文格式"></a>2.3.3 邮件报文格式</h3><p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220325154621.png" alt="image-20220323095531056"></p>
+<p>报文由两部分组成：一个包含环境信息的首部和一个包含邮件内容的报文体；首部和报文体之间使用空行分开；首部行的格式为关键字：及其值；每个首部必须包含一个From和To首部行。首部也可以包含其它信息，比如Subject等。这与2.4.1中接触的SMTP命令不同，那节中的命令是握手协议的一部分；本节中研究的内容是邮件报文自身的一部分</p>
+<h3 id="2-3-4-邮件访问协议"><a href="#2-3-4-邮件访问协议" class="headerlink" title="2.3.4 邮件访问协议"></a>2.3.4 邮件访问协议</h3><p>需要注意的是，SMTP是邮件服务器之间发送邮件报文的协议，并不是用户通过代理和邮件服务器之间通信的协议；用户代理使用邮件访问协议来从邮件服务器上获取邮件信息；目前常用的邮件访问协议有POP3（Post Office Protocol-Version 3）、因特网邮件访问协议（IMAP，Internet Mail Access protocol）和HTTP</p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220325154622.png" alt="image-20220323095931773"></p>
+<ul>
+<li><strong>POP3</strong></li>
+</ul>
+<p>POP3是一个非常简单的协议，因为简单，所以功能有限；</p>
+<p>POP3使用端口110来建立TCP连接（SMTP使用端口25）；</p>
+<p>POP3按照三个阶段进行工作：特许、事务处理和更新；</p>
+<ul>
+<li>在特许阶段，用户代理发送密码和用户名，进行身份鉴别；</li>
+<li>第二阶段，用户代理取回报文，同时还可以做删除、取消删除等标记或者统计邮件信息；</li>
+<li>第三个阶段是在用户退出后，POP3结束会话，删除被标记的邮件；</li>
+</ul>
+<p>一个需要注意的是，POP3用户代理可以使用两种事务处理模式：一种是下载并删除，另一种是下载保留；POP3代理发出的命令和其工作模式相关；</p>
+<p>下载并删除的方法存在的问题是，如果用户在一台设备上查看了邮件（下载了邮件）后，邮件将被删除，那么在其他设备上将无法查看邮件；这给用户带来一定的不便。使用下载保存方式，则用户下载邮件后，邮件还在服务器上。</p>
+<p>在用户代理与邮箱服务器之间的POP3会话期间，该POP3服务器保留了一些状态信息，特别是标记了哪些用户报文被标记为删除了。但是POP3服务器并不在POP3绘画过程中携带状态信息，大大简化了POP3的服务。</p>
+<ul>
+<li><strong>IMAP</strong></li>
+</ul>
+<p>POP3协议无法为用户提供邮件分类管理的功能，虽然用户可以通过将邮件下载到本地，然后由用户代理程序做分类管理，但是处理的结果是无法同步到其他查看设备上的。为了解决这一问题，IMAP诞生了。IMAP是一个邮件访问协议，比POP3要复杂的多，当然也就有更多的特色了。</p>
+<p>（远程）IMAP将每一份邮件和一个一个文件夹联系起来，当报文第一次到达服务器时，它与收件人的INBOX相关联。收件人可以将邮件移到新创建的文件夹，阅读邮件，删除邮件等。</p>
+<p>IMAP允许用户在不同文件夹里移动邮件并且查询邮件。值得注意的是，IMAP服务器维护了IMAP会话的用户状态信息，但是POP3并不；IMAP协议还允许用户代理获取报文组件而不是报文整体。</p>
+<ul>
+<li><strong>基于Web的电子邮件</strong></li>
+</ul>
+<p>这种方式主要是指，用户使用HTTP协议和邮件服务器通信。用户代理就是普通的浏览器，但是，邮件服务器之间还是使用SMTP协议的</p>
+]]></content>
+      <categories>
+        <category>computer network notes</category>
+      </categories>
+      <tags>
+        <tag>computer network</tag>
+        <tag>SMTP</tag>
       </tags>
   </entry>
 </search>

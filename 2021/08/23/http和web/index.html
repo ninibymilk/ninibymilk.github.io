@@ -127,10 +127,10 @@
 <p>如果使用持续连接，那么服务器在发送响应报文后将保持该TCP打开，后续客户端可以使用该连接来向服务器发出请求。不但一个完整的页面可以通过同一个连接传送，同一台服务器上的多个页面也可以通过同一个连接发送。这就提高了效率；</p>
 <p>一般来说，如果一条连接在一定的时间间隔后没被使用的话，就会被关闭。HTTP默认使用的是带流水线的持续连接。</p>
 <h3 id="3-HTTP报文格式"><a href="#3-HTTP报文格式" class="headerlink" title="3.HTTP报文格式"></a>3.HTTP报文格式</h3><h4 id="请求报文"><a href="#请求报文" class="headerlink" title="请求报文"></a>请求报文</h4><p>以下是wireshark抓出来的一段HTTP请求报文</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">GET</span> <span class="operator">/</span>admin_ui<span class="operator">/</span>rdx<span class="operator">/</span>core<span class="operator">/</span>images<span class="operator">/</span>close.png <span class="type">HTTP</span><span class="operator">/</span><span class="number">1.1</span></span><br><span class="line"><span class="type">Accept</span>: <span class="operator">*/*</span></span><br><span class="line"><span class="type">Referer</span>: http:<span class="comment">//xxx.xxx.xxx.xxx/menu/neo</span></span><br><span class="line"><span class="type">Accept</span><span class="operator">-</span><span class="type">Language</span>: en<span class="operator">-</span><span class="type">US</span></span><br><span class="line"><span class="type">User</span><span class="operator">-</span><span class="type">Agent</span>: <span class="type">Mozilla</span><span class="operator">/</span><span class="number">4.0</span> (compatible; <span class="type">MSIE</span> <span class="number">7.0</span>; <span class="type">Windows</span> <span class="type">NT</span> <span class="number">6.1</span>; <span class="type">WOW64</span>; <span class="type">Trident</span><span class="operator">/</span><span class="number">7.0</span>; <span class="type">SLCC2</span>; .<span class="type">NET</span> <span class="type">CLR</span> <span class="number">2.0</span>.<span class="number">50727</span>; .<span class="type">NET</span> <span class="type">CLR</span> <span class="number">3.5</span>.<span class="number">30729</span>; .<span class="type">NET</span> <span class="type">CLR</span> <span class="number">3.0</span>.<span class="number">30729</span>; .<span class="type">NET4</span>.0C; .<span class="type">NET4</span>.0E)</span><br><span class="line"><span class="type">Accept</span><span class="operator">-</span><span class="type">Encoding</span>: gzip, deflate</span><br><span class="line"><span class="type">Host</span>: xxx.xxx.xxx.xxx</span><br><span class="line"><span class="type">Connection</span>: <span class="type">Keep</span><span class="operator">-</span><span class="type">Alive</span></span><br><span class="line"><span class="type">Cookie</span>: startupapp<span class="operator">=</span>neo; is_cisco_platform<span class="operator">=</span><span class="number">0</span>; rdx_pagination_size<span class="operator">=</span><span class="number">250</span><span class="operator">%</span>20Per<span class="operator">%</span>20Page; <span class="type">SESSID</span><span class="operator">=</span>deb31b8eb9ca68a514cf55777744e339</span><br></pre></td></tr></table></figure>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">GET</span> <span class="type">URl</span> <span class="type">HTTP</span><span class="operator">/</span><span class="number">1.1</span></span><br><span class="line"><span class="type">Host</span>: <span class="number">172.24</span>.<span class="number">116.154</span>:<span class="number">10000</span></span><br><span class="line"><span class="type">Connection</span>: keep<span class="operator">-</span>alive</span><br><span class="line"><span class="type">Upgrade</span><span class="operator">-</span><span class="type">Insecure</span><span class="operator">-</span><span class="type">Requests</span>: <span class="number">1</span></span><br><span class="line"><span class="type">User</span><span class="operator">-</span><span class="type">Agent</span>: <span class="type">Mozilla</span><span class="operator">/</span><span class="number">5.0</span> (<span class="type">Windows</span> <span class="type">NT</span> <span class="number">10.0</span>; <span class="type">Win64</span>; x64) <span class="type">AppleWebKit</span><span class="operator">/</span><span class="number">537.36</span> (<span class="type">KHTML</span>, like <span class="type">Gecko</span>) <span class="type">Chrome</span><span class="operator">/</span><span class="number">99.0</span>.<span class="number">4844.74</span> <span class="type">Safari</span><span class="operator">/</span><span class="number">537.36</span></span><br><span class="line"><span class="type">Accept</span>: text<span class="operator">/</span>html,application<span class="operator">/</span>xhtml<span class="operator">+</span>xml,application<span class="operator">/</span>xml;q<span class="operator">=</span><span class="number">0.9</span>,image<span class="operator">/</span>avif,image<span class="operator">/</span>webp,image<span class="operator">/</span>apng,<span class="operator">*/*</span>;q<span class="operator">=</span><span class="number">0.8</span>,application<span class="operator">/</span>signed<span class="operator">-</span>exchange;v<span class="operator">=</span>b3;q<span class="operator">=</span><span class="number">0.9</span></span><br><span class="line"><span class="type">Accept</span><span class="operator">-</span><span class="type">Encoding</span>: gzip, deflate</span><br><span class="line"><span class="type">Accept</span><span class="operator">-</span><span class="type">Language</span>: zh<span class="operator">-</span><span class="type">CN</span>,zh;q<span class="operator">=</span><span class="number">0</span>.9SESSID<span class="operator">=</span>deb31b8eb9ca68a514cf55777744e339</span><br></pre></td></tr></table></figure>
 
 <p>HTTP的请求报文包括：请求行(request line)、请求头部(header)、空行 和 请求数据(request data) 四个部分组成。</p>
-<p><img src="/http%E5%92%8Cweb/20220318111516.png" alt="image-20220318111447560"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220326194015.png" alt="image-20220318111447560"></p>
 <p><strong>请求行</strong>包括： 请求方法，URL(<strong>包括参数信息</strong>)，协议版本这些信息</p>
 <p>**请求头部(Header)**是一个个的key-value值，比如</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Host: xxx.xxx.xxx.xxx</span><br><span class="line">Connection: Keep-Alive</span><br></pre></td></tr></table></figure>
@@ -141,7 +141,7 @@
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">HTTP</span><span class="operator">/</span><span class="number">1.1</span> <span class="number">200</span> <span class="type">OK</span></span><br><span class="line"><span class="type">Bdpagetype</span>: <span class="number">1</span></span><br><span class="line"><span class="type">Bdqid</span>: <span class="number">0xacbbb9d800005133</span></span><br><span class="line"><span class="type">Cache</span><span class="operator">-</span><span class="type">Control</span>: <span class="keyword">private</span></span><br><span class="line"><span class="type">Connection</span>: <span class="type">Keep</span><span class="operator">-</span><span class="type">Alive</span></span><br><span class="line"><span class="type">Content</span><span class="operator">-</span><span class="type">Encoding</span>: gzip</span><br><span class="line"><span class="type">Content</span><span class="operator">-</span><span class="type">Type</span>: text<span class="operator">/</span>html</span><br><span class="line"><span class="type">Cxy_all</span>: baidu<span class="operator">+</span>f8b5e5b521b3644ef7f3455ea441c5d0</span><br><span class="line"><span class="type">Date</span>: <span class="type">Fri</span>, <span class="number">12</span> <span class="type">Oct</span> <span class="number">2018</span> <span class="number">06</span>:<span class="number">36</span>:<span class="number">28</span> <span class="type">GMT</span></span><br><span class="line"><span class="type">Expires</span>: <span class="type">Fri</span>, <span class="number">12</span> <span class="type">Oct</span> <span class="number">2018</span> <span class="number">06</span>:<span class="number">36</span>:<span class="number">26</span> <span class="type">GMT</span></span><br><span class="line"><span class="type">Server</span>: <span class="type">BWS</span><span class="operator">/</span><span class="number">1.1</span></span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: delPer<span class="operator">=</span><span class="number">0</span>; path<span class="operator">=/</span>; domain<span class="operator">=</span>.baidu.com</span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: <span class="type">BDSVRTM</span><span class="operator">=</span><span class="number">0</span>; path<span class="operator">=/</span></span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: <span class="type">BD_HOME</span><span class="operator">=</span><span class="number">0</span>; path<span class="operator">=/</span></span><br><span class="line"><span class="type">Set</span><span class="operator">-</span><span class="type">Cookie</span>: <span class="type">H_PS_PSSID</span><span class="operator">=</span><span class="number">1433_21112_18560_26350_27245_22158</span>; path<span class="operator">=/</span>; domain<span class="operator">=</span>.baidu.com</span><br><span class="line"><span class="type">Vary</span>: <span class="type">Accept</span><span class="operator">-</span><span class="type">Encoding</span></span><br><span class="line"><span class="type">X</span><span class="operator">-</span><span class="type">Ua</span><span class="operator">-</span><span class="type">Compatible</span>: <span class="type">IE</span><span class="operator">=</span><span class="type">Edge</span>,chrome<span class="operator">=</span><span class="number">1</span></span><br><span class="line"><span class="type">Transfer</span><span class="operator">-</span><span class="type">Encoding</span>: chunked</span><br><span class="line"> </span><br><span class="line"><span class="operator">&lt;!</span><span class="type">DOCTYPE</span> html<span class="operator">&gt;</span></span><br><span class="line"><span class="operator">&lt;!--</span><span class="type">STATUS</span> <span class="type">OK</span><span class="operator">--&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>HTTP的响应报文包括：状态行，响应头，空行，数据(响应体)</p>
-<p><img src="/http%E5%92%8Cweb/image-20220318111831190.png" alt="image-20220318111831190"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220326194005.png" alt="image-20220318111831190"></p>
 <p><strong>状态行</strong>包括：HTTP版本号，状态码和状态值组成。</p>
 <p><strong>响应头</strong>类似请求头，是一系列key-value值</p>
 <p>Cache-Control: private<br>Content-Encoding: gzip<br>Server: BWS&#x2F;1.1<br>Set-Cookie: delPer&#x3D;0; path&#x3D;&#x2F;; domain&#x3D;.baidu.com<br><strong>空白行</strong>：同上，响应报文也用空白行来分隔header和数据</p>
@@ -247,7 +247,7 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/08/23/http%E5%92%8Cweb/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://ninibymilk.github.io/2021/08/23/http%E5%92%8Cweb/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -260,11 +260,11 @@
    
   <nav class="article-nav">
     
-      <a href="/2022/02/11/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80%E2%80%94%E5%AD%97%E8%8A%82%E5%BA%8F%E8%BD%AC%E6%8D%A2/" class="article-nav-link">
+      <a href="/2021/08/30/DNS/" class="article-nav-link">
         <strong class="article-nav-caption">上一篇</strong>
         <div class="article-nav-title">
           
-            网络编程基础 1 —字节序转换/IP地址转换
+            DNS:因特网的目录服务
           
         </div>
       </a>
@@ -574,6 +574,30 @@
     viewer_init()
 </script> 
 <!-- MathJax -->
+ <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/MathJax.js"></script>
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/config/TeX-AMS-MML_HTMLorMML-full.js"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true,
+  };
+</script>
 
 <!-- Katex -->
 

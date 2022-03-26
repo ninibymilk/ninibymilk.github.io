@@ -140,7 +140,7 @@
 <p>反复释放内存</p>
 <p>错误地调用 free()</p>
 <p><strong>关于内存泄漏</strong></p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111251745711.png" alt="image-20211125174454450"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111251745711.png" alt="image-20211125174454450"></p>
 <h2 id="第-15-章-机制：地址转换"><a href="#第-15-章-机制：地址转换" class="headerlink" title="第 15 章 机制：地址转换"></a>第 15 章 机制：地址转换</h2><p>在<strong>CPU 虚拟化</strong>时，使用了受限直接访问 LDE，LDE 背后的想法很简单：让程序运行的大部分指令直接访问硬件，在一些关键点(进程发生系统调用和发生时钟中断)由操作系统介入来确保高效和控制</p>
 <p>对<strong>内存虚拟化</strong>时，同样追求高效和控制，高效决定我们要利用硬件的支持，控制意味着操作系统确保每个应用只能访问自己的内存空间，要保护应用程序不会互相影响，更不会影响操作系统，灵活性即希望程序能以任何方式访问它们自己的内存空间，从而让系统更容易编程</p>
 <h3 id="地址转换"><a href="#地址转换" class="headerlink" title="地址转换"></a><strong>地址转换</strong></h3><p>为了完成这些，采用了称为<strong>基于硬件的地址转换，即地址转换</strong>，利用地址转换，硬件对每次内存访问进行处理，将指令中的虚拟地址转换为数据实际存储的物理地址，因此在每次内存引用时，硬件都会进行地址转换，将应用程序的内存引用重定位到内存中实际所在的位置</p>
@@ -317,7 +317,7 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/03/23/%E8%99%9A%E6%8B%9F%E5%8C%96%E5%86%85%E5%AD%98/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://ninibymilk.github.io/2021/03/23/%E8%99%9A%E6%8B%9F%E5%8C%96%E5%86%85%E5%AD%98/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -644,6 +644,30 @@
     viewer_init()
 </script> 
 <!-- MathJax -->
+ <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/MathJax.js"></script>
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/config/TeX-AMS-MML_HTMLorMML-full.js"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true,
+  };
+</script>
 
 <!-- Katex -->
 

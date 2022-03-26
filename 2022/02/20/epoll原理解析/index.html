@@ -129,7 +129,7 @@
 <li>数据经由网卡传送到内存(步骤 ②)</li>
 <li>然后网卡通过中断信号通知 CPU 有数据到达，CPU 执行中断程序(步骤 ③)</li>
 </ul>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319100859.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319100859.png" alt="img"></p>
 <p>此处的中断程序主要有两项功能，先将网络数据写入到对应 Socket 的接收缓冲区里面(步骤 ④)，再唤醒进程 A(步骤 ⑤)，重新将进程 A 放入工作队列中。</p>
 <p>那么问题来了</p>
 <ul>
@@ -140,11 +140,11 @@
 <p>第二个问题是多路复用的重中之重，也正是本文后半部分的重点。</p>
 <h2 id="Select监视多个socket方法"><a href="#Select监视多个socket方法" class="headerlink" title="Select监视多个socket方法"></a>Select监视多个socket方法</h2><p>​    在讲epoll之前，我们先来介绍一下select，他也是实现I&#x2F;O多路复用的一种方法，出现在epoll之前，实现也比epoll简单。</p>
 <p>Select 的实现思路很直接，假如程序同时监视如下图的 Sock1、Sock2 和 Sock3 三个 Socket，那么在调用 Select 之后，操作系统把进程 A 分别加入这三个 Socket 的等待队列中。操作系统把进程 A 分别加入这三个 Socket 的等待队列中当任何一个 Socket 收到数据后，中断程序将唤起进程。下图展示了 Sock2 接收到了数据的处理流程：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319101427.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319101427.png" alt="img"></p>
 <p>Sock2 接收到了数据，中断程序唤起进程 A</p>
 <p>注：Recv 和 Select 的中断回调可以设置成不同的内容。</p>
 <p>所谓唤起进程，就是将进程从所有的等待队列中移除，加入到工作队列里面，如下图所示：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319101507.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319101507.png" alt="img"></p>
 <p>这种简单方式行之有效，在几乎所有操作系统都有对应的实现。但是简单的方法往往有缺点，主要是：</p>
 <ul>
 <li>每次调用 Select 都需要将进程加入到所有监视 Socket 的等待队列，每次唤醒都需要从每个队列中移除。这里涉及了两次遍历，而且每次都要将整个 FDS 列表传递给内核，有一定的开销。</li>
@@ -157,23 +157,23 @@
 <h3 id="Epoll-的原理与工作流程"><a href="#Epoll-的原理与工作流程" class="headerlink" title="Epoll 的原理与工作流程"></a>Epoll 的原理与工作流程</h3><h4 id="创建-Epoll-对象"><a href="#创建-Epoll-对象" class="headerlink" title="创建 Epoll 对象"></a>创建 Epoll 对象</h4><p>如下图所示，当某个进程调用 epoll_create 方法时，内核会创建一个 eventpoll 对象。</p>
 <p>eventpoll 对象也是文件系统中的一员，和 Socket 一样，它也会有等待队列。</p>
 <p>创建一个代表该 Epoll 的 eventpoll 对象是必须的，因为内核要维护“就绪列表”等数据，“就绪列表”可以作为 eventpoll 的成员。</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102113.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319102113.png" alt="img"></p>
 <h4 id="维护监视列表"><a href="#维护监视列表" class="headerlink" title="维护监视列表"></a><strong>维护监视列表</strong></h4><p>创建 Epoll 对象后，可以用 epoll_ctl 添加或删除所要监听的 Socket。以添加 Socket 为例。</p>
 <p>如上图，如果通过 epoll_ctl 添加 Sock1、Sock2 和 Sock3 的监视，内核会将 eventpoll 添加到这三个 Socket 的等待队列中。</p>
 <p>当 Socket 收到数据后，中断程序会操作 eventpoll 对象，而不是直接操作进程。</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102248.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319102248.png" alt="img"></p>
 <h4 id="接收数据"><a href="#接收数据" class="headerlink" title="接收数据"></a><strong>接收数据</strong></h4><p>当 Socket 收到数据后，中断程序会给 eventpoll 的“就绪列表”添加 Socket 引用。</p>
 <p>如下图展示的是 Sock2 和 Sock3 收到数据后，中断程序让 Rdlist 引用这两个 Socket。</p>
 <p>eventpoll 对象相当于 Socket 和进程之间的中介，Socket 的数据接收并不直接影响进程，而是通过改变 eventpoll 的就绪列表来改变进程状态。</p>
 <p>当程序执行到 epoll_wait 时，如果 Rdlist 已经引用了 Socket，那么 epoll_wait 直接返回，如果 Rdlist 为空，阻塞进程。</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102557.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319102557.png" alt="img"></p>
 <h4 id="阻塞和唤醒进程"><a href="#阻塞和唤醒进程" class="headerlink" title="阻塞和唤醒进程"></a><strong>阻塞和唤醒进程</strong></h4><p>假设计算机中正在运行进程 A 和进程 B，在某时刻进程 A 运行到了 epoll_wait 语句。</p>
 <p>如下图所示，内核会将进程 A 放入 eventpoll 的等待队列中，阻塞进程。</p>
 <p>当 Socket 接收到数据，中断程序一方面修改 Rdlist，另一方面唤醒 eventpoll 等待队列中的进程，进程 A 再次进入运行状态</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102646.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319102646.png" alt="img"></p>
 <h3 id="epoll实现细节"><a href="#epoll实现细节" class="headerlink" title="epoll实现细节"></a>epoll实现细节</h3><p>至此，相信读者对 Epoll 的本质已经有一定的了解。但我们还需要知道 eventpoll 的数据结构是什么样子?</p>
 <p>此外，就绪队列应该使用什么数据结构? eventpoll 应使用什么数据结构来管理通过 epoll_ctl 添加或删除的 Socket?</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319103002.png" alt="img"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319103002.png" alt="img"></p>
 <p>Epoll 原理示意图，图片来源：《深入理解 <a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=Nginx&spm=1001.2101.3001.7020">Nginx</a>：模块开发与架构解析(第二版)》，陶辉</p>
 <p>如上图所示，eventpoll 包含了 Lock、MTX、WQ(等待队列)与 Rdlist 等成员，其中 Rdlist 和 RBR 是我们所关心的。</p>
 <h4 id="就绪列表的数据结构"><a href="#就绪列表的数据结构" class="headerlink" title="就绪列表的数据结构"></a><strong>就绪列表的数据结构</strong></h4><p>就绪列表引用着就绪的 Socket，所以它应能够快速的插入数据。程序可能随时调用 epoll_ctl 添加监视 Socket，也可能随时删除。</p>
@@ -184,7 +184,7 @@
 <p>红黑树是一种自平衡二叉查找树，搜索、插入和删除时间复杂度都是 O(log(N))，效率较好，Epoll 使用了红黑树作为索引结构(对应上图的 RBR)。</p>
 <p>注：因为操作系统要兼顾多种功能，以及有更多需要保存的数据，Rdlist 并非直接引用 Socket，而是通过 Epitem 间接引用，红黑树的节点也是 Epitem 对象。</p>
 <p>同样，文件系统也并非直接引用着 Socket。为方便理解，本文中省略了一些间接结构。</p>
-<h3 id="select和epoll实现方法对比"><a href="#select和epoll实现方法对比" class="headerlink" title="select和epoll实现方法对比"></a>select和epoll实现方法对比</h3><p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/20220319102814.png" alt="img"></p>
+<h3 id="select和epoll实现方法对比"><a href="#select和epoll实现方法对比" class="headerlink" title="select和epoll实现方法对比"></a>select和epoll实现方法对比</h3><p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220319102814.png" alt="img"></p>
  
       <!-- reward -->
       
@@ -249,7 +249,7 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2022/02/20/epoll%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://ninibymilk.github.io/2022/02/20/epoll%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -576,6 +576,30 @@
     viewer_init()
 </script> 
 <!-- MathJax -->
+ <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/MathJax.js"></script>
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/config/TeX-AMS-MML_HTMLorMML-full.js"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true,
+  };
+</script>
 
 <!-- Katex -->
 

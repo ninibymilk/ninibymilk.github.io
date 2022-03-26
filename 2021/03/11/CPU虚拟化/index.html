@@ -161,7 +161,7 @@
 <p><strong>进程的状态</strong></p>
 <p>三种基本状态：</p>
 <p>1、运行（running）：在运行状态下，进程正在处理器上运行。这意味着它正在执行指令。<br>2、就绪（ready）：在就绪状态下，进程已准备好运行，但由于某种原因，操作系统选择不在此时运行。<br>3、阻塞（blocked）：在阻塞状态下，一个进程执行了某种操作，直到发生其他事件时才会准备运行。一个常见的例子是，当进程向磁盘发起 I&#x2F;O 请求时，它会被阻塞，因此其他进程可以使用处理器。</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111111301668.png" alt="image-20211111130118589"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111111301668.png" alt="image-20211111130118589"></p>
 <p>其他可能存在的状态：</p>
 <p><strong>挂起状态</strong>（是该进程暂时不接受调度）。</p>
 <p><strong>创建状态</strong>：此时，进程已经拥有了字节的 PCB，但该进程所必需的资源或其它信息（如主存资源）尚未分配，进程自身还未进入主存，即创建工作尚未完成，进程还不能够被调度运行。</p>
@@ -174,29 +174,29 @@
 <p><strong>用以下标志运行程序：.&#x2F;process-run.py -l 5:100,5:100。CPU 利用率（CPU 使用时间的百分比）应该是多少？为什么你知道这一点？利用 -c 标记查看你的答案是否正确。</strong></p>
 <p>运行结果如下</p>
 <p>**cpu 利用率为 100%**，可以看到进程 0 和进程 1 交替执行，且没有调用 IO 命令。</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943336.png" alt="image-20211107224505762"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943336.png" alt="image-20211107224505762"></p>
 <p>加上-c 标记后运行结果。CPU 一直处于占用状态，验证正确</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943337.png" alt="image-20211107224328317"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943337.png" alt="image-20211107224328317"></p>
 <p><strong>4.2</strong></p>
 <p><strong>现在用这些标志运行：.&#x2F;process-run.py -l 4:100,1:0。这些标志指定了一个包含 4 条指令的进程（都要使用 CPU），并且只是简单地发出 I&#x2F;O 并等待它完成。完成这两个进程需要多长时间？利用-c 检查你的答案是否正确。</strong></p>
 <p>从运行结果来看，进程 0 的 4 条指令需要占用 4 个 cpu 时间，发起 io 和 io 结束需要 2 个时装周期 ，io 占用时间还无法得知。total&#x3D;4+2+n</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943338.png"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943338.png"></p>
 <p>加上-c 标记后运行结果，可以看到程序一共占用了 11 个时钟周期，io 占用了 5 时钟周期</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111120937254.png"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111120937254.png"></p>
 <p><strong>4.3</strong></p>
 <p><strong>现在交换进程的顺序：.&#x2F;process-run.py -l 1:0,4:100。现在发生了什么？交换顺序是否重要？为什么？同样，用-c 看看你的答案是否正确。</strong></p>
 <p>交换运行顺序后，首先运行进程 0，进程 0 发起 IO，系统进行上下文切换，进程 1 占用 cpu 执行程序。</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943340.png" alt="image-20211109170627689"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943340.png" alt="image-20211109170627689"></p>
 <p>加上-c，可以看到，让进程 0 先执行 IO 的话，进程 1 在进程 0 调用 IO 的同时可占用 CPU。只需 6 个时钟周期即可执行完程序</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943341.png" alt="image-20211109171420829"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943341.png" alt="image-20211109171420829"></p>
 <p><strong>4.4</strong></p>
 <p><strong>现在交换进程的顺序：.&#x2F;process-run.py -l 1:0,4:100。现在发生了什么？交换顺序是否重要？为什么？同样，用-c 看看你的答案是否正确。</strong></p>
 <p>可以看到，因为进程在进行 I&#x2F;O 操作时，系统不会进行上下文切换，所以进程 1 只能等待进程 0 调用 IO 结束再占用 CPU，最终要消耗 9 个时钟周期</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943342.png" alt="image-20211109172648650"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943342.png" alt="image-20211109172648650"></p>
 <p><strong>4.5</strong></p>
 <p><strong>现在，运行相同的进程，但切换行为设置，在等待 I&#x2F;O 时切换到另一个进程（-l 1:0,4:100-c -S SWITCH_ON_IO）。现在会发生什么？利用-c 来确认你的答案是否正确。</strong></p>
 <p>可以看到，让进程 0 先执行 IO，然后系统进行上下文切换，进程 1 可占用 CPU。只需 6 个时钟周期即可执行完程序</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943343.png" alt="image-20211109172752093"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943343.png" alt="image-20211109172752093"></p>
 <h2 id="第五章-进程-API"><a href="#第五章-进程-API" class="headerlink" title="第五章-进程 API"></a>第五章-进程 API</h2><h3 id="知识点-1"><a href="#知识点-1" class="headerlink" title="知识点"></a>知识点</h3><h4 id="fork-系统调用"><a href="#fork-系统调用" class="headerlink" title="fork 系统调用"></a><strong>fork 系统调用</strong></h4><p>1、子进程不会从 main()函数开始执行，而是直接从 fork()系统调用返回。</p>
 <p>2、子进程拥有自己的地址空间（即拥有自己的私有内存）、寄存器、程序计数器等</p>
 <p>3、父进程获得的返回值是新创建子进程的 PID，而子进程获得的返回值是 0</p>
@@ -226,9 +226,9 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">test1</span><span class="params">()</span> &#123;<span class="comment">//在调用之前,让主进程访问一个变量(例如 x)并将其值设               //置为100</span></span><br><span class="line">    <span class="type">int</span> pid = fork();</span><br><span class="line">    <span class="type">int</span> x = <span class="number">100</span>;</span><br><span class="line">    <span class="keyword">if</span> (pid &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;fork error\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;child, x %d\n&quot;</span>, x);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;parent, x %d\n&quot;</span>, x);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">test2</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> pid = fork();</span><br><span class="line">    <span class="type">int</span> x = <span class="number">100</span>;</span><br><span class="line">    <span class="keyword">if</span> (pid &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;fork error\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid == <span class="number">0</span>) &#123;  <span class="comment">//当子进程和父进程都改变 x 的值时</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;child,x %d\n&quot;</span>, x);</span><br><span class="line">        x = <span class="number">0</span>;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;child,x %d\n&quot;</span>, x);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;parent,x %d\n&quot;</span>, x);</span><br><span class="line">        x = <span class="number">1</span>;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;parent,x %d\n&quot;</span>, x);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (argc == <span class="number">1</span>) &#123;</span><br><span class="line">        test1();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        test2();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <p>可以看到，在调用之前,让主进程访问一个变量(例如 x)并将其值设为 100，父进程和子进程的 x 值都为 100</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943344.png" alt="image-20211109174929408"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943344.png" alt="image-20211109174929408"></p>
 <p>当子进程和父进程在各自进程修改 x 值时，父子进程的值各自不受影响</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943345.png" alt="image-20211109173934825"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943345.png" alt="image-20211109173934825"></p>
 <p><strong>5.2</strong></p>
 <p><strong>编写一个打开文件的程序（使用 open()系统调用），然后调用 fork()创建一个新进程。子进程和父进程都可以访问 open()返回的文件描述符吗？当它在并发（即同时）写入文件时，会发生什么？</strong></p>
 <p>测试代码：</p>
@@ -236,8 +236,8 @@
 
 <p>运行结果如下，可以看到</p>
 <p>父进程，子进程都能访问 open 返回的 fd 文件符。当他们同时写入文件时，存在竞争条件，但因为操作系统会进行调度，所以最终两个进程都能写入成功</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943346.png" alt="image-20211109180303635"></p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943347.png" alt="image-20211109180212533"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943346.png" alt="image-20211109180303635"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943347.png" alt="image-20211109180212533"></p>
 <p><strong>5.4</strong></p>
 <p><strong>编写一个调用 fork()的程序,然后调用某种形式的 exec()来运行序”&#x2F;bin&#x2F;ls”看看是否可以尝试 exec 的所有变体,包括 execl()、 execle()、 execlp()、 execv()、 execvp()和 execve(),为什么同样的基本调用会有这么多变种？</strong></p>
 <p>测试代码</p>
@@ -253,19 +253,19 @@
 <li>c 语言没有默认参数语法,只能实现多个变体</li>
 </ol>
 <p>execl:</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943348.png" alt="image-20211109195822756"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943348.png" alt="image-20211109195822756"></p>
 <p>execlp:</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943349.png" alt="image-20211109195938552"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943349.png" alt="image-20211109195938552"></p>
 <p>execve：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943350.png" alt="image-20211109200052709"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943350.png" alt="image-20211109200052709"></p>
 <p>execv：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943351.png" alt="image-20211109200128674"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943351.png" alt="image-20211109200128674"></p>
 <p>execvp：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943352.png" alt="image-20211109200209564"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943352.png" alt="image-20211109200209564"></p>
 <p>execle：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943353.png" alt="image-20211109200430882"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943353.png" alt="image-20211109200430882"></p>
 <p>execlP：</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943354.png" alt="image-20211109200543452"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943354.png" alt="image-20211109200543452"></p>
 <h2 id="第六章——受限直接执行"><a href="#第六章——受限直接执行" class="headerlink" title="第六章——受限直接执行"></a>第六章——受限直接执行</h2><h3 id="受限运行协议"><a href="#受限运行协议" class="headerlink" title="受限运行协议"></a>受限运行协议</h3><p><strong>用户模式</strong> user mode：在用户模式下运行的代码会受到限制，如用户模式下，进程不能发出 I&#x2F;O，这样会引发异常，可能导致操作系统终止该进程</p>
 <p><strong>内核模式</strong> kernel mode：操作系统就在内核模式下运行，在此模式下，运行的代码可以做它想做的所有事，包括特权操作，发出 I&#x2F;O 和执行所有类型的受限制操作</p>
 <p>受限直接运行<strong>有两个阶段</strong>：<br>1，系统引导时：内核初始化陷阱表，CPU 记住陷阱表的位置以供使用<br>2，运行进程时：在执行进程前，操作系统为进程初始化了一些内容，接着转入用户模式运行程序。当进程发起系统调用时，会重新陷入操作系统，然后通过陷阱返回，并将控制权重新交给进程</p>
@@ -285,14 +285,14 @@
 <h4 id="最短完成时间优先（STCF）"><a href="#最短完成时间优先（STCF）" class="headerlink" title="最短完成时间优先（STCF）"></a>最短完成时间优先（STCF）</h4><p>每当新工作进入系统时，它就会确定剩余工作和新工作中，谁的剩余时间最少，然后调度该工作。</p>
 <p>允许抢占，放宽假设，所有任务不是同时到达的</p>
 <p>优点：结果是平均周转时间大大提高，虑到我们的新假设，STCF 可证明是最优的。考虑到如果所有工作同时到达，SJF 是最优的</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111112050629.png" alt="image-20211111205039567"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111112050629.png" alt="image-20211111205039567"></p>
 <h4 id="轮转（RR）"><a href="#轮转（RR）" class="headerlink" title="轮转（RR）"></a>轮转（RR）</h4><p>基本思想：RR 在一个时间片（time slice，有时称为调度 scheduling quantum）内运行一个工作，然后切换到运行队列中的下一个任务，而不是运行一个任务直到结束。它反复执行，直到所有任务完成。</p>
 <p>【请注意，时间片长度必须是时钟中断周期的倍数。】</p>
 <p>时间片长度对于 RR 是至关重要的。<br>时间片太短是有问题的：突然上下文切换的成本将影响整体性能。因此，系统设计者需要权衡时间片的长度，使其足够长，以便摊销（amortize）上下文切换成本，而又不会使系统不及时响应。</p>
 <p>优势：有非常好的平均响应时间，通过设置合适的时间片，能获得不错的性能</p>
 <p>缺点：较差的平均周转时间</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111230810271.png" alt="image-20211123081045212"></p>
-<h4 id="结合-IO"><a href="#结合-IO" class="headerlink" title="结合 IO"></a><strong>结合 IO</strong></h4><p>当一个交互性进程发出 IO 让出 CPU 后，调度程序调度其他程序，从而更好地利用 CPU<img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111112104131.png" alt="image-20211111210429081"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111230810271.png" alt="image-20211123081045212"></p>
+<h4 id="结合-IO"><a href="#结合-IO" class="headerlink" title="结合 IO"></a><strong>结合 IO</strong></h4><p>当一个交互性进程发出 IO 让出 CPU 后，调度程序调度其他程序，从而更好地利用 CPU<img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111112104131.png" alt="image-20211111210429081"></p>
 <h3 id="课后习题-2"><a href="#课后习题-2" class="headerlink" title="课后习题"></a>课后习题</h3><p><strong>7.1</strong></p>
 <p><strong>使用 SJF 和 FIFO 调度程序运行长度为 200 的 3 个作业时,计算响应时间和周转时间。</strong></p>
 <table>
@@ -528,7 +528,7 @@
 <td>否</td>
 </tr>
 </tbody></table>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111101943355.png" alt="image-20211109210002760"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111101943355.png" alt="image-20211109210002760"></p>
 <p><strong>8.3</strong></p>
 <p><strong>将如何配置调度程序参数，像轮转调度程序那样工作？</strong></p>
 <p>因为对于同一个队列中的工作，采取轮转的方式调度。所以将队列数设为 1 即可</p>
@@ -537,7 +537,7 @@
 <p>保证参数 B 小于等于 190，这样至少每隔 200ms 这个长时间运行工作就能被执行 10ms（5%）</p>
 <h2 id="第九章"><a href="#第九章" class="headerlink" title="第九章"></a>第九章</h2><h3 id="知识点-4"><a href="#知识点-4" class="headerlink" title="知识点"></a>知识点</h3><h4 id="彩票调度"><a href="#彩票调度" class="headerlink" title="彩票调度"></a><strong>彩票调度</strong></h4><p>彩票数（ticket）代表了进程（或用户或其他）占有某个资源的份额。一个进程拥有的彩票数占总彩票数的百分比，就是它占有资源的份额。</p>
 <p><strong>一个简单的例子</strong></p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111111054744.png" alt="image-20211111105425418"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111111054744.png" alt="image-20211111105425418"></p>
 <p><strong>优势</strong></p>
 <p>彩票调度最精彩的地方在于利用了随机性<br>随机方法相对于传统的决策方式，至少有 3 点优势。</p>
 <p>第一，随机方法常常可以避免奇怪的边角情况<br>第二，随机方法很轻量，几乎不需要记录任何状态。<br>第三，随机方法很快。只要能很快地产生随机数，做出决策就很快</p>
@@ -555,7 +555,7 @@
 <p><strong>一个例子</strong></p>
 <p>A、B、C 这 3 个工作的票数分别是 100、50 和 250，我们通过用一个大数分别除以他们的票数来获得每个进程的步长。比如用 10000 除以这些票数值，得到了 3 个进程的步长分别为 100、200 和 40。我们称这个值为每个进程的步长（stride）。每次进程运<br>行后，我们会让它的计数器 [称为行程（pass）值] 增加它的步长，记录它的总体进展。</p>
 <p>可以看出，C 运行了 5 次、A 运行了 2 次，B 一次，正好是票数的比例——200、100 和 50。彩票调度算法只能一段时间后，在概率上实现比例，而步长调度算法可以在每个调度周期后做到完全正确。</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111111105771.png" alt="image-20211111110512549"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111111105771.png" alt="image-20211111110512549"></p>
 <p><strong>优势</strong></p>
 <p>步长调度能实现一个确定性的公平分配算法。</p>
 <p>随机方式可以使得调度程序的实现简单（且大致正确），但偶尔并不能产生正确的比例，尤其在工作运行时间很短的情况下。</p>
@@ -577,15 +577,15 @@
 <p>job2 ，总占用时间：2，彩票数：109-152</p>
 <p>产生的随机数依次取模得到执行作业的顺序为：</p>
 <p>2 0 1 2 2 2 1 1 1 1 1 1</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111111128405.png" alt="image-20211111112849348"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111111128405.png" alt="image-20211111112849348"></p>
 <p>运行命令行 python2 lottery.py -j 3 -s 2，随机种子为 2</p>
 <p>同理可得到执行作业的顺序：</p>
 <p>2 0 0 2 0 1 0 2 0 0 0 1 0 0 1 2 1 1 1 2 1 1 2</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111111133096.png" alt="image-20211111113351023"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111111133096.png" alt="image-20211111113351023"></p>
 <p>运行命令行 python2 lottery.py -j 3 -s 3，随机种子为 3</p>
 <p>同理可得到执行作业的顺序：</p>
 <p>1 1 0 1 0 2 2 2 2 2 2</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111111134211.png" alt="image-20211111113449142"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111111134211.png" alt="image-20211111113449142"></p>
 <p><strong>9.2</strong></p>
 <p><strong>现在运行两个具体的工作：每个长度为 10,但是一个（工作 0)只有一张彩票，另一个（工作 1)有 100 张（-l 10:1,10:100).彩票数量如此不平衡时会发生什么？在工作 1 完成之前，工作 0 是否会运行？多久？一般来说，这种彩票不平衡对彩票调度的行为有什么影响？</strong></p>
 <p>只有一张彩票被调度的可能性非常小，可能会饿死。</p>
@@ -607,7 +607,7 @@
 <p>当时间片调整为 30 后，job1 在 150 时完成，job0 在 240 的时候完成</p>
 <p>公平性较差</p>
 <p>一般来说，时间片越小，两个工作完成的时间越接近，公平性越高</p>
-<p><img src="https://gitee.com/nnilk/cloudimage/raw/master/img/202111111143789.png" alt="image-20211111114313728"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202111111143789.png" alt="image-20211111114313728"></p>
 <h2 id="第十章——多处理器调度"><a href="#第十章——多处理器调度" class="headerlink" title="第十章——多处理器调度"></a>第十章——多处理器调度</h2><p><strong>多处理器架构</strong></p>
 <p><strong>缓存一致性（cache coherence）问题</strong></p>
 <p>与单处理器的核心区别在于对硬件缓存（cache）的使用，事实证明，多 CPU 的情况下缓存要复杂得多。例如，假设一个运行在 CPU 1 上的程序从内存地址 A 读取数据。由于不在 CPU 1 的缓存中，所以系统直接访问内存，得到值 D。程序然后修改了地址 A 处的值，只是将它的缓存更新为新值 D’。将数据写回内存比较慢，因此系统（通常）会稍后再做。假设这时操作系统中断了该程序的运行，并将其交给 CPU 2，重新读取地址 A 的数据，由于 CPU 2 的缓存中并没有该数据，所以会直接从内存中读取，得到了旧值 D，而不是正确的值 D’。</p>
@@ -689,7 +689,7 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/03/11/CPU%E8%99%9A%E6%8B%9F%E5%8C%96/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://ninibymilk.github.io/2021/03/11/CPU%E8%99%9A%E6%8B%9F%E5%8C%96/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -1016,6 +1016,30 @@
     viewer_init()
 </script> 
 <!-- MathJax -->
+ <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/MathJax.js"></script>
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/config/TeX-AMS-MML_HTMLorMML-full.js"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true,
+  };
+</script>
 
 <!-- Katex -->
 
