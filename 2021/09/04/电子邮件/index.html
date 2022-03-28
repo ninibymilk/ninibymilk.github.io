@@ -118,7 +118,7 @@
 <h3 id="2-3-1SMTP"><a href="#2-3-1SMTP" class="headerlink" title="2.3.1SMTP"></a>2.3.1SMTP</h3><p><strong>传输的三个阶段</strong>：握手、传输、关闭连接。</p>
 <p>SMTP25号端口。SMTP是持续连接的。对每一报文，客户使用一个新的MAIL FROM：crepes.fr开始。当所有报文发送完后才发送QUIT，断开连接。SMTP出现在因特网之前，尽管它有着很不错的特性，但是它具有的某种陈旧的特征表明它仍然是一种继承的技术，比如，它限制邮件报文的所有部分只能使用7比特的ASCII表示，这就导致二进制多媒体文件需要编码为ASCII，而且在发送方需要编码，接收方则需要解码。</p>
 <p>值得注意的是，SMTP报文一般不使用中间邮件服务器发送报文，也就是邮件不会在中间某个邮件服务器保留；在SMTP握手阶段，SMTP客户端将介绍发送方和接收方的邮箱地址；一旦介绍完毕后，SMTP客户端将开始发送报文</p>
-<p><img src="/%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6/20220325154620.png" alt="image-20220323090828915"></p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220326194302.png" alt="image-20220323090828915"></p>
 <h3 id="2-3-2-与HTTP对比"><a href="#2-3-2-与HTTP对比" class="headerlink" title="2.3.2 与HTTP对比"></a>2.3.2 与HTTP对比</h3><p>HTTP和SMTP都是用TCP协议；持续的HTTP和SMTP都是用持续连接；但是两者也有区别。</p>
 <ul>
 <li>首先HTTP被设计为一个Pull协议而SMTP被设计为一个Push协议。即用户通过HTTP主动向服务器请求内容，而SMTP则是客户将内容推向服务器端；</li>
