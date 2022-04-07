@@ -5087,8 +5087,8 @@ type=MX：则value为那么所对应的邮件服务器的规范主机名；
   <entry>
     <title>FUSO论文阅读笔记</title>
     <url>/2022/04/07/FUSO/</url>
-    <content><![CDATA[<h1 id="《Fast-and-Cautious-Leveraging-Multi-path-Diversity-for-Transport-Loss-Recovery-in-Data-Centers》论文阅读笔记"><a href="#《Fast-and-Cautious-Leveraging-Multi-path-Diversity-for-Transport-Loss-Recovery-in-Data-Centers》论文阅读笔记" class="headerlink" title="《Fast and Cautious: Leveraging Multi-path Diversity for Transport Loss Recovery in Data Centers》论文阅读笔记"></a>《Fast and Cautious: Leveraging Multi-path Diversity for Transport Loss Recovery in Data Centers》论文阅读笔记</h1><blockquote>
-<p>该文介绍了一种利用DCN中多路径多样性特性进行输运损失恢复的新型分组损失恢复方法FUSO（Fast Multi-path Loss Recovery ）</p>
+    <content><![CDATA[<blockquote>
+<p>该文《Fast and Cautious: Leveraging Multi-path Diversity for Transport Loss Recovery in Data Centers》介绍了一种利用DCN中多路径多样性特性进行输运损失恢复的新型分组损失恢复方法FUSO（Fast Multi-path Loss Recovery ）</p>
 <p>FUSO主要有两个特性：</p>
 <ol>
 <li>fast：它不需要在有损耗的子流上等待超时</li>
