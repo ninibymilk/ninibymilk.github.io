@@ -5084,4 +5084,77 @@ type=MX：则value为那么所对应的邮件服务器的规范主机名；
         <tag>Data Structure and Algorithm</tag>
       </tags>
   </entry>
+  <entry>
+    <title>FUSO论文阅读笔记</title>
+    <url>/2022/04/07/FUSO/</url>
+    <content><![CDATA[<h1 id="《Fast-and-Cautious-Leveraging-Multi-path-Diversity-for-Transport-Loss-Recovery-in-Data-Centers》论文阅读笔记"><a href="#《Fast-and-Cautious-Leveraging-Multi-path-Diversity-for-Transport-Loss-Recovery-in-Data-Centers》论文阅读笔记" class="headerlink" title="《Fast and Cautious: Leveraging Multi-path Diversity for Transport Loss Recovery in Data Centers》论文阅读笔记"></a>《Fast and Cautious: Leveraging Multi-path Diversity for Transport Loss Recovery in Data Centers》论文阅读笔记</h1><blockquote>
+<p>该文介绍了一种利用DCN中多路径多样性特性进行输运损失恢复的新型分组损失恢复方法FUSO（Fast Multi-path Loss Recovery ）</p>
+<p>FUSO主要有两个特性：</p>
+<ol>
+<li>fast：它不需要在有损耗的子流上等待超时</li>
+<li>cautious：它不违反拥塞控制算法</li>
+</ol>
+<p>试验台实验和仿真结果表明在1Gbps的试验台中，FUSO可将对延迟敏感的流量的 99^th^FCT（ flow completion time）降低约82.3%，而在10Gbps的大规模模拟网络中则可降低约87.9%。</p>
+</blockquote>
+<h2 id="预置知识"><a href="#预置知识" class="headerlink" title="预置知识"></a>预置知识</h2><ul>
+<li><p>FTP（ flow completion time）</p>
+</li>
+<li><p><a href="https://zhuanlan.zhihu.com/p/277593169">MPTCP</a></p>
+</li>
+<li><p>RTO</p>
+</li>
+</ul>
+<h2 id="快速多路径丢失恢复（FUSO）"><a href="#快速多路径丢失恢复（FUSO）" class="headerlink" title="快速多路径丢失恢复（FUSO）"></a>快速多路径丢失恢复（FUSO）</h2><h3 id="1-概述"><a href="#1-概述" class="headerlink" title="1.概述"></a>1.概述</h3><p>FUSO建立在多路径传输的基础上，多路径传输将一个TCP流划分为多个子流。FUSO侧重于多路径丢失恢复，而不是多路径拥塞控制。</p>
+<p>FUSO的<strong>核心思想</strong>是，在严格遵守拥塞控制的情况下，如果存在空闲拥塞窗口(cwnd)， FUSO首先尝试发送新的数据。如果上层应用程序目前没有新数据，<strong>FUSO利用这个传输机会，通过利用“good”子流，主动&#x2F;立即发送“bad”子流上预期可能丢失(un-ACKed)报文的恢复报文。</strong>注意，FUSO不影响现有的MPTCP机会重传机制，该机制由全接收窗口触发。这两种机制可以相互补充。</p>
+<p>接下来我们分别讨论发送端和接收端的所做的工作</p>
+<h3 id="发送端"><a href="#发送端" class="headerlink" title="发送端"></a>发送端</h3><p>FUSO发送端主动恢复多路径丢失过程可以概括为Alogo.1.</p>
+<p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/20220407090641.png" alt="image-20220407090638114"></p>
+<h4 id="TRY-SEND-RECOVERIES"><a href="#TRY-SEND-RECOVERIES" class="headerlink" title="TRY SEND RECOVERIES()"></a>TRY SEND RECOVERIES()</h4><p>具体来说，发送端我们在传输栈中插入一个函数<code>TRY SEND RECOVERIES()</code>，监视BytesInFlight<del>Total</del>，CWND<del>Total</del>和应用程序数</p>
+<p>这个函数需要插入到两个位置:</p>
+<p>i) 在应用程序传递的所有数据被推入传输发送缓冲区并发送出去之后，目前没有新的数据从上层应用程序传递出去;</p>
+<p>ii) 接收到ACK后，传输状态(如BytesInFlight<del>Total</del>, CWND<del>Total</del>)已经改变。</p>
+<p>在这个函数中，如果满足以下两个条件，发送方调用SEND A RECOVERY()函数发送一个恢复包:</p>
+<p>i) 拥塞控制允许有空闲的窗口容量</p>
+<p>ii) 所有新数据都已发送出去。</p>
+<h4 id="SEND-A-RECOVERY"><a href="#SEND-A-RECOVERY" class="headerlink" title="SEND A RECOVERY()"></a>SEND A RECOVERY()</h4><p>在函数<code>SEND A RECOVERY()</code>中，FUSO发送者首先调用函数FIND WORST SUB-FLOW()和FIND BEST SUB-FLOW()可以找到当前最差和最好的子流。</p>
+<p>在存在un-ACKed 数据的子流选择最差子流，在拥塞窗口(cwnd)中有拥塞控制允许的空闲空间的子流中选择最佳子流。至于具体选择子流的策略我们会在下文继续讨论</p>
+<p>如果目前没有最坏或最好的子流，此轮FUSO停止生成恢复报文。接下来，如果找到了最差和最好的子流，则生成最差子流的恢复包。因为在DACKs或RTO检测到数据包丢失之前，FUSO会进行主动的丢包恢复，我们必须猜测哪个包最有可能丢失。</p>
+<p>FUSO推断该报文是最差子流上发出时间最长的最早的未被ack的报文。因此，发送端主动为最坏路径上的一个未被ack报文生成一个恢复报文</p>
+<p>为了避免给网络增加过多不必要的流量，在FUSO中采用主动丢失恢复方案，一个未被ack的报文最多发送一次。</p>
+<p>恢复报文生成后，FUSO发送端通过最佳子流发送恢复报文。注意，恢复数据包被视为最佳子流的新数据包。恢复包处于最佳子流的拥塞控制下，如果在最佳子流中丢失，则使用标准的TCP丢失恢复将在最佳子流中作为正常数据包重传。但是，为了避免重复恢复，当FUSO发送端稍后进行快速多路径丢失恢复时，这些报文不会被计入等待恢复的unack报文中。</p>
+<h3 id="路径选择"><a href="#路径选择" class="headerlink" title="路径选择"></a>路径选择</h3><p>如何选择最佳子流和最差子流？</p>
+<h4 id="丢包率"><a href="#丢包率" class="headerlink" title="丢包率"></a>丢包率</h4><p>我们定义 $C_l &#x3D; α ·lossrate + β · lossratelast$描述子流中发生丢包的可能性。</p>
+<p>$C_l$​是该子流中总丢包率(lossrate)和最近丢包率(lossrate<del>last</del>)的加权和。α, β为各部分的权重。</p>
+<p>由于TCP&#x2F;MPTCP在检测到数据包被DACK或RTO丢失后会重传，FUSO使用重传的总包数与传输的总包数的比值作为近似的丢包率。需要注意的是，FUSO生成的恢复包将被视为新的报文，而不是子流的重传报文。lossrate<del>last</del>计算为1&#x2F;上次重传发送的包数。</p>
+<h4 id="最差子流"><a href="#最差子流" class="headerlink" title="最差子流"></a>最差子流</h4><p>最差的子流是在那些至少有一个未被ack包(可能丢失)和C<del>l</del>最大的子流中挑选出来的。对于从未遇到过重传的子流，其C<del>l</del>&#x3D; 0。如果所有子流程的C<del>l</del>均为零，则FUSO选择RTT最大的子流程，从而优化整体FCT。</p>
+<h4 id="最优子流"><a href="#最优子流" class="headerlink" title="最优子流"></a>最优子流</h4><p>最佳子流在有空闲cwnd、C<del>l</del>值最小的子流中选择。</p>
+<ul>
+<li>对于从未遇到重传输的子流，它们的C<del>l</del>等于零，且小于其他子流。</li>
+<li>如果超过一个子流的C<del>l</del>为零，FUSO选择RTT最小的子流为最佳子流。</li>
+<li>在初始状态下，当FUSO开始主动恢复包时，一些子流程可能从未传输过任何数据。当FUSO选择最优子流时，这些子流的C<del>l</del>值为无穷大且具有最低优先级。</li>
+<li>在所有子流C<del>l</del> &#x3D;∞的情况下，FUSO随机选取其中一个子流为最佳子流。</li>
+<li>最好的和最差的子流可能是同一个。在这种情况下，FUSO只是简单地将恢复报文在原始报文之后的同一子流中发送。</li>
+</ul>
+<h3 id="接收端"><a href="#接收端" class="headerlink" title="接收端"></a>接收端</h3><p>FUSO接受端相对简单，在多路传输协议，如MPTCP，接收端有一个数据级的接受缓存区，每一个子流都有都有一个虚拟的接收缓存区映射到这个数据级的接受缓存区。</p>
+<p>在接收到FUSO恢复报文后，FUSO接收端直接将恢复报文插入到数据级接收缓冲区的相应位置，完成流传输。</p>
+<p>对于传输FUSO恢复报文的最佳子流，从该子流的拥塞控制和原始TCP的丢失恢复来看，这些报文自然被认为是正常的数据包。虽然受到了它们的保护，但坏子流并不知道这些恢复包，并可能不必要地重新传输旧数据包。</p>
+<h3 id="Further-Study"><a href="#Further-Study" class="headerlink" title="Further Study"></a>Further Study</h3><p>目前，FUSO选择了这样一种简单的方法，在单个子流和整体多路径传输流上保持精确的拥塞控制行为，并且不增加攻击行为。它不需要在发送端和接收端之间进行进一步的协调，除了TCP中原有的ACK方案，<strong>但可能会引起一些冗余的重传</strong>。消除冗余重传的一种简单的解决方法是，接收端在收到来自其他良好子流的恢复报文后，主动为坏子流的原始报文生成ack。</p>
+<p>然而，这可能会导致拥塞控制的不利影响。具体来说，坏子流的发送端可能会错误地将路径判断为良好状态，从而增加其发送速率，加剧损失。</p>
+<p>为了保持拥塞控制行为和消除冗余重传，可能需要对MCTCP&#x2F;TCP协议进行非常复杂的修改。发送方和接收方必须协调决定是否&#x2F;如何改变每个子流的拥塞控制行为(例如，增加&#x2F;减少拥塞窗口的数量)，以应对各种情况，如</p>
+<ul>
+<li>收到了主动重传但丢失了原始包;</li>
+<li>收到了原始包但丢失了主动重传;</li>
+<li>两个包都丢失;</li>
+</ul>
+<p>这种解决方案的可行性和如何设计还需要进一步研究，是我们未来的工作。目前，FUSO选择了一些多余的重传以换取上述简单和低成本的方法。</p>
+<p>论文地址：<a href="https://1989chenguo.github.io/Publications/FUSO-ATC16.pdf">https://1989chenguo.github.io/Publications/FUSO-ATC16.pdf</a></p>
+]]></content>
+      <categories>
+        <category>computer network notes</category>
+      </categories>
+      <tags>
+        <tag>computer network</tag>
+        <tag>MPTCP</tag>
+      </tags>
+  </entry>
 </search>
