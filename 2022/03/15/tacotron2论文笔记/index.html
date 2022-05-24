@@ -29,6 +29,16 @@
       <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
        
  
+<script>
+var _hmt = _hmt || [];
+(function() {
+	var hm = document.createElement("script");
+	hm.src = "https://hm.baidu.com/hm.js?d3513e7c357dc063d6f8aaf30379803c";
+	var s = document.getElementsByTagName("script")[0]; 
+	s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
 
       <link
         rel="stylesheet"
@@ -120,21 +130,21 @@
 <h2 id="模型概述"><a href="#模型概述" class="headerlink" title="模型概述"></a>模型概述</h2><p>该语音合成系统由两个组件组成，如下图所示</p>
 <ol>
 <li>一个循环 seq2seq 声谱特征预测网络，它从输入字符序列预测 mel 谱图帧的序列;</li>
-<li>一个改进的 WaveNet，它根据预测的 mel 谱图帧生成时域波形样本。<span id="more"></span></li>
+<li>一个改进的 WaveNet，它根据预测的 mel 谱图帧生成时域波形样本。</li>
 </ol>
 <p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202203031055188.png" alt="image-20220303105518888"></p>
-<p>我们选择了一个低电平的声学表示:梅尔-频谱图，以连接这两个成分。使用一种很容易从时域波形计算出来的表示形式，可以让我们分别训练这两个分量。这种表示也比波形样本更平滑，更容易训练使用平方误差损失，因为它是不变的相位在每一帧。mel 谱图与线性谱图有关，即短时傅里叶变换(STFT)幅度。</p>
-<p>该方法是根据人类听觉系统的实测响应，对短时傅立叶变换的频率轴进行非线性变换，以较少的维数总结频率内容。</p>
+<h2 id="梅尔谱图"><a href="#梅尔谱图" class="headerlink" title="梅尔谱图"></a>梅尔谱图</h2><p>​    我们选择了一个低电平的声学表示:梅尔-频谱图，以连接这两个成分。使用一种很容易从时域波形计算出来的表示形式，可以让我们分别训练这两个分量。这种表示也比波形样本更平滑，更容易训练使用平方误差损失，因为它是不变的相位在每一帧。mel 谱图与线性谱图有关，即短时傅里叶变换(STFT)幅度。</p>
+<p>​    该方法是根据人类听觉系统的实测响应，对短时傅立叶变换的频率轴进行非线性变换，以较少的维数总结频率内容。</p>
 <p>使用这种听觉频率标度可以强调对语音清晰度至关重要的低频细节，同时减少了对高频细节的强调，高频细节主要由摩擦和其他噪声爆发控制，通常不需要以高保真度建模。由于这些特性，从 mel 尺度衍生出来的特征已经被用作语音识别的基础表示几十年了</p>
-<h2 id="声谱预测网络"><a href="#声谱预测网络" class="headerlink" title="声谱预测网络"></a>声谱预测网络</h2><h3 id="梅尔谱图生成"><a href="#梅尔谱图生成" class="headerlink" title="梅尔谱图生成"></a>梅尔谱图生成</h3><p>我们使用跨越 125 Hz 至 7.6 kHz 的 80 通道 mel 滤波器组将 STFT 幅度转换为梅尔尺度，然后进行对数动态范围压缩。在日志压缩之前，为了限制对数域的动态范围，滤波器组的输出幅度被裁剪到最小值 0.01。</p>
-<h3 id="结构概述"><a href="#结构概述" class="headerlink" title="结构概述"></a>结构概述</h3><p>该网络由编码器（Encoder）和解码器（Decoder）组成。编码器将字符序列转换为隐藏的特征表示，解码器使用该特征表示来预测谱图。输入字符使用学习过的 512 维字符嵌入（a learned 512-dimensional character embedding）表示，该字符嵌入经过 3 个卷积层的堆栈，每个卷积层包含 512 个形状为 5 x 1 的滤波器（filter），即每个滤波器跨越 5 个字符，然后是批量归一化和 ReLU 激活。</p>
+<p>我们使用跨越 125 Hz 至 7.6 kHz 的 80 通道 mel 滤波器组将 STFT 幅度转换为梅尔尺度，然后进行对数动态范围压缩。在日志压缩之前，为了限制对数域的动态范围，滤波器组的输出幅度被裁剪到最小值 0.01。</p>
+<h2 id="声谱预测网络"><a href="#声谱预测网络" class="headerlink" title="声谱预测网络"></a>声谱预测网络</h2><h3 id="结构概述"><a href="#结构概述" class="headerlink" title="结构概述"></a>结构概述</h3><p>该网络由编码器（Encoder）和解码器（Decoder）组成。编码器将字符序列转换为隐藏的特征表示，解码器使用该特征表示来预测谱图。输入字符使用学习过的 512 维字符嵌入（a learned 512-dimensional character embedding）表示，该字符嵌入经过 3 个卷积层的堆栈，每个卷积层包含 512 个形状为 5 x 1 的滤波器（filter），即每个滤波器跨越 5 个字符，然后是批量归一化和 ReLU 激活。</p>
 <h3 id="编码器（Encoder）"><a href="#编码器（Encoder）" class="headerlink" title="编码器（Encoder）"></a>编码器（Encoder）</h3><p>编码器输出由注意力网络消耗，该网络将完整编码序列总结为每个解码器输出步骤的固定长度上下文向量。我们使用位置敏感注意（location-sensitive attention），它扩展了可加性注意机制将先前解码器时间步骤中的累积注意权值作为额外的特征。这鼓励模型在输入过程中始终向前移动，减少解码程序重复或忽略某些子序列的潜在失败模式。在投射输入后计算注意力概率</p>
 <blockquote>
 <p>在 Tacotron2 中，编码器将输入序列 X&#x3D;[x<del>1</del>,x<del>2</del>,…,x<del>Tx</del>] 映射成序列 H&#x3D;[h<del>1</del>,h<del>2</del>,…,h<del>Tx</del>] ，其中序列 H 被称作“编码器隐状态”(encoder hidden states)。注意：编码器的输入输出序列都拥有相同的长度，h<del>i</del>之于相邻分量 h<del>j</del>拥有的信息等价于 x<del>i</del>之于 x<del>j</del>所拥有的信息。</p>
 <p>在 Tacotron2 中，每一个输入分量 xi 就是一个字符。Tacotron2 的编码器是一个 3 层卷积层后跟一个双向 LSTM 层形成的模块，在 Tacotron2 中卷积层给予了神经网络类似于 N−gramN−gram 感知上下文的能力。这里使用卷积层获取上下文主要是由于实践中 RNN 很难捕获长时依赖，并且卷积层的使用使得模型对不发音字符更为鲁棒(如’know’中的’k’)。</p>
 <p>经词嵌入(word embedding)的字符序列先送入三层卷积层以提取上下文信息，然后送入一个双向的 LSTM 中生成编码器隐状态，即：</p>
 <p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202203031438629.png" alt="image-20220225155829121"></p>
-<p>其中，F1、F2、F3F1、F2、F3 为 3 个卷积核，ReLUReLU 为每一个卷积层上的非线性激活 E¯ 表示对字符序列 X 做 embedding，EncoderRecurrency 表示双向 LSTM。</p>
+<p>其中，F1、F2、F3为 3 个卷积核，ReLUReLU 为每一个卷积层上的非线性激活 E¯ 表示对字符序列 X 做 embedding，EncoderRecurrency 表示双向 LSTM。</p>
 </blockquote>
 <h3 id="Tacotron2-注意力机制-Location-Sensitive-Attention"><a href="#Tacotron2-注意力机制-Location-Sensitive-Attention" class="headerlink" title="Tacotron2 注意力机制-Location Sensitive Attention"></a>Tacotron2 注意力机制-Location Sensitive Attention</h3><blockquote>
 <p><img src="https://pic-1310557869.cos.ap-beijing.myqcloud.com/img/202203031438800.png" alt="image-20220225160230769"></p>
